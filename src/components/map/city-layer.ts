@@ -79,23 +79,28 @@ function buildingMaterial(quality: Quality) {
       float est = vInfo.y;
       float seed = vInfo.z;
       float isWall = vWall.y;
-      // Palette: warm limestone low-rise, pale sand mid-rise, cool pale glass for towers
-      vec3 low = mix(vec3(0.925, 0.900, 0.858), vec3(0.955, 0.935, 0.900), seed);
-      vec3 mid = mix(vec3(0.930, 0.925, 0.905), vec3(0.880, 0.895, 0.890), seed);
-      vec3 tower = mix(vec3(0.835, 0.875, 0.885), vec3(0.900, 0.910, 0.900), seed);
+      float camDist = distance(vLocal, uCamPos);
+      // Palette: warm limestone low-rise, pale sand mid-rise, pale glass-white towers
+      vec3 low = mix(vec3(0.955, 0.935, 0.895), vec3(0.975, 0.960, 0.930), seed);
+      vec3 mid = mix(vec3(0.960, 0.950, 0.930), vec3(0.925, 0.935, 0.930), seed);
+      vec3 tower = mix(vec3(0.900, 0.925, 0.935), vec3(0.950, 0.955, 0.950), seed);
       vec3 base = h < 14.0 ? low : (h < 45.0 ? mid : tower);
-      vec3 roof = base * 0.93 + vec3(0.012, 0.012, 0.010);
+      vec3 roof = base * 0.95;
       vec3 col = mix(roof, base, isWall);
-      // Facade rhythm: floors every 3.4 m, bays every ~3.2 m (towers read as glazed, low-rise subtle)
+      // Facade rhythm (floors 3.4 m, bays ~3 m). Anti-aliased, and resolved to an average tone with
+      // distance so far towers read as glazed volumes instead of shimmering dots.
       if (isWall > 0.5 && uWindows > 0.5 && h > 6.0) {
-        float fz = fract(vLocal.z / 3.4);
-        float fu = fract(vWall.x / (h > 45.0 ? 2.6 : 3.4));
-        float win = step(0.30, fz) * step(fz, 0.86) * step(0.16, fu) * step(fu, 0.84);
-        vec3 glass = h > 45.0 ? vec3(0.48, 0.60, 0.66) : vec3(0.62, 0.66, 0.66);
-        float k = (h > 45.0 ? 0.55 : 0.32) * (est > 0.5 ? 0.6 : 1.0);
-        col = mix(col, glass, win * k);
-        // ground-floor band
-        col *= mix(0.86, 1.0, smoothstep(0.0, 4.2, vLocal.z));
+        float fz = vLocal.z / 3.4;
+        float fu = vWall.x / (h > 45.0 ? 2.8 : 3.6);
+        vec2 w = max(fwidth(vec2(fz, fu)), vec2(1e-4));
+        float band = smoothstep(0.30 - w.x, 0.30 + w.x, fract(fz)) * (1.0 - smoothstep(0.88 - w.x, 0.88 + w.x, fract(fz)));
+        float bay = smoothstep(0.12 - w.y, 0.12 + w.y, fract(fu)) * (1.0 - smoothstep(0.88 - w.y, 0.88 + w.y, fract(fu)));
+        float detail = 1.0 - smoothstep(420.0, 1500.0, camDist);
+        float pattern = mix(0.44, band * bay, detail);
+        vec3 glass = h > 45.0 ? vec3(0.55, 0.67, 0.72) : vec3(0.70, 0.73, 0.73);
+        float k = (h > 45.0 ? 0.55 : 0.26) * (est > 0.5 ? 0.55 : 1.0);
+        col = mix(col, glass, pattern * k);
+        col *= mix(0.88, 1.0, smoothstep(0.0, 4.2, vLocal.z));
       }
       // Contact darkening near the ground (cheap ambient occlusion)
       col *= mix(0.74, 1.0, smoothstep(0.0, 10.0, vLocal.z) * isWall + (1.0 - isWall));
@@ -109,8 +114,8 @@ function buildingMaterial(quality: Quality) {
     ).replace(
       "#include <fog_fragment>",
       /* glsl */ `
-      float camDist = distance(vLocal, uCamPos);
-      float haze = smoothstep(1800.0, 9000.0, camDist) * 0.75;
+      float hazeDist = distance(vLocal, uCamPos);
+      float haze = smoothstep(1800.0, 9000.0, hazeDist) * 0.75;
       gl_FragColor.rgb = mix(gl_FragColor.rgb, uHaze, haze);
       `,
     );
@@ -142,10 +147,10 @@ void main() {
     1.0));
   vec3 view = normalize(uCamPos - vLocal);
   float fres = pow(1.0 - max(dot(view, nrm), 0.0), 3.0);
-  vec3 deep = vec3(0.17, 0.47, 0.52);
-  vec3 shallow = vec3(0.39, 0.71, 0.71);
+  vec3 deep = vec3(0.16, 0.50, 0.56);
+  vec3 shallow = vec3(0.44, 0.78, 0.78);
   vec3 sky = vec3(0.86, 0.93, 0.94);
-  vec3 col = mix(mix(deep, shallow, 0.45), sky, 0.15 + 0.6 * fres);
+  vec3 col = mix(mix(deep, shallow, 0.5), sky, 0.08 + 0.5 * fres);
   vec3 r = reflect(-uSun, nrm);
   float glint = pow(max(dot(r, view), 0.0), 220.0) * 1.4;
   col += vec3(1.0, 0.94, 0.82) * glint;
@@ -185,10 +190,30 @@ void main() {
 }
 `;
 
-const COLUMN_FRAG_PATCH = /* glsl */ `
-#include <color_fragment>
-float topGlow = smoothstep(0.82, 1.0, vColumnZ);
-diffuseColor.rgb = mix(diffuseColor.rgb * 0.92, min(diffuseColor.rgb * 1.25 + 0.08, vec3(1.0)), topGlow);
+const COLUMN_VERT = /* glsl */ `
+varying float vZ;
+varying vec3 vColor;
+void main() {
+  vZ = position.z;
+  #ifdef USE_INSTANCING_COLOR
+    vColor = instanceColor;
+  #else
+    vColor = vec3(1.0);
+  #endif
+  gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0);
+}
+`;
+const COLUMN_FRAG = /* glsl */ `
+varying float vZ;
+varying vec3 vColor;
+void main() {
+  float a = mix(0.22, 0.95, pow(vZ, 1.1));
+  float cap = smoothstep(0.955, 1.0, vZ);
+  vec3 c = mix(vColor * 0.9, min(vColor * 1.18 + 0.06, vec3(1.0)), vZ);
+  c = mix(c, vec3(1.0), cap * 0.5);
+  gl_FragColor = vec4(c, a + cap * 0.1);
+  #include <colorspace_fragment>
+}
 `;
 
 export class CityLayer implements CustomLayerInterface {
@@ -202,7 +227,7 @@ export class CityLayer implements CustomLayerInterface {
   private camera = new THREE.Camera();
   private origin = originMercator();
   private startTime = performance.now();
-  private sun = new THREE.DirectionalLight(0xfff1dc, 2.1);
+  private sun = new THREE.DirectionalLight(0xfff0d8, 3.1);
   private buildingUniforms: ReturnType<typeof buildingMaterial>["uniforms"] | null = null;
   private buildings: THREE.Mesh | null = null;
   private ground: THREE.Mesh;
@@ -237,11 +262,11 @@ export class CityLayer implements CustomLayerInterface {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.applyQualityToRenderer();
 
-    const hemi = new THREE.HemisphereLight(0xe6f2f2, 0xbcae98, 1.25);
+    const hemi = new THREE.HemisphereLight(0xe8f3f4, 0xd2c4aa, 2.1);
     hemi.up.set(0, 0, 1);
     hemi.position.set(0, 0, 1);
     this.scene.add(hemi);
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.2));
     this.sun.castShadow = true;
     this.sun.shadow.camera.up.set(0, 0, 1);
     this.sun.shadow.bias = -0.0004;
@@ -384,14 +409,10 @@ export class CityLayer implements CustomLayerInterface {
       const geom = new THREE.CylinderGeometry(1, 1, 1, 20, 1, false);
       geom.rotateX(Math.PI / 2);
       geom.translate(0, 0, 0.5);
-      const mat = new THREE.MeshStandardMaterial({ roughness: 0.45, metalness: 0.0, transparent: true, opacity: 0.94 });
-      mat.onBeforeCompile = (shader) => {
-        shader.vertexShader = "varying float vColumnZ;\n" + shader.vertexShader.replace("#include <begin_vertex>", "#include <begin_vertex>\nvColumnZ = position.z;");
-        shader.fragmentShader = "varying float vColumnZ;\n" + shader.fragmentShader.replace("#include <color_fragment>", COLUMN_FRAG_PATCH);
-      };
+      const mat = new THREE.ShaderMaterial({ vertexShader: COLUMN_VERT, fragmentShader: COLUMN_FRAG, transparent: true, depthWrite: false });
       this.columns = new THREE.InstancedMesh(geom, mat, max);
       this.columns.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-      this.columns.castShadow = this.quality === "cinematic";
+      this.columns.castShadow = false;
       this.columns.frustumCulled = false;
       this.columns.renderOrder = 6;
       this.columns.count = 0;
@@ -401,7 +422,7 @@ export class CityLayer implements CustomLayerInterface {
     const seen = new Set<string>();
     data.forEach((d, i) => {
       seen.add(d.id);
-      const r = 7 + Math.min(10, Math.sqrt(d.count) * 2.4);
+      const r = 5 + Math.min(8, Math.sqrt(d.count) * 1.9);
       const target = visible ? 26 + d.count * 13 + d.emphasis * 40 : 0;
       const prev = this.columnState.get(d.id);
       const color = new THREE.Color(d.color);

@@ -23,3 +23,6 @@ Thumbs.db
 # visual QA output
 screenshots/*.png
 !screenshots/review/
+
+# local debugging helpers
+scripts/debug-*.mjs

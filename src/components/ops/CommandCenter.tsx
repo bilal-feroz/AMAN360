@@ -152,7 +152,11 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         camera={ui.camera}
         padding={padding}
         selectedRecipientId={ui.selectedRecipientId}
-        onSelectRecipient={(id) => ui.selectRecipient(id)}
+        onSelectRecipient={(id) => {
+          ui.selectRecipient(id);
+          const p = ops.state?.personas.find((x) => x.id === id);
+          if (p?.location) ui.flyTo({ kind: "point", lngLat: p.location.coordinates as [number, number], zoom: 16.9, pitch: 62 });
+        }}
         onSelectZone={onSelectZone}
         onSelectClosure={onSelectClosure}
         onHover={ui.setHover}
@@ -201,7 +205,7 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
       {/* Map stage overlays */}
       <div className="pointer-events-none absolute z-10" style={{ top: TOP, bottom: 0, insetInlineStart: RAIL, insetInlineEnd: panelWidth }}>
         <motion.div
-          className="absolute inset-x-4 bottom-4"
+          className="absolute inset-x-4 bottom-6"
           initial={false}
           animate={{ y: chrome ? 0 : 160, opacity: chrome ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 140, damping: 22, delay: chrome ? 0.26 : 0 }}
@@ -213,6 +217,7 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
           {closureInfo && chrome && <ClosureCard onClose={() => setClosureInfo(false)} />}
         </AnimatePresence>
         {chrome && <Legend />}
+        <Attribution />
         <AnimatePresence>{devicesOpen && <div className="pointer-events-auto"><DevicesDrawer onClose={() => setDevicesOpen(false)} /></div>}</AnimatePresence>
         {ops.error && (
           <div role="alert" className="pointer-events-auto absolute start-1/2 top-4 flex max-w-[560px] -translate-x-1/2 items-start gap-2 rounded-xl bg-white px-4 py-3 text-[13px] text-coral-ink shadow-[var(--shadow-float)] ring-1 ring-coral/30 rtl:translate-x-1/2">
@@ -331,7 +336,7 @@ function Legend() {
           ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside zone"],
           ["#e8ac45", lang === "ar" ? "يحتاج مراجعة" : "Needs review"],
         ]
-      : [["#9aaeb3", lang === "ar" ? "سكان اصطناعيون (≈120 م)" : "Synthetic population (≈120 m cells)"]];
+      : [["#6fa3ab", lang === "ar" ? "سكان اصطناعيون (≈120 م)" : "Synthetic population (≈120 m cells)"]];
   return (
     <div className="absolute end-4 top-4 rounded-xl bg-white/90 px-3 py-2 text-[11.5px] shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
       <div className="mb-1 font-semibold text-ink">{lang === "ar" ? "أعمدة السكان" : "Population columns"}</div>
@@ -343,6 +348,23 @@ function Legend() {
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+/** Required data attributions, always visible (MapLibre's own control would sit under the panel). */
+function Attribution() {
+  return (
+    <div className="pointer-events-auto absolute bottom-0 end-0 rounded-ss-lg bg-white/80 px-2 py-0.5 text-[10.5px] text-muted backdrop-blur" dir="ltr">
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" className="hover:text-ink">© OpenStreetMap contributors</a>
+      {" · "}
+      <a href="https://openfreemap.org" target="_blank" rel="noopener" className="hover:text-ink">OpenFreeMap</a>
+      {" · "}
+      <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener" className="hover:text-ink">OpenMapTiles</a>
+      {" · "}
+      <a href="https://cloudless.eox.at" target="_blank" rel="noopener" className="hover:text-ink">EOxCloudless 2024 (contains modified Copernicus Sentinel data)</a>
+      {" · "}
+      <a href="https://maplibre.org" target="_blank" rel="noopener" className="hover:text-ink">MapLibre</a>
     </div>
   );
 }

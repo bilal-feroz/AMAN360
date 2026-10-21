@@ -35,7 +35,7 @@ interface Props {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  unassessed: "#9aaeb3",
+  unassessed: "#6fa3ab",
   outside: "#c3cfd1",
   needs_review: "#e8ac45",
   inside_zone: "#f39a80",
@@ -120,7 +120,7 @@ export default function CityMap(props: Props) {
         style: buildStyle(propsRef.current.lang, window.location.origin),
         center: [INTRO_KEYS[0].lng, INTRO_KEYS[0].lat],
         zoom: INTRO_KEYS[0].zoom,
-        attributionControl: { compact: false },
+        attributionControl: false,
         canvasContextAttributes: { antialias: true, powerPreference: "high-performance" },
         pixelRatio: Math.min(window.devicePixelRatio || 1, propsRef.current.quality === "lite" ? 1 : 2),
         maxPitch: 75,
@@ -375,8 +375,9 @@ export default function CityMap(props: Props) {
         features: st.closures.map((c) => ({ type: "Feature", properties: { id: c.id, mode: zoneMode }, geometry: c.geometry as LineString })),
       });
     map.setPaintProperty("zone-fill", "fill-opacity", zoneMode === "active" ? 0.13 : 0);
-    map.setPaintProperty("zone-line", "line-opacity", zoneMode === "active" ? 0.95 : zoneMode === "preview" ? 0.55 : 0);
-    map.setPaintProperty("zone-line", "line-dasharray", zoneMode === "active" ? [1, 0] : [2, 2]);
+    map.setPaintProperty("zone-line", "line-opacity", zoneMode === "active" ? 0.95 : zoneMode === "preview" ? 0.85 : 0);
+    map.setPaintProperty("zone-line", "line-color", zoneMode === "active" ? PALETTE.zoneLine : "#d99a2b");
+    map.setPaintProperty("zone-line", "line-dasharray", zoneMode === "active" ? [1, 0] : [2, 1.6]);
     map.setPaintProperty("closure-casing", "line-opacity", zoneMode === "active" ? 1 : 0);
     map.setPaintProperty("closure-line", "line-opacity", zoneMode === "active" ? 1 : zoneMode === "preview" ? 0.35 : 0);
     map.setPaintProperty("closure-line", "line-color", zoneMode === "active" ? PALETTE.closure : "#8fa3a8");
@@ -432,7 +433,10 @@ export default function CityMap(props: Props) {
       const el = document.createElement("button");
       el.type = "button";
       el.setAttribute("aria-label", "Incident EVT-RAIN-001");
-      el.addEventListener("click", () => propsRef.current.onSelectZone());
+      el.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        propsRef.current.onSelectZone();
+      });
       inc = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([55.3903, 25.3247]).addTo(map);
       markers.current.set(incKey, inc);
     }
@@ -457,7 +461,10 @@ export default function CityMap(props: Props) {
     if (!cl) {
       const el = document.createElement("button");
       el.type = "button";
-      el.addEventListener("click", () => propsRef.current.onSelectClosure());
+      el.addEventListener("click", (ev) => {
+        ev.stopPropagation(); // the marker sits over the zone layer — don't also select the zone
+        propsRef.current.onSelectClosure();
+      });
       cl = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([55.3901, 25.3229]).addTo(map);
       markers.current.set("closure", cl);
     }
@@ -491,7 +498,8 @@ export default function CityMap(props: Props) {
       const tone =
         status === "assistance_requested" ? "#fa684f" : status === "acknowledged" ? "#087f7a" : p.decision?.outcome === "NO_ACTION" ? "#8fa3a8" : p.decision ? look.tone : "#8fa3a8";
       const selected = propsRef.current.selectedRecipientId === p.id;
-      el.style.display = p.persona === "priya" ? "none" : "";
+      // Personas appear once the engine has assessed impact — the opening city stays calm.
+      el.style.display = p.persona === "priya" || !active ? "none" : "";
       el.setAttribute("aria-label", `${p.displayName} (${p.id})`);
       el.style.zIndex = selected ? "5" : "2";
       el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;transform:translateY(-4px)">

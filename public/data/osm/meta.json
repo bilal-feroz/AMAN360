@@ -1,0 +1,18 @@
+{
+  "source": "OpenStreetMap via Overpass API",
+  "license": "ODbL-1.0",
+  "attribution": "© OpenStreetMap contributors",
+  "extracted": "2026-10-21T05:52:05.487Z",
+  "bbox": [
+    25.312,
+    55.366,
+    25.342,
+    55.404
+  ],
+  "counts": {
+    "buildings": 6015,
+    "heightTagged": 748,
+    "roads": 2619,
+    "greenWater": 784
+  }
+}

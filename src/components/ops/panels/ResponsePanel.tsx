@@ -11,7 +11,7 @@ import { Bar } from "./ImpactPanel";
 
 export function ResponsePanel() {
   const { state, t, lang, reviewAction, canAct } = useOps();
-  const { selectCase, flyTo, openPhones } = useUi();
+  const { selectCase, flyTo, openPhones, viewAt, setViewAt } = useUi();
   const [answering, setAnswering] = useState<string | null>(null);
   const [answer, setAnswer] = useState("");
   if (!state) return null;
@@ -44,7 +44,29 @@ export function ResponsePanel() {
           </Button>
         }
       />
-      <Section title={lang === "ar" ? "الحالة الآن" : "Current picture"}>
+      <Section
+        title={lang === "ar" ? "الحالة الآن" : "Current picture"}
+        aside={
+          (() => {
+            const issued = state.stages.find((s) => s.id === "issued")?.at;
+            if (!issued) return null;
+            const atIssue = new Date(Date.parse(issued) + 1).toISOString();
+            return (
+              <div role="group" aria-label={lang === "ar" ? "مقارنة قبل وبعد" : "Before / after comparison"} className="flex rounded-lg bg-surface-2 p-0.5 text-[11.5px] ring-1 ring-line">
+                <button
+                  onClick={() => (setViewAt(atIssue), flyTo({ kind: "zone" }))}
+                  className={viewAt ? "rounded-md bg-white px-2 py-1 font-medium text-ink shadow-sm" : "px-2 py-1 text-muted hover:text-ink"}
+                >
+                  {lang === "ar" ? "عند الإصدار" : "At issue"}
+                </button>
+                <button onClick={() => setViewAt(null)} className={!viewAt ? "rounded-md bg-white px-2 py-1 font-medium text-ink shadow-sm" : "px-2 py-1 text-muted hover:text-ink"}>
+                  {lang === "ar" ? "الآن" : "Now"}
+                </button>
+              </div>
+            );
+          })()
+        }
+      >
         <div className="grid grid-cols-3 gap-x-3 gap-y-4">
           <Stat label={t("alertsSent")} value={m.alertsSent} big />
           <Stat label={t("safe")} value={m.safe} tone="teal" big />

@@ -49,6 +49,11 @@ A concise record of what was built, tested and verified — kept so work can res
 10. **Evaluation & docs** — `npm run evaluate` measured results; README, ARCHITECTURE, SAFETY_MODEL,
     DEMO_SCRIPT (with judge Q&A), EVALUATION, ROADMAP, DEPLOYMENT.
 
+11. **Visual review pass 3** — production Earth shot; globe-scale annotation declutter (MapLibre
+    inline opacity), ocean-toned polar background, 1366×768 layout, scenario presets (baseline,
+    fail-closed drill, responses-complete checkpoint), before/after response comparison, cluster
+    click-to-focus; curated screenshots in `docs/screenshots/`.
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
@@ -60,6 +65,8 @@ A concise record of what was built, tested and verified — kept so work can res
 | `npm run evaluate` | results recorded in EVALUATION.md |
 | Console errors during e2e | none |
 | Cross-session real-time update | operator view updates without reload when a phone responds |
+| Scenario presets via API | conflict drill → gate blocked; checkpoint → 120/84/7/29; baseline → draft |
+| Security spot checks | invalid citizen token rejected; unauthenticated ops API 401; non-allow-listed tile path 404 |
 
 ## Not verified / known limitations
 

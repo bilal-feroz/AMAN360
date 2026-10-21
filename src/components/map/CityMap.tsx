@@ -167,6 +167,15 @@ export default function CityMap(props: Props) {
 
     // Interactions
     map.on("click", "closure-line", () => propsRef.current.onSelectClosure());
+    map.on("click", (e) => {
+      const st = propsRef.current.state;
+      if (!st || map.getZoom() < 13) return;
+      const hit = st.clusters.find((c) => {
+        const q = map.project(c.center);
+        return Math.hypot(q.x - e.point.x, q.y - e.point.y) < 22;
+      });
+      if (hit) map.flyTo({ center: hit.center, zoom: Math.max(map.getZoom(), 16.4), pitch: 60, duration: 1400, padding: propsRef.current.padding, essential: true });
+    });
     map.on("click", "zone-fill", (e) => {
       const hit = map.queryRenderedFeatures(e.point, { layers: ["closure-line"] });
       if (!hit.length) propsRef.current.onSelectZone();

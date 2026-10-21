@@ -77,6 +77,8 @@ laptop's IP). Responses on a device update the command center live over Server-S
 
 ### Presentation mode
 
+Settings (gear) also offers **scenario presets** — the start state, a *fail-closed drill* with conflicting feeds, and a *responses complete* checkpoint for Q&A — plus quality, motion and simulation speed.
+
 Click **Presentation** in the top bar for the guided ~3-minute walkthrough. It drives the real
 product (same APIs and the real citizen UI), and can be paused (Space), skipped (← →), restarted or
 exited at any time. See [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
@@ -90,13 +92,26 @@ exited at any time. See [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 | `npm run dev` | Development server on :3360 |
 | `npm run db:reset` | Restore the documented baseline (also available as *Reset demo* in the UI) |
 | `npm test` | Unit and integration tests (Vitest) |
-| `npm run test:e2e` | End-to-end tests incl. full demo loop and Presentation Mode (Playwright) |
+| `npm run test:e2e` | End-to-end tests incl. full demo loop and Presentation Mode (Playwright; first run `npx playwright install chromium`) |
 | `npm run evaluate` | Headless evaluation run that prints the measured results in EVALUATION.md |
 | `npm run data:osm` | Re-extract focus-area OSM data (Overpass) |
 
 Optional: set `ANTHROPIC_API_KEY` (server-side only) to enable the bounded LLM layer. Without it,
 the demo uses the approved bilingual template library and deterministic classifiers, and the UI says
 so ("Approved templates (deterministic)").
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Opening — Earth](docs/screenshots/00-opening-earth.jpg) Opening sequence: Sentinel-2 Earth | ![Opening — city](docs/screenshots/01-opening-city.jpg) Descent into Al Majaz |
+| ![Overview](docs/screenshots/02-sharjah-overview.jpg) Calm city, verified alert waiting | ![Activated](docs/screenshots/03-hazard-zone-activated.jpg) Zone, closure and computed impact |
+| ![Closure](docs/screenshots/04-road-closure-detail.jpg) Simulated closure — no invented diversion | ![Why](docs/screenshots/05-why-this-action.jpg) “Why this action?” |
+| ![Guidance](docs/screenshots/06-bilingual-guidance-approval.jpg) Bilingual guidance approval | ![Responses](docs/screenshots/10-response-intelligence.jpg) Response intelligence (120 · 85 · 8 · 27) |
+| ![Case](docs/screenshots/11-case-explainability.jpg) Case with full decision chain | ![Arabic](docs/screenshots/12-command-center-arabic.jpg) Arabic command center (RTL) |
+| ![Arabic citizen](docs/screenshots/07-citizen-arabic.jpg) Citizen app — Arabic | ![English citizen](docs/screenshots/08-citizen-english.jpg) Citizen app — English driver |
+
+More in [docs/screenshots](docs/screenshots).
 
 ## Technology
 

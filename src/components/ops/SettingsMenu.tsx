@@ -28,6 +28,30 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
 
   return (
     <div ref={ref} role="dialog" aria-label={t("settings")} className="absolute end-0 top-10 z-50 w-[300px] rounded-2xl bg-surface p-3 shadow-[var(--shadow-float)] ring-1 ring-line">
+      <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{lang === "ar" ? "السيناريو" : "Scenario"}</div>
+      <div className="px-1.5 pb-3">
+        <select
+          aria-label={lang === "ar" ? "اختيار السيناريو" : "Choose scenario"}
+          disabled={!canAct}
+          defaultValue=""
+          onChange={(e) => {
+            if (!e.target.value) return;
+            void demo("scenario", { id: e.target.value }).then(() => {
+              flyTo({ kind: e.target.value === "rain-responses-complete" ? "zone" : "overview" });
+              useUi.getState().setView(e.target.value === "rain-responses-complete" ? "responses" : "queue");
+              onClose();
+            });
+          }}
+          className="h-9 w-full rounded-lg bg-surface-2 px-2 text-[12.5px] text-ink ring-1 ring-line outline-none focus:ring-2 focus:ring-cyan"
+        >
+          <option value="" disabled>
+            {lang === "ar" ? "تحميل سيناريو تدريبي…" : "Load a training scenario…"}
+          </option>
+          <option value="rain-baseline">{lang === "ar" ? "أمطار غزيرة وإغلاق طريق — البداية" : "Heavy rainfall & closure — start"}</option>
+          <option value="rain-conflict-drill">{lang === "ar" ? "تمرين الإغلاق الآمن: موجزات متعارضة" : "Fail-closed drill: conflicting feeds"}</option>
+          <option value="rain-responses-complete">{lang === "ar" ? "نقطة تحقق: اكتملت الردود" : "Checkpoint: responses complete"}</option>
+        </select>
+      </div>
       <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{t("visualQuality")}</div>
       <div className="px-1.5 pb-3">
         <Segmented

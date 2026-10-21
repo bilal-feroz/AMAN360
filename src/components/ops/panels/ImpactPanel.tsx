@@ -117,7 +117,7 @@ export function ImpactPanel() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-2">
-                    <span className="text-[13.5px] font-semibold text-ink">{p.displayName}</span>
+                    <bdi className="text-[13.5px] font-semibold text-ink">{p.displayName}</bdi>
                     <span className="font-id text-[11px] text-muted">{p.id}</span>
                     <Chip tone="outline" className="!px-1.5 !py-0 text-[10.5px]">
                       {p.language === "ar" ? "العربية" : "English"}

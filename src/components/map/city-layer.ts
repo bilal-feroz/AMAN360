@@ -191,10 +191,15 @@ void main() {
 `;
 
 const COLUMN_VERT = /* glsl */ `
+uniform vec3 uCamPos;
 varying float vZ;
 varying vec3 vColor;
+varying float vNear;
 void main() {
   vZ = position.z;
+  vec4 world = instanceMatrix * vec4(position, 1.0);
+  // Columns step back when the camera is close, so streets and buildings stay readable.
+  vNear = smoothstep(280.0, 1100.0, distance(world.xyz, uCamPos));
   #ifdef USE_INSTANCING_COLOR
     vColor = instanceColor;
   #else
@@ -206,8 +211,9 @@ void main() {
 const COLUMN_FRAG = /* glsl */ `
 varying float vZ;
 varying vec3 vColor;
+varying float vNear;
 void main() {
-  float a = mix(0.22, 0.95, pow(vZ, 1.1));
+  float a = mix(0.22, 0.95, pow(vZ, 1.1)) * mix(0.32, 1.0, vNear);
   float cap = smoothstep(0.955, 1.0, vZ);
   vec3 c = mix(vColor * 0.9, min(vColor * 1.18 + 0.06, vec3(1.0)), vZ);
   c = mix(c, vec3(1.0), cap * 0.5);
@@ -409,7 +415,7 @@ export class CityLayer implements CustomLayerInterface {
       const geom = new THREE.CylinderGeometry(1, 1, 1, 20, 1, false);
       geom.rotateX(Math.PI / 2);
       geom.translate(0, 0, 0.5);
-      const mat = new THREE.ShaderMaterial({ vertexShader: COLUMN_VERT, fragmentShader: COLUMN_FRAG, transparent: true, depthWrite: false });
+      const mat = new THREE.ShaderMaterial({ vertexShader: COLUMN_VERT, fragmentShader: COLUMN_FRAG, uniforms: { uCamPos: this.waterUniforms.uCamPos }, transparent: true, depthWrite: false });
       this.columns = new THREE.InstancedMesh(geom, mat, max);
       this.columns.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
       this.columns.castShadow = false;

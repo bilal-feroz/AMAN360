@@ -168,3 +168,12 @@ body {
   background-size: 200% 100%;
   animation: aman-shimmer 1.6s linear infinite;
 }
+
+/* Map annotation decluttering at city scale */
+.aman-marker {
+  transition: opacity 0.35s ease;
+}
+[data-far="true"] .aman-marker {
+  opacity: 0;
+  pointer-events: none;
+}

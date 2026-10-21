@@ -78,6 +78,8 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
     if (ui.introRequest > 0) setStage("earth");
   }, [ui.introRequest]);
 
+  useEffect(() => setClosureInfo(false), [ui.view]);
+
   const onIntroStage = useCallback(
     (s: IntroStage) => {
       setStage(s);

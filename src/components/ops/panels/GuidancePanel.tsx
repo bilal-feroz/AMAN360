@@ -28,7 +28,7 @@ export function highlightFacts(text: string, facts: string[]): ReactNode {
 
 export function GuidancePanel() {
   const { state, t, lang, incidentAction, busy, canAct } = useOps();
-  const { setView, openPhones, guidance: sel, setGuidance } = useUi();
+  const { setView, openPhones, guidance: sel, setGuidance, flyTo } = useUi();
   const actions = useMemo(() => [...new Set(state?.guidance.map((g) => g.actionId) ?? [])], [state?.guidance]);
   const actionId = sel.actionId;
   const variant = sel.variant;
@@ -65,6 +65,7 @@ export function GuidancePanel() {
     const ok = await incidentAction("publish");
     if (ok) {
       setView("responses");
+      flyTo({ kind: "zone" });
       openPhones(["RES-014", "RES-047"]);
     }
   };

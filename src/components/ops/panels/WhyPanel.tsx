@@ -36,7 +36,7 @@ export function WhyPanel() {
         title={t("whyThisAction")}
         subtitle={
           <span>
-            {r.displayName} · <span className="font-id">{r.id}</span> · {r.language === "ar" ? "العربية" : "English"} · {lang === "ar" ? "بيانات اصطناعية" : "synthetic person"}
+            <bdi>{r.displayName}</bdi> · <span className="font-id">{r.id}</span> · {r.language === "ar" ? "العربية" : "English"} · {lang === "ar" ? "بيانات اصطناعية" : "synthetic person"}
           </span>
         }
         onBack={() => setView("impact")}

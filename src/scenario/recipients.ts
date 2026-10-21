@@ -273,6 +273,10 @@ function assignPersonas(recipients: Recipient[], inside: BuildingPick[]) {
   } satisfies Partial<Recipient>);
 }
 
+function pick<T>(arr: T[], r: () => number): T {
+  return arr[Math.floor(r() * arr.length)];
+}
+
 function shuffle<T>(arr: T[], r: () => number): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -307,11 +311,13 @@ function assignSimulatedResponses(recipients: Recipient[], r: () => number) {
     if (!k) break;
     if (k === "help") {
       const h = HELP_TEXTS[help++];
+      if (x.language !== h.lang) x.displayName = `${pick(h.lang === "ar" ? AR_NAMES : EN_NAMES, r)} ${INITIALS[Math.floor(r() * INITIALS.length)]}.`;
       x.language = h.lang;
       x.vulnerability = h.vulnerability;
       assigned.set(x.id, { kind: "help", delaySec: Math.round(6 + r() * 26), text: h.text });
     } else if (k === "clarify") {
       const c = CLARIFY_TEXTS[clarify++];
+      if (x.language !== c.lang) x.displayName = `${pick(c.lang === "ar" ? AR_NAMES : EN_NAMES, r)} ${INITIALS[Math.floor(r() * INITIALS.length)]}.`;
       x.language = c.lang;
       assigned.set(x.id, { kind: "clarify", delaySec: Math.round(8 + r() * 20), text: c.text });
     } else {

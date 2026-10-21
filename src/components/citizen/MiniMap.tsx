@@ -21,19 +21,31 @@ export function MiniMap({
   const pts = [...ring, ...lines.flat(), ...(you ? [you.coordinates] : [])];
   const xs = pts.map((p) => p[0]);
   const ys = pts.map((p) => p[1]);
-  const pad = 0.0016;
-  const minX = Math.min(...xs) - pad;
-  const maxX = Math.max(...xs) + pad;
-  const minY = Math.min(...ys) - pad;
-  const maxY = Math.max(...ys) + pad;
-  const W = 340;
+  const pad = 0.0012;
   const kx = Math.cos((25.32 * Math.PI) / 180);
-  const H = Math.round((W * (maxY - minY)) / ((maxX - minX) * kx));
+  const W = 340;
+  const H = 230;
+  let minX = Math.min(...xs) - pad;
+  let maxX = Math.max(...xs) + pad;
+  let minY = Math.min(...ys) - pad;
+  let maxY = Math.max(...ys) + pad;
+  // Grow the shorter dimension so the geography fills the frame without distortion.
+  const spanX = (maxX - minX) * kx;
+  const spanY = maxY - minY;
+  if (spanX / spanY < W / H) {
+    const grow = ((spanY * W) / H - spanX) / kx / 2;
+    minX -= grow;
+    maxX += grow;
+  } else {
+    const grow = ((spanX * H) / W - spanY) / 2;
+    minY -= grow;
+    maxY += grow;
+  }
   const P = ([x, y]: number[]) => [((x - minX) / (maxX - minX)) * W, H - ((y - minY) / (maxY - minY)) * H];
   const d = (cs: number[][]) => cs.map((c, i) => `${i ? "L" : "M"}${P(c).map((v) => v.toFixed(1)).join(",")}`).join(" ");
   const y = you ? P(you.coordinates) : null;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label={label} style={{ maxHeight: 260, direction: "ltr" }}>
+    <svg viewBox={`0 0 ${W} ${H}`} className="block w-full" role="img" aria-label={label} style={{ direction: "ltr" }}>
       <defs>
         <pattern id="mm-grid" width="18" height="18" patternUnits="userSpaceOnUse">
           <path d="M18 0H0V18" fill="none" stroke="#dce5e2" strokeWidth="0.6" />

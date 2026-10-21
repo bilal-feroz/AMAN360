@@ -10,7 +10,7 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
   const { t, state, demo, canAct } = useOps();
   const view = useUi((s) => s.view);
   const setView = useUi((s) => s.setView);
-  const openCases = state?.cases.filter((c) => c.status !== "resolved").length ?? 0;
+  const openCases = state ? state.metrics.cases.total - state.metrics.cases.resolved : 0;
   const items: { v: PanelView; icon: typeof Inbox; label: string; badge?: number; tone?: "coral" }[] = [
     { v: "queue", icon: Inbox, label: t("incidents") },
     { v: "impact", icon: Users, label: t("impact") },
@@ -26,7 +26,12 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
         return (
           <button
             key={v}
-            onClick={() => setView(v === "case" && !useUi.getState().selectedCaseId ? "responses" : v)}
+            onClick={() => {
+              const ui = useUi.getState();
+              ui.setView(v === "case" && !ui.selectedCaseId ? "responses" : v);
+              if ((v === "impact" || v === "guidance" || v === "responses") && state?.assessment) ui.flyTo({ kind: "zone" });
+              if (v === "queue") ui.flyTo({ kind: "overview" });
+            }}
             aria-current={active ? "page" : undefined}
             className={cn(
               "group relative flex w-[64px] flex-col items-center gap-1 rounded-xl px-1 py-2 text-[10.5px] font-medium leading-tight transition-colors",

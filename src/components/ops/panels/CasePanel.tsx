@@ -51,7 +51,7 @@ export function CasePanel() {
         </blockquote>
         <dl className="mt-3">
           <Field label={lang === "ar" ? "المستلم" : "Recipient"}>
-            {c.recipient?.displayName} <span className="font-id text-[11.5px] text-muted">· {c.recipientId} · {lang === "ar" ? "اصطناعي" : "synthetic"}</span>
+            <bdi>{c.recipient?.displayName}</bdi> <span className="font-id text-[11.5px] text-muted">· {c.recipientId} · {lang === "ar" ? "اصطناعي" : "synthetic"}</span>
           </Field>
           <Field label={lang === "ar" ? "المنطقة" : "Area"}>{c.recipient?.areaLabel[lang]}</Field>
           <Field label={lang === "ar" ? "وقت الاستلام" : "Received"}>{fmtDateTime(c.openedAt, lang)}</Field>

@@ -20,6 +20,7 @@ export function IntroOverlay({ stage, lang, onSkip }: { stage: IntroStage; lang:
       {stage !== "done" && (
         <motion.div className="pointer-events-none absolute inset-0 z-40" initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.8 } }}>
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgb(9_32_38/0.42)_100%)]" />
+          <div className="absolute inset-x-0 bottom-0 h-[38%] bg-gradient-to-t from-[rgb(9_32_38/0.55)] to-transparent" />
           <AnimatePresence>
             {showIdentity && (
               <motion.div

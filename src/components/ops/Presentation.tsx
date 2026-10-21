@@ -64,9 +64,29 @@ export function Presentation() {
     if ((await fresh()).incident.state === "approved") await opsRef.current.incidentAction("publish");
   };
   const freshCase = async (recipientId: string) => (await fresh()).cases.find((c) => c.recipientId === recipientId);
-  const tapDevice = (recipientId: string, payload: { kind: "safe" | "help"; text?: string }) => {
-    const frame = document.querySelector<HTMLIFrameElement>(`iframe[data-recipient="${recipientId}"]`);
-    frame?.contentWindow?.postMessage({ type: "aman:demo-tap", ...payload }, window.location.origin);
+  /** Taps a button inside the live citizen device; resolves when the device confirms (or times out). */
+  const tapDevice = async (recipientId: string, payload: { kind: "safe" | "help"; text?: string }) => {
+    let frame: HTMLIFrameElement | null = null;
+    for (let i = 0; i < 40 && !frame; i++) {
+      frame = document.querySelector<HTMLIFrameElement>(`iframe[data-recipient="${recipientId}"]`);
+      if (!frame) await new Promise((r) => setTimeout(r, 150));
+    }
+    if (!frame) return;
+    const done = new Promise<void>((resolve) => {
+      const onMsg = (e: MessageEvent) => {
+        if (e.origin === window.location.origin && e.data?.type === "aman:demo-tap-done" && e.source === frame!.contentWindow) {
+          window.removeEventListener("message", onMsg);
+          resolve();
+        }
+      };
+      window.addEventListener("message", onMsg);
+      setTimeout(() => {
+        window.removeEventListener("message", onMsg);
+        resolve();
+      }, 15_000);
+    });
+    frame.contentWindow?.postMessage({ type: "aman:demo-tap", ...payload }, window.location.origin);
+    await done;
   };
 
   const L = (b: Bi) => b[ops.lang];
@@ -77,7 +97,7 @@ export function Presentation() {
       clock: "00:00",
       title: { en: "A calm city", ar: "مدينة هادئة" },
       caption: { en: "A digital twin of Al Majaz, Sharjah — real streets, real buildings, synthetic people.", ar: "توأم رقمي لمنطقة المجاز في الشارقة — شوارع ومبانٍ حقيقية وأشخاص اصطناعيون." },
-      hold: 9000,
+      hold: 7000,
       run: async () => {
         if ((await fresh()).incident.state !== "draft") await opsRef.current.demo("reset");
         ui.setFinale(false);
@@ -103,7 +123,7 @@ export function Presentation() {
       clock: "00:35",
       title: { en: "Geographic intelligence", ar: "الذكاء الجغرافي" },
       caption: { en: "The source is verified, the zone and closure are drawn, and every synthetic recipient is matched by real spatial computation.", ar: "يتم التحقق من المصدر ورسم المنطقة والإغلاق، ومطابقة كل مستلم اصطناعي بحساب مكاني فعلي." },
-      hold: 11000,
+      hold: 9500,
       run: async () => {
         ui.flyTo({ kind: "zone" });
         await ensureActivated();
@@ -158,9 +178,9 @@ export function Presentation() {
         await ensurePublished();
         ui.openPhones(["RES-014", "RES-047"]);
         await wait(5500);
-        tapDevice("RES-047", { kind: "safe" });
-        await wait(4500);
-        tapDevice("RES-014", { kind: "help", text: "المياه دخلت إلى الطابق الأرضي، ووالدي كبير في السن ولا يستطيع صعود الدرج." });
+        await tapDevice("RES-047", { kind: "safe" });
+        await wait(3000);
+        await tapDevice("RES-014", { kind: "help", text: "المياه دخلت إلى الطابق الأرضي، ووالدي كبير في السن ولا يستطيع صعود الدرج." });
         await wait(5000);
       },
     },
@@ -169,7 +189,7 @@ export function Presentation() {
       clock: "02:10",
       title: { en: "The picture updates", ar: "الصورة تتحدّث" },
       caption: { en: "Responses flow back in near real time: metrics, map columns and the priority queue all change from stored records.", ar: "تعود الردود بشكل شبه فوري: تتغير المؤشرات وأعمدة الخريطة وقائمة الأولوية من السجلات المخزنة." },
-      hold: 12000,
+      hold: 10000,
       run: async () => {
         ui.closePhones();
         ui.setView("responses");
@@ -319,7 +339,7 @@ export function Presentation() {
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="pointer-events-auto absolute bottom-[132px] left-1/2 z-30 w-[min(760px,calc(100%-560px))] -translate-x-1/2 overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-24px_rgb(0_0_0/0.6)]"
+        className={cn("pointer-events-auto absolute left-1/2 z-30", ui.phone.open ? "top-4" : "bottom-[132px]", " w-[min(760px,calc(100%-560px))] -translate-x-1/2 overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-24px_rgb(0_0_0/0.6)]")}
         role="region"
         aria-label="Presentation controls"
       >

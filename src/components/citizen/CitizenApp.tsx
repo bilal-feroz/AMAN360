@@ -144,15 +144,14 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
   );
 
   // Presentation-mode taps from the command center (same-origin parent only) drive the real UI.
-  useEffect(() => {
-    const onMsg = async (e: MessageEvent) => {
-      if (e.origin !== window.location.origin || e.data?.type !== "aman:demo-tap") return;
-      pendingTap.current = { kind: e.data.kind, text: e.data.text };
-      if (e.data.kind === "safe") {
+  // A tap that arrives before the alert has loaded is queued and performed once it is on screen.
+  const performTap = useCallback(
+    async (tap: { kind: "safe" | "help"; text?: string }) => {
+      if (tap.kind === "safe") {
         await respond("safe");
-      } else if (e.data.kind === "help") {
+      } else {
         setSheet("help");
-        const text: string = e.data.text ?? "";
+        const text = tap.text ?? "";
         for (let i = 1; i <= text.length; i += 3) {
           setHelpText(text.slice(0, i));
           await new Promise((r) => setTimeout(r, 28));
@@ -161,10 +160,27 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
         await new Promise((r) => setTimeout(r, 700));
         await respond("help", { text });
       }
+      window.parent?.postMessage({ type: "aman:demo-tap-done", kind: tap.kind }, window.location.origin);
+    },
+    [respond],
+  );
+  useEffect(() => {
+    const onMsg = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin || e.data?.type !== "aman:demo-tap") return;
+      const tap = { kind: e.data.kind as "safe" | "help", text: e.data.text as string | undefined };
+      if (alert) void performTap(tap);
+      else pendingTap.current = tap;
     };
     window.addEventListener("message", onMsg);
     return () => window.removeEventListener("message", onMsg);
-  }, [respond]);
+  }, [performTap, alert]);
+  useEffect(() => {
+    if (alert && pendingTap.current) {
+      const tap = pendingTap.current;
+      pendingTap.current = null;
+      void performTap(tap);
+    }
+  }, [alert, performTap]);
 
   const readAloud = () => {
     if (!content) return;
@@ -246,7 +262,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
                   <span>
                     <b className="font-semibold text-ink">{inbox.recipient.mobility === "driver" ? c.driverContext : c.insideZone}</b>
                     <br />
-                    {alert.areaName[lang]}
+                    {inbox.recipient.mobility === "driver" ? alert.closureName[lang] : alert.areaName[lang]}
                   </span>
                 </div>
                 <h1 id="alert-title" className="mt-3 text-[22px] font-semibold leading-snug text-ink">

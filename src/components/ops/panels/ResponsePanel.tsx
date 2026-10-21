@@ -100,7 +100,7 @@ export function ResponsePanel() {
                     <Chip tone={c.priority === "P1" ? "coral" : "amber"} className="!py-0 text-[10.5px]">
                       {c.priority}
                     </Chip>
-                    <span className="text-[12px] font-medium text-ink">{c.recipient?.displayName}</span>
+                    <bdi className="text-[12px] font-medium text-ink">{c.recipient?.displayName}</bdi>
                     <span className="ms-auto text-[11px] text-muted tnum">{fmtTime(c.openedAt, lang, true)}</span>
                   </div>
                   <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-snug text-ink-2" dir="auto">

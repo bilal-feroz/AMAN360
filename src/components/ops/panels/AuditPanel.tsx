@@ -38,7 +38,7 @@ export function AuditPanel() {
                 <span className="font-id">{e.type}</span>
                 <span className="font-id ms-auto truncate">{e.actor}</span>
               </div>
-              <p className="mt-0.5 text-[12.5px] leading-snug text-ink">{e.summary}</p>
+              <p lang="en" dir="auto" className="mt-0.5 text-[12.5px] leading-snug text-ink">{e.summary}</p>
             </div>
           </li>
         ))}

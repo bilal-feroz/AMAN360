@@ -181,6 +181,10 @@ export default function CityMap(props: Props) {
       raf = requestAnimationFrame(() => hoverClusters(map, e.point));
     });
     map.on("mouseout", () => propsRef.current.onHover(null));
+    // Individual annotations step back at city scale so the overview stays legible.
+    const declutter = () => container.current && (container.current.dataset.far = String(map.getZoom() < 14.3));
+    map.on("zoom", declutter);
+    declutter();
 
     return () => {
       introRef.current?.cancel();
@@ -437,6 +441,7 @@ export default function CityMap(props: Props) {
         ev.stopPropagation();
         propsRef.current.onSelectZone();
       });
+      el.classList.add("aman-marker");
       inc = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([55.3903, 25.3247]).addTo(map);
       markers.current.set(incKey, inc);
     }
@@ -465,6 +470,7 @@ export default function CityMap(props: Props) {
         ev.stopPropagation(); // the marker sits over the zone layer — don't also select the zone
         propsRef.current.onSelectClosure();
       });
+      el.classList.add("aman-marker");
       cl = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([55.3901, 25.3229]).addTo(map);
       markers.current.set("closure", cl);
     }
@@ -489,6 +495,7 @@ export default function CityMap(props: Props) {
           ev.stopPropagation();
           propsRef.current.onSelectRecipient(p.id);
         });
+        el.classList.add("aman-marker");
         m = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat(p.location.coordinates as [number, number]).addTo(map);
         markers.current.set(key, m);
       }
@@ -505,8 +512,8 @@ export default function CityMap(props: Props) {
       el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;transform:translateY(-4px)">
         <div style="display:flex;align-items:center;gap:6px;background:${selected ? "#102c33" : "#fff"};color:${selected ? "#fff" : "#102c33"};border-radius:999px;padding:3px 10px 3px 3px;box-shadow:0 10px 22px -12px rgba(16,44,51,.6);border:1px solid ${tone}66;font-family:var(--font-sans);white-space:nowrap">
           <span style="width:22px;height:22px;border-radius:99px;background:${tone};color:#fff;display:grid;place-items:center;font:600 11px/1 var(--font-sans)">${look.initial}</span>
-          <span style="font:600 11.5px/1 var(--font-sans)">${p.displayName}</span>
-          <span style="font:500 10.5px/1 var(--font-mono);opacity:.65">${p.id}</span>
+          <span dir="ltr" style="font:600 11.5px/1 var(--font-sans)">${p.displayName}</span>
+          <span dir="ltr" style="font:500 10.5px/1 var(--font-mono);opacity:.65">${p.id}</span>
         </div>
         <span style="width:2px;height:16px;background:linear-gradient(${tone},transparent)"></span>
       </div>`;

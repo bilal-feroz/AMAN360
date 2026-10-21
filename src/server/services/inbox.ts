@@ -48,6 +48,7 @@ export function citizenInbox(token: string) {
       issuedAt: incident.issuedAt,
       validUntil: incident.validUntil,
       areaName: facts.zone,
+      closureName: facts.closure,
       variants,
       responses,
       case: caseRecord ? { id: caseRecord.id, status: caseRecord.status, priority: caseRecord.priority, notes: caseRecord.notes.filter((n) => n.by.startsWith("OP-")).map((n) => ({ at: n.at, text: n.text })) } : null,

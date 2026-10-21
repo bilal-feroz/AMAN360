@@ -471,7 +471,9 @@ function NoAlerts({ c, area, name }: { c: (typeof CITIZEN_COPY)["en"]; area: str
       <div className="mt-6 flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-[13px] text-ink-2 ring-1 ring-line">
         <MapPin size={14} className="text-muted" /> {c.yourArea}: {area}
       </div>
-      <p className="mt-2 text-[12px] text-muted">{name}</p>
+      <p className="mt-2 text-[12px] text-muted">
+        <bdi>{name}</bdi>
+      </p>
     </div>
   );
 }

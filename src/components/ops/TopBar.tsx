@@ -31,18 +31,18 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
     <header className="relative z-30 flex h-14 items-center gap-4 border-b border-line bg-surface/95 px-4 backdrop-blur">
       <div className="flex items-center gap-2.5 text-teal">
         <AmanMark size={26} />
-        <span className="text-[15.5px] font-semibold tracking-[0.06em] text-ink rtl:tracking-normal">{lang === "ar" ? "أمان 360" : "AMAN 360"}</span>
+        <span className="whitespace-nowrap text-[15.5px] font-semibold tracking-[0.06em] text-ink rtl:tracking-normal">{lang === "ar" ? "أمان 360" : "AMAN 360"}</span>
       </div>
       <div className="h-6 w-px bg-line" />
       <Chip tone="amber" dot className="uppercase tracking-[0.06em] rtl:tracking-normal">
         {t("training")}
       </Chip>
-      <div className="hidden items-center gap-1.5 text-[12.5px] text-ink-2 lg:flex">
+      <div className="hidden items-center gap-1.5 whitespace-nowrap text-[12.5px] text-ink-2 2xl:flex">
         <MapPin size={14} className="text-muted" />
         {t("location")}
       </div>
       {incident && (
-        <div className="hidden items-center gap-2 xl:flex">
+        <div className="hidden items-center gap-2 whitespace-nowrap 2xl:flex">
           <span className="text-line-strong">·</span>
           <span className="font-id text-[12px] text-ink-2">{incident.id}</span>
           <Chip tone={active ? "coral" : incident.state === "blocked" ? "coral" : "neutral"} dot>
@@ -61,17 +61,19 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
       <div className="ms-auto flex items-center gap-3">
         <div className="hidden items-center gap-2 text-[12px] text-muted md:flex" title={lang === "ar" ? "مزامنة مع خادم العرض المحلي" : "Sync with the local demo server"}>
           <span className={cn("h-2 w-2 rounded-full", connection === "live" ? "bg-teal" : "bg-amber")} />
-          <Radio size={13} />
-          {connection === "live" ? (lang === "ar" ? "مزامنة مباشرة" : "Live sync") : lang === "ar" ? "إعادة الاتصال…" : "Reconnecting…"}
+          <Radio size={13} className="hidden 2xl:block" />
+          <span className="hidden whitespace-nowrap 2xl:inline">{connection === "live" ? (lang === "ar" ? "مزامنة مباشرة" : "Live sync") : lang === "ar" ? "إعادة الاتصال…" : "Reconnecting…"}</span>
         </div>
-        <div className="tnum hidden text-[12.5px] font-medium text-ink-2 sm:block" aria-label={t("uaeTime")}>
+        <div className="tnum hidden whitespace-nowrap text-[12.5px] font-medium text-ink-2 sm:block" aria-label={t("uaeTime")}>
           {time} <span className="text-muted">{lang === "ar" ? "بتوقيت الإمارات" : "GST"}</span>
         </div>
         {state?.provider && (
-          <Chip tone={state.provider.llmConfigured ? "cyan" : "neutral"} className="hidden 2xl:inline-flex">
+          <span className="hidden 2xl:inline-flex">
+          <Chip tone={state.provider.llmConfigured ? "cyan" : "neutral"}>
             {state.provider.llmConfigured ? <Sparkles size={12} /> : <ShieldCheck size={12} />}
             {state.provider.llmConfigured ? t("llmMode") : t("templateMode")}
           </Chip>
+          </span>
         )}
         <Segmented
           ariaLabel={t("language")}

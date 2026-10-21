@@ -48,6 +48,7 @@ export function Timeline() {
               <button
                 key={s.id}
                 disabled={!reached}
+                title={L(s.label)}
                 onClick={() => pick(i)}
                 className="group relative z-10 flex min-w-0 flex-1 flex-col items-center gap-1.5 text-center disabled:cursor-default"
                 aria-current={current ? "step" : undefined}
@@ -60,17 +61,23 @@ export function Timeline() {
                 >
                   {current && <span className="h-1.5 w-1.5 rounded-full bg-white" />}
                 </span>
-                <span className={cn("max-w-[120px] text-[11px] font-medium leading-tight", current ? "text-ink" : reached ? "text-ink-2" : "text-muted/70")}>
+                <span
+                  className={cn(
+                    "max-w-[120px] text-[11px] font-medium leading-tight",
+                    current ? "text-ink" : reached ? "text-ink-2" : "text-muted/70",
+                    !current && "hidden min-[1600px]:block",
+                  )}
+                >
                   {L(s.label)}
                 </span>
-                <span className="tnum text-[10.5px] text-muted">{s.at ? fmtTime(s.at, lang, true) : "—"}</span>
+                <span className={cn("tnum text-[10.5px] text-muted", !current && "hidden min-[1600px]:block")}>{s.at ? fmtTime(s.at, lang, true) : "—"}</span>
               </button>
             );
           })}
         </div>
       </div>
       {m.alertsSent > 0 && (
-        <div className="flex items-center gap-5 rounded-2xl bg-surface/95 px-5 py-3 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
+        <div className="flex items-center gap-3 rounded-2xl bg-surface/95 px-4 py-3 min-[1600px]:gap-5 min-[1600px]:px-5 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
           <Metric label={t("alertsSent")} value={m.alertsSent} />
           <Metric label={t("safe")} value={m.safe} tone="text-teal" />
           <Metric label={t("assistance")} value={m.assistance} tone="text-coral-ink" />

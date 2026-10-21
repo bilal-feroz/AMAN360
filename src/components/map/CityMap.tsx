@@ -416,7 +416,7 @@ export default function CityMap(props: Props) {
       let m = markers.current.get(key);
       if (!m) {
         const el = document.createElement("div");
-        el.className = "pointer-events-none select-none";
+        el.className = "aman-marker pointer-events-none select-none";
         m = new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat(l.lngLat).addTo(map);
         markers.current.set(key, m);
       }

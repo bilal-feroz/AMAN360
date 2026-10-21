@@ -173,7 +173,9 @@ body {
 .aman-marker {
   transition: opacity 0.35s ease;
 }
+/* MapLibre sets inline opacity on markers (globe occlusion), so the override must win. */
 [data-far="true"] .aman-marker {
-  opacity: 0;
+  opacity: 0 !important;
+  visibility: hidden;
   pointer-events: none;
 }

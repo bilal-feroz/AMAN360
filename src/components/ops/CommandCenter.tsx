@@ -65,7 +65,7 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
   const [vw, setVw] = useState(1920);
   const chrome = stage === "done";
   const rtl = ops.lang === "ar";
-  const panelWidth = ui.view === "guidance" ? Math.min(660, Math.max(520, vw * 0.34)) : 440;
+  const panelWidth = ui.view === "guidance" ? Math.min(660, Math.max(520, vw * 0.34)) : vw < 1500 ? 400 : 440;
 
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);

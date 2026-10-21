@@ -61,7 +61,12 @@ export function buildStyle(lang: Lang, origin: string): StyleSpecification {
       },
     },
     layers: [
-      { id: "background", type: "background", paint: { "background-color": PALETTE.land } },
+      {
+        id: "background",
+        type: "background",
+        // Deep ocean tone at planetary scale (also fills the polar caps beyond the imagery), land tone at street scale
+        paint: { "background-color": ["interpolate", ["linear"], ["zoom"], 0, "#123c4a", 6, "#1d4f5c", 9, PALETTE.land] },
+      },
       {
         id: "imagery",
         type: "raster",

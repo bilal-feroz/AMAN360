@@ -131,6 +131,11 @@ export function getProvider(): CommunicationProvider {
   return cached;
 }
 
+/** Test seam: swap the provider (e.g. a fake LLM) without network access. */
+export function setProviderForTests(p: CommunicationProvider | null) {
+  cached = p;
+}
+
 export function providerStatus() {
   const p = getProvider();
   return { id: p.id, label: p.label, model: p.model, llmConfigured: p.id !== "template" };

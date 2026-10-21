@@ -59,13 +59,19 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
     let es: EventSource | null = null;
     let poll: ReturnType<typeof setInterval> | null = null;
     let retry: ReturnType<typeof setTimeout> | null = null;
+    let debounce: ReturnType<typeof setTimeout> | null = null;
+    // Bursts of changes (e.g. a whole district responding) coalesce into one refresh.
+    const scheduleLoad = () => {
+      if (debounce) clearTimeout(debounce);
+      debounce = setTimeout(() => void load(), 350);
+    };
     const connect = () => {
       es = new EventSource(`/api/citizen/${token}/stream`);
       es.addEventListener("hello", () => {
         setOffline(false);
         if (poll) clearInterval(poll), (poll = null);
       });
-      es.addEventListener("change", () => void load());
+      es.addEventListener("change", scheduleLoad);
       es.onerror = () => {
         es?.close();
         if (!poll) poll = setInterval(() => void load(), 3000);
@@ -77,6 +83,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
       es?.close();
       if (poll) clearInterval(poll);
       if (retry) clearTimeout(retry);
+      if (debounce) clearTimeout(debounce);
     };
   }, [token, load]);
 
@@ -129,6 +136,22 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
         const data = await res.json();
         if (!res.ok) throw new Error(data.error ?? "Failed");
         if (kind === "clarify") setAnswer({ text: data.answer?.text ?? null, escalated: data.escalated });
+        // Show the recorded state immediately; the reload below confirms it from the server.
+        setInbox((prev) =>
+          prev && {
+            ...prev,
+            alerts: prev.alerts.map((a) =>
+              a.messageId === alert.messageId
+                ? {
+                    ...a,
+                    state: data.messageState,
+                    responses: data.duplicate ? a.responses : [...a.responses, { kind, at: data.receivedAt, text: extra.text ?? null, answerId: data.answer?.id ?? null, escalated: !!data.escalated }],
+                    case: data.caseId && !a.case ? { id: data.caseId, status: "open", priority: "P1", notes: [] } : a.case,
+                  }
+                : a,
+            ),
+          },
+        );
         if (kind === "help") {
           setSheet(null);
           setHelpText("");

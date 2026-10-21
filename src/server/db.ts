@@ -86,8 +86,9 @@ type Db = Database.Database;
 const g = globalThis as unknown as { __amanDb?: Db; __amanSecret?: string };
 
 export function dataDir(): string {
-  const dir = path.resolve(process.env.AMAN_DATA_DIR || ".data");
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  // Runtime data lives outside the traced bundle.
+  const dir = path.resolve(/*turbopackIgnore: true*/ process.env.AMAN_DATA_DIR || ".data");
+  if (!existsSync(/*turbopackIgnore: true*/ dir)) mkdirSync(/*turbopackIgnore: true*/ dir, { recursive: true });
   return dir;
 }
 

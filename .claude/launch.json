@@ -4,7 +4,19 @@
     {
       "name": "aman360-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3360
+    },
+    {
+      "name": "aman360-prod",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start"
+      ],
       "port": 3360
     }
   ]

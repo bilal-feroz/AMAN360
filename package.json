@@ -14,12 +14,13 @@
     "start": "next start -p 3360",
     "demo": "npm run build && npm run start",
     "typecheck": "tsc --noEmit",
-    "db:reset": "tsx scripts/reset-db.ts",
+    "db:reset": "tsx --conditions=react-server scripts/reset-db.mts",
     "data:osm": "node scripts/fetch-osm.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "screenshots": "playwright test tests/e2e/screenshots.spec.ts --project=chromium"
+    "screenshots": "playwright test tests/e2e/screenshots.spec.ts --project=chromium",
+    "evaluate": "tsx --conditions=react-server scripts/evaluate.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.137.0",

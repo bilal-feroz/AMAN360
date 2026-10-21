@@ -1,0 +1,21 @@
+import { chromium } from "@playwright/test";
+const BASE = "http://localhost:3360";
+const browser = await chromium.launch({ headless: true, args: ["--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist"] });
+const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+await ctx.request.post(`${BASE}/api/auth/login`, { data: { operatorId: "OP-ALYA", passcode: "aman-demo-2026" } });
+const page = await ctx.newPage();
+const logs = [];
+page.on("console", (m) => logs.push(`${m.type()}: ${m.text().slice(0, 300)}`));
+page.on("pageerror", (e) => logs.push(`pageerror: ${e}`));
+await page.addInitScript(() => sessionStorage.setItem("aman:intro-seen", "1"));
+await page.goto(BASE + "/");
+await page.waitForTimeout(12000);
+const info = await page.evaluate(() => {
+  const m = window.__amanMap;
+  if (!m) return { noMap: true, canvases: document.querySelectorAll("canvas").length };
+  const c = m.getCanvas();
+  return { zoom: m.getZoom(), center: m.getCenter(), pitch: m.getPitch(), proj: m.getProjection?.(), loaded: m.loaded(), styleLoaded: m.isStyleLoaded(), canvas: [c.width, c.height, c.clientWidth, c.clientHeight], layers: m.getStyle().layers.map((l) => l.id) };
+});
+console.log(JSON.stringify(info, null, 1));
+console.log(logs.filter((l) => !l.includes("HMR") && !l.includes("Fast Refresh")).slice(0, 30).join("\n"));
+await browser.close();

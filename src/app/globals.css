@@ -1,0 +1,170 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@theme {
+  --color-bg: #f7f9f7;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f4f2;
+  --color-surface-3: #e7eeeb;
+  --color-ink: #102c33;
+  --color-ink-2: #2b4a52;
+  --color-muted: #667c83;
+  --color-line: #dce5e2;
+  --color-line-strong: #c4d2ce;
+  --color-teal: #087f7a;
+  --color-teal-ink: #06635f;
+  --color-teal-soft: #e2f3f1;
+  --color-cyan: #42c8bb;
+  --color-coral: #fa684f;
+  --color-coral-ink: #c4412b;
+  --color-coral-soft: #feebe7;
+  --color-amber: #e8ac45;
+  --color-amber-ink: #8f6210;
+  --color-amber-soft: #fcf2df;
+  --color-slate: #8fa3a8;
+
+  --font-sans: "Readex Pro Variable", "Readex Pro", system-ui, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  --shadow-panel: 0 1px 0 rgb(16 44 51 / 0.04), 0 8px 24px -12px rgb(16 44 51 / 0.18);
+  --shadow-float: 0 2px 6px -2px rgb(16 44 51 / 0.12), 0 18px 40px -18px rgb(16 44 51 / 0.32);
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  --text-scale: 1;
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: calc(16px * var(--text-scale));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-bg);
+  min-height: 100dvh;
+}
+
+/* Arabic gets slightly more line height and no letter-spacing tweaks. */
+:lang(ar) {
+  line-height: 1.75;
+  letter-spacing: 0 !important;
+}
+
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+.font-id {
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+  font-feature-settings: "zero" 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-cyan);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* High-contrast preference (citizen + operator) */
+[data-contrast="high"] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-2: #f2f2f2;
+  --color-ink: #000000;
+  --color-ink-2: #000000;
+  --color-muted: #2c2c2c;
+  --color-line: #000000;
+  --color-line-strong: #000000;
+  --color-teal: #005a55;
+  --color-teal-ink: #003f3c;
+  --color-coral: #b3260f;
+  --color-coral-ink: #8a1c09;
+  --color-amber-ink: #5c3d00;
+}
+[data-contrast="high"] :focus-visible {
+  outline: 4px solid #000;
+}
+
+[data-motion="reduced"] *,
+[data-motion="reduced"] *::before,
+[data-motion="reduced"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Scrollbars inside panels */
+.scroll-thin {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-line-strong) transparent;
+}
+
+/* MapLibre chrome restyled to match the product */
+.maplibregl-ctrl-attrib {
+  font-family: var(--font-sans);
+  font-size: 10.5px !important;
+  background: rgb(255 255 255 / 0.82) !important;
+  color: var(--color-muted) !important;
+  border-radius: 8px 0 0 0;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--color-ink-2) !important;
+}
+.maplibregl-ctrl-bottom-right {
+  z-index: 1 !important;
+}
+.maplibregl-canvas:focus-visible {
+  outline: none;
+}
+
+@keyframes aman-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+.aman-pulse {
+  animation: aman-pulse 1.8s var(--ease-out-soft) infinite;
+}
+
+@keyframes aman-dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+@keyframes aman-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.aman-shimmer {
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+  background-size: 200% 100%;
+  animation: aman-shimmer 1.6s linear infinite;
+}

@@ -19,3 +19,7 @@ playwright/.cache/
 
 .DS_Store
 Thumbs.db
+
+# visual QA output
+screenshots/*.png
+!screenshots/review/

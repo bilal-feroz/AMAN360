@@ -73,7 +73,8 @@ function variantInstruction(variant: ActionVariant, language: Lang): string {
 }
 
 export function createAnthropicProvider(apiKey: string, model: string): CommunicationProvider {
-  const client = new Anthropic({ apiKey, baseURL: anthropicBaseURL(), timeout: 20_000, maxRetries: 1 });
+  // Short timeout, no client retry: on failure the approved template is used, so a slow network never stalls a demo.
+  const client = new Anthropic({ apiKey, baseURL: anthropicBaseURL(), timeout: 15_000, maxRetries: 0 });
   return {
     id: "anthropic",
     label: "Anthropic Claude (bounded rewrite + validated)",

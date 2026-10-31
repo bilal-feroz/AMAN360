@@ -137,7 +137,7 @@ More in [docs/screenshots](docs/screenshots).
 - **Turf.js** spatial processing; **SQLite** (better-sqlite3) persistence; **SSE** real-time sync
 - **Anthropic Claude** (optional, server-side): validated simplification and question routing, and
   the streaming generative-UI copilot (adaptive thinking, strict display-only tools)
-- **Vitest** (93 tests) and **Playwright** (full demo loop + Presentation Mode)
+- **Vitest** (94 tests) and **Playwright** (full demo loop + Presentation Mode)
 
 ## Data & attribution
 

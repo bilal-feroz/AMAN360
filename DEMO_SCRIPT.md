@@ -76,7 +76,8 @@ Click **Approve guidance** → **Issue to simulated channels**.
 
 | Problem | Do this |
 |---|---|
-| Venue internet drops | Keep going — tiles are cached and the city pack is bundled |
+| Venue internet drops | Keep going — tiles are cached and the city pack is bundled. The copilot and guidance fall back to their labelled rule/template modes on their own |
+| Copilot answers feel slow (~13 s) | Talk over the "Thinking…" timer — it is the point. Or set `AMAN_COPILOT_EFFORT=low` in `.env.local` before starting (≈ 8–10 s) |
 | Something looks wrong | Settings → **Reset demo** (2 s), then Presentation → restart |
 | 3D is slow on the projector PC | Settings → Visual quality → **Balanced** or **Lite** |
 | Need the end state quickly | Settings → **Complete simulation** |

@@ -61,14 +61,21 @@ A concise record of what was built, tested and verified — kept so work can res
     grow, timeline labels colliding when the panel narrows the map, and a map projection call
     throwing during hot reload ("Style is not done loading").
 
+13. **Live Claude run** — key verified (models endpoint), then guidance rewrites and the copilot
+    exercised against Claude Opus 5.5. Found and fixed: sequential rewrites took 43 s (now
+    concurrent, 9.8 s); plain variants blocked for over-long steps (limits now stated in the prompt,
+    8/8 pass; validator message names the step); copilot quoted UTC times (snapshot now in GST),
+    answers ran long, gender inferred from a name; bidi glitches for Latin names and ids inside
+    Arabic. Prompt-injection probe passed (see EVALUATION.md).
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` | 93 / 93 passed (incl. 10 copilot tests with a scripted model stream) |
+| `npm test` | 94 / 94 passed (incl. 11 copilot tests with a scripted model stream) |
 | `npm run build` | succeeds |
-| `npm run test:e2e` against production build | 2 / 2 passed (demo loop 1.8 min, presentation 3.3 min) |
+| `npm run test:e2e` against production build | 2 / 2 passed, also with live Claude enabled (demo loop 1.5 min, presentation 3.5 min) |
 | `npm run evaluate` | results recorded in EVALUATION.md |
 | Console errors during e2e | none |
 | Cross-session real-time update | operator view updates without reload when a phone responds |
@@ -77,8 +84,7 @@ A concise record of what was built, tested and verified — kept so work can res
 
 ## Not verified / known limitations
 
-- The LLM provider and the copilot have not yet been called against the live Anthropic API (the
-  value supplied was a key id, which returns 401); both are covered by tests with scripted
-  providers, and the copilot's rule-based mode was verified in the browser.
+- The live model was exercised on a handful of runs only (see EVALUATION.md); quality across many
+  runs and expert rating of the Arabic simplifications are not done.
 - Weak/older GPUs were not tested on hardware; quality presets exist for them.
 - Translations are self-authored and need expert review.

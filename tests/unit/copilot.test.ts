@@ -197,6 +197,27 @@ describe("copilot — model mode (scripted stream)", () => {
     expect(events.at(-1)).toMatchObject({ t: "done", mode: "rules" });
   });
 
+  it("switches to the rule-based view when the model sends nothing in time", async () => {
+    const { copilotTiming } = await import("@/server/copilot/run");
+    const before = copilotTiming.firstEventMs;
+    copilotTiming.firstEventMs = 50;
+    setCopilotFactoryForTests((_params, signal) => ({
+      events: (async function* () {
+        await new Promise((_, reject) => signal.addEventListener("abort", () => reject(Object.assign(new Error("aborted"), { name: "AbortError" }))));
+      })(),
+      final: async () => {
+        throw new Error("unreachable");
+      },
+    }));
+    try {
+      const events = await collect("Brief me");
+      expect(events.find((e) => e.t === "step" && e.state === "failed")).toMatchObject({ text: expect.stringContaining("no response within") });
+      expect(events.at(-1)).toMatchObject({ t: "done", mode: "rules" });
+    } finally {
+      copilotTiming.firstEventMs = before;
+    }
+  });
+
   it("sends the model a snapshot with citizen text fenced as data and no tokens", async () => {
     await published();
     const snap = buildSnapshot(getOpsState());

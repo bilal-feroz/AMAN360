@@ -25,6 +25,8 @@ export interface ModelStream {
 export type StreamFactory = (params: Record<string, unknown>, signal: AbortSignal) => ModelStream;
 
 const MAX_TURNS = 3;
+/** If the model sends nothing at all within this time (e.g. venue Wi-Fi hangs), switch to the rule-based view. */
+export const copilotTiming = { firstEventMs: 15_000 };
 
 function copilotEffort(): "low" | "medium" | "high" {
   const e = process.env.AMAN_COPILOT_EFFORT?.trim();
@@ -107,6 +109,7 @@ export function renderTool(name: ToolName, rawInput: unknown, id: string, s: Ops
 }
 
 function apiErrorLabel(e: unknown): string {
+  if (e instanceof Anthropic.APIUserAbortError) return "Cancelled";
   if (e instanceof Anthropic.APIError) {
     if (e.status === 401) return "API key rejected (401)";
     if (e.status === 429) return "Rate limited (429)";
@@ -155,6 +158,17 @@ export async function runLLM(req: CopilotRequest, emit: Emit, opts: { factory: S
   ];
 
   let visible = false;
+  const ctrl = new AbortController();
+  const onAbort = () => ctrl.abort();
+  opts.signal.addEventListener("abort", onAbort);
+  let gotEvent = false;
+  let timedOut = false;
+  const watchdog = setTimeout(() => {
+    if (!gotEvent) {
+      timedOut = true;
+      ctrl.abort();
+    }
+  }, copilotTiming.firstEventMs);
   let announcedModel = opts.model;
   const usage = { input: 0, output: 0 };
   try {
@@ -171,11 +185,12 @@ export async function runLLM(req: CopilotRequest, emit: Emit, opts: { factory: S
           tools: TOOLS,
           messages,
         },
-        opts.signal,
+        ctrl.signal,
       );
       const blocks = new Map<number, { type: string; name?: string; id?: string; json: string; at: number }>();
       const rendered = new Map<string, { ok: boolean; summary: string }>();
       for await (const ev of stream.events) {
+        gotEvent = true;
         if (ev.type === "message_start" && ev.message?.model && ev.message.model !== announcedModel) {
           announcedModel = ev.message.model;
           emit({ t: "meta", mode: "llm", model: announcedModel, label: lang === "ar" ? "Claude · مباشر" : "Claude · live", note: "served by fallback model" });
@@ -235,7 +250,7 @@ export async function runLLM(req: CopilotRequest, emit: Emit, opts: { factory: S
     console.info(`[copilot] ${announcedModel} turns done · in ${usage.input} · out ${usage.output} tokens · ${Date.now() - t0} ms`);
     emit({ t: "done", ms: Date.now() - t0, mode: "llm" });
   } catch (e) {
-    const label = apiErrorLabel(e);
+    const label = timedOut ? `no response within ${Math.round(copilotTiming.firstEventMs / 1000)} s` : apiErrorLabel(e);
     if (label === "Cancelled") return;
     console.warn(`[copilot] ${label}`);
     if (!visible) {
@@ -245,6 +260,9 @@ export async function runLLM(req: CopilotRequest, emit: Emit, opts: { factory: S
     }
     emit({ t: "error", message: label });
     emit({ t: "done", ms: Date.now() - t0, mode: "llm" });
+  } finally {
+    clearTimeout(watchdog);
+    opts.signal.removeEventListener("abort", onAbort);
   }
 }
 

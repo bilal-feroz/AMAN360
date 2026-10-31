@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { z } from "zod";
 import { handler, HttpError, requireOperator } from "@/server/http";
 import { approveGuidance, assessImpact, injectConflict, prepareGuidance, publish, resolveIncident, verifySource } from "@/server/services/workflow";
+import { approveAndSend, holdAutoSend, runAgent } from "@/server/services/automation";
 
 type Ctx = { params: Promise<{ id: string; action: string }> };
 const Body = z.object({ note: z.string().max(500).optional() }).optional();
@@ -23,6 +24,14 @@ export const POST = handler(async (req: NextRequest, { params }: Ctx) => {
     }
     case "prepare":
       return { guidance: await prepareGuidance(id, op.id) };
+    case "pipeline":
+      // The agent's full preparation (verify → match → draft & validate), started now by an operator.
+      return { agent: await runAgent(id, op.id) };
+    case "approve_send":
+      return approveAndSend(id, op.id);
+    case "hold_auto":
+      holdAutoSend(id, op.id);
+      return { ok: true };
     case "approve":
       approveGuidance(id, op.id, body?.note);
       return { ok: true };

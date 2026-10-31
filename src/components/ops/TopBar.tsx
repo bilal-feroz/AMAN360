@@ -110,13 +110,28 @@ function IncidentPill() {
   const inc = state.incident;
   const s = inc.state;
   const active = ["assessed", "approved", "active"].includes(s);
-  const tone = s === "blocked" ? "coral" : active ? "coral" : s === "draft" ? "amber" : "teal";
-  const status =
-    s === "draft"
+  const a = state.automation;
+  const preparing = a.agent.status === "running";
+  const ready = ["assessed", "approved"].includes(s) && state.guidance.length > 0 && !preparing;
+  const countdown = ready && a.send?.status === "countdown";
+  const tone = s === "blocked" || countdown || s === "active" ? "coral" : s === "draft" || preparing || ready ? "amber" : active ? "coral" : "teal";
+  const status = preparing
+    ? lang === "ar"
+      ? "أمان يجهّز…"
+      : "AMAN preparing…"
+    : countdown
       ? lang === "ar"
-        ? "بانتظار التفعيل"
-        : "Awaiting activation"
-      : s === "blocked"
+        ? "إرسال تلقائي قريبًا"
+        : "Auto-sending"
+      : ready
+        ? lang === "ar"
+          ? "جاهزة للإرسال"
+          : "Ready to send"
+        : s === "draft"
+          ? lang === "ar"
+            ? "تنبيه وارد"
+            : "Alert received"
+          : s === "blocked"
         ? t("conflicting")
         : s === "resolved"
           ? t("resolved")

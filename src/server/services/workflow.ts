@@ -172,14 +172,19 @@ const variantsNeeded = (incidentId: string) => {
   return [...set.values()];
 };
 
-/** Step 3 — prepare localized guidance (template-selected, or LLM-simplified and validated). */
-export async function prepareGuidance(incidentId: string, actor: string): Promise<GuidanceDraft[]> {
+/**
+ * Step 3 — prepare localized guidance (template-selected, or LLM-simplified and validated).
+ * `templatesOnly` skips model rewrites entirely; the pre-authorised auto-send policy requires it, so
+ * nothing a model wrote can reach the public without a human approving it.
+ */
+export async function prepareGuidance(incidentId: string, actor: string, opts: { templatesOnly?: boolean } = {}): Promise<GuidanceDraft[]> {
   const incident = requireIncident(incidentId);
   if (!["assessed", "approved"].includes(incident.state)) throw new WorkflowError(`Guidance can only be prepared after assessment (state: ${incident.state})`);
   const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Publication gate failed", 409, gate.blocks);
   const facts = messageFacts(incident);
   const provider = getProvider();
+  const useModel = provider.id !== "template" && !opts.templatesOnly;
   const drafts: GuidanceDraft[] = [];
 
   const needs = variantsNeeded(incidentId);
@@ -187,7 +192,7 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
   // and deterministic. Standard variants are never sent to a model.
   const candidates = await Promise.all(
     needs.map(async (need) => {
-      if (provider.id === "template" || need.variant === "standard") return { candidate: null, error: null };
+      if (!useModel || need.variant === "standard") return { candidate: null, error: null };
       const action = actionById(need.actionId)!;
       try {
         const candidate = await provider.rewriteVariant({
@@ -214,7 +219,7 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
     let checks: ValidationCheck[];
     let passed: boolean;
 
-    if (provider.id !== "template" && need.variant !== "standard") {
+    if (useModel && need.variant !== "standard") {
       const { candidate, error } = candidates[i];
       if (error) {
         fallbackUsed = true;
@@ -308,7 +313,7 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
     const llm = drafts.filter((d) => d.mode === "llm").length;
     audit("comms", "guidance.generated", `${drafts.length} localized guidance variants prepared (${llm ? `${llm} LLM-simplified` : "approved templates"})`, {
       entity: incidentId,
-      data: { provider: provider.id, variants: drafts.map((d) => d.id) },
+      data: { provider: useModel ? provider.id : "template", variants: drafts.map((d) => d.id) },
     });
     audit("comms-validator", "guidance.validated", `${drafts.filter((d) => d.validationPassed).length}/${drafts.length} variants passed safety validation`, {
       entity: incidentId,

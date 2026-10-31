@@ -143,8 +143,19 @@ a fake provider that misbehaves (`tests/unit/llm-pipeline.test.ts`).
 
 ## 5. Humans in the loop
 
+- The AMAN agent may *prepare* without being asked: it runs the same audited, deterministic steps
+  an operator would (verify the source, match recipients, prepare and validate guidance) and then
+  stops. It cannot approve or send. If the feed conflicts or fails verification it stops and says so.
 - Publication requires a duty officer's explicit approval after reviewing EN/AR text, accessible
-  variants, validation results and the generation record.
+  variants, validation results and the generation record — one decision, **Approve & send**.
+- The single exception is the **pre-authorised auto-send** policy, modelled on systems such as
+  earthquake early warning where seconds matter. An authorised officer switches it on in advance
+  (it is off by default and after every reset). It fires only when all six conditions hold —
+  policy on, official verified feed, severity warning or higher, approved template wording only
+  (model rewrites are discarded and the message is re-prepared from templates), every validation
+  check passed, no conflicting reports — and only after a 15-second hold window in which any
+  operator can stop it. Every condition is re-checked at send time; any change cancels the send.
+  Social-media signals cannot start it. Unit-tested in `tests/unit/automation.test.ts`.
 - Assistance requests become cases that an operator must acknowledge, follow up and resolve.
 - Unverifiable questions and unusable locations become review items, never automated answers.
 - The citizen is told the truth: "An operator will review it. This prototype does not dispatch

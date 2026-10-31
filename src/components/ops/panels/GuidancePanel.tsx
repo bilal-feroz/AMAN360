@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
-import { Check, X, Send, ShieldCheck, Volume2, FileCheck2, Ban } from "lucide-react";
+import { Check, X, ShieldCheck, Volume2, FileCheck2, Ban } from "lucide-react";
 import type { ActionVariant, GuidanceDraft } from "@/domain/types";
 import { formatUntil } from "@/domain/comms/facts";
 import { Button, Chip, cn, Disclosure, Segmented } from "@/components/ui";
@@ -13,6 +13,7 @@ import { ACTION_LABEL } from "../workflow";
 import { ActionBar, PanelHeader } from "./PanelHeader";
 import { Empty } from "./ImpactPanel";
 import { RedTeamCard } from "./RedTeamCard";
+import { ApproveSendBar } from "./AgentCard";
 import { SmsPreview } from "./SmsPreview";
 
 export function highlightFacts(text: string, facts: string[]): ReactNode {
@@ -31,8 +32,8 @@ export function highlightFacts(text: string, facts: string[]): ReactNode {
 }
 
 export function GuidancePanel() {
-  const { state, t, lang, incidentAction, busy, canAct } = useOps();
-  const { setView, openPhones, guidance: sel, setGuidance, flyTo } = useUi();
+  const { state, t, lang } = useOps();
+  const { setView, guidance: sel, setGuidance } = useUi();
   const actions = useMemo(() => [...new Set(state?.guidance.map((g) => g.actionId) ?? [])], [state?.guidance]);
   const actionId = sel.actionId;
   const variant = sel.variant;
@@ -43,10 +44,7 @@ export function GuidancePanel() {
   const en = drafts.find((g) => g.language === "en");
   const ar = drafts.find((g) => g.language === "ar");
   const counts = state.assessment?.summary.byAction ?? {};
-  const recipients = state.assessment?.summary.send ?? 0;
   const allValid = state.guidance.length > 0 && state.guidance.every((g) => g.validationPassed);
-  const approved = state.guidance.length > 0 && state.guidance.every((g) => g.state === "approved");
-  const published = ["active", "resolved"].includes(state.incident.state);
   const facts = (l: "en" | "ar") => [state.hazard?.name[l] ?? "", state.closures[0]?.name[l] ?? "", formatUntil(state.incident.validUntil, l)];
   const consistency = en?.checks.find((c) => c.id === "bilingual-consistency");
   const checks = en?.checks ?? [];
@@ -76,15 +74,6 @@ export function GuidancePanel() {
       </div>
     );
   }
-
-  const publish = async () => {
-    const ok = await incidentAction("publish");
-    if (ok) {
-      setView("responses");
-      flyTo({ kind: "zone" });
-      openPhones(["RES-014", "RES-047"]);
-    }
-  };
 
   return (
     <div className="flex min-h-full flex-col">
@@ -188,31 +177,7 @@ export function GuidancePanel() {
             <Ban size={14} /> {lang === "ar" ? "بعض النسخ لم تجتز التحقق — الاعتماد محظور" : "Some versions failed validation — approval is blocked"}
           </div>
         )}
-        <div className="flex gap-2">
-          <Button
-            tone={approved ? "soft" : "primary"}
-            size="lg"
-            className="flex-1"
-            disabled={!canAct || approved || !allValid || !state.gate.ok}
-            busy={busy === "approve"}
-            onClick={() => void incidentAction("approve")}
-            icon={approved ? <Check size={17} /> : <ShieldCheck size={17} />}
-          >
-            {approved ? t("approved") : t("approve")}
-          </Button>
-          <Button
-            tone="danger"
-            size="lg"
-            className="flex-1"
-            disabled={!canAct || !approved || published}
-            busy={busy === "publish"}
-            onClick={publish}
-            title={lang === "ar" ? "قنوات محاكاة — لا تُرسل رسائل حقيقية" : "Simulated channels — no real messages are sent"}
-            icon={published ? <Check size={17} /> : <Send size={16} className="rtl:-scale-x-100" />}
-          >
-            {published ? t("deliveryIssued") : lang === "ar" ? `إرسال إلى ${recipients} شخصًا` : `Send to ${recipients} people`}
-          </Button>
-        </div>
+        <ApproveSendBar />
       </ActionBar>
     </div>
   );

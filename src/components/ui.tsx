@@ -232,6 +232,22 @@ export function Field({ label, children, mono }: { label: ReactNode; children: R
   );
 }
 
+export function Switch({ checked, onChange, label, disabled }: { checked: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={cn("relative inline-flex h-[22px] w-[38px] shrink-0 items-center rounded-full transition-colors disabled:opacity-45", checked ? "bg-teal" : "bg-line-strong")}
+    >
+      <span className={cn("h-[18px] w-[18px] rounded-full bg-white shadow-[0_1px_2px_rgb(16_44_51/0.3)] transition-transform", checked ? "translate-x-[18px] rtl:-translate-x-[18px]" : "translate-x-[2px] rtl:-translate-x-[2px]")} />
+    </button>
+  );
+}
+
 /** Secondary information lives one click away. Closed by default. */
 export function Disclosure({ summary, children, className, defaultOpen = false, icon }: { summary: ReactNode; children: ReactNode; className?: string; defaultOpen?: boolean; icon?: ReactNode }) {
   const [open, setOpen] = useState(defaultOpen);

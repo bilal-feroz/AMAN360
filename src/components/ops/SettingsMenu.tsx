@@ -2,13 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import { FastForward, Film, RotateCcw, TriangleAlert, LocateFixed, LogOut } from "lucide-react";
-import { Segmented } from "@/components/ui";
+import { Segmented, Switch } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { api } from "@/lib/api";
 import { useOps } from "./context";
 
 export function SettingsMenu({ onClose }: { onClose: () => void }) {
-  const { t, lang, state, demo, incidentAction, canAct, operator, signInRequired } = useOps();
+  const { t, lang, state, demo, incidentAction, canAct, operator, signInRequired, policy } = useOps();
   const { quality, setQuality, reducedMotion, setReducedMotion, replayIntro, flyTo } = useUi();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -54,6 +54,26 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
             <LogOut size={15} />
           </button>
         )}
+      </div>
+
+      <div className={label}>{lang === "ar" ? "الأتمتة" : "Automation"}</div>
+      <div className="mb-3 space-y-1 px-1.5">
+        <label className="flex items-start gap-3 rounded-lg py-1.5">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13px] text-ink">{lang === "ar" ? "يجهّز الوكيل التنبيهات الموثّقة" : "Agent prepares verified alerts"}</span>
+            <span className="block text-[11.5px] leading-snug text-muted">{lang === "ar" ? "تحقق ومطابقة وصياغة — ثم ينتظر موافقتك" : "Verifies, matches and drafts — then waits for you"}</span>
+          </span>
+          <Switch label={lang === "ar" ? "التجهيز التلقائي" : "Auto-prepare"} checked={!!state?.automation.autoPrepare} disabled={!canAct} onChange={(v) => void policy({ autoPrepare: v })} />
+        </label>
+        <label className="flex items-start gap-3 rounded-lg py-1.5">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13px] text-ink">{lang === "ar" ? "إرسال تلقائي للتحذيرات المعتمدة مسبقًا" : "Auto-send pre-authorised warnings"}</span>
+            <span className="block text-[11.5px] leading-snug text-muted">
+              {lang === "ar" ? "موجز رسمي وصياغة معتمدة فقط، مع مهلة إيقاف 15 ث. يُطفأ عند إعادة الضبط." : "Official feed and approved wording only, with a 15 s hold. Turns off on reset."}
+            </span>
+          </span>
+          <Switch label={lang === "ar" ? "الإرسال التلقائي" : "Auto-send"} checked={!!state?.automation.autoSend} disabled={!canAct} onChange={(v) => void policy({ autoSend: v })} />
+        </label>
       </div>
 
       <div className={label}>{lang === "ar" ? "السيناريو" : "Scenario"}</div>

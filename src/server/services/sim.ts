@@ -27,6 +27,11 @@ export async function processDue(now = Date.now()): Promise<number> {
         else if (item.kind === "flag_no_response") flagNoResponse(item.payload as { incidentId: string });
         else if (item.kind === "signal_verify") (await import("../signals/service")).completeVerification(item.payload as { dataset: "scenario"; hotspotId: string });
         else if (item.kind === "case_triage") await (await import("./triage")).triageCase(item.payload as { caseId: string; again?: boolean });
+        // Not awaited: the agent can wait on a model, and it reports its own progress over the bus.
+        else if (item.kind === "agent_prepare") {
+          const automation = await import("./automation");
+          if (automation.autoPrepareOn()) void automation.runAgent((item.payload as { incidentId: string }).incidentId);
+        } else if (item.kind === "auto_send") (await import("./automation")).processAutoSend(item.payload as { incidentId: string });
       } catch (e) {
         console.warn(`[sim] ${item.kind} failed:`, (e as Error).message);
       }

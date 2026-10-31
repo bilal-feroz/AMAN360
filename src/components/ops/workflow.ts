@@ -12,9 +12,9 @@ export function nextView(state: OpsState | null): PanelView | null {
     case "blocked":
       return "queue";
     case "assessed":
-      return state.guidance.length ? "guidance" : "impact";
     case "approved":
-      return "guidance";
+      // The Alert view holds the agent's "Ready to send" card and the one-tap send.
+      return "queue";
     case "active":
       return state.metrics.cases.open > 0 ? "responses" : null;
     default:

@@ -12,6 +12,7 @@ import { providerStatus } from "../comms/providers";
 import * as store from "../store";
 import type { StoredMessage } from "../store";
 import { nextState } from "./citizen";
+import { automationStatus } from "./automation";
 import { signalsSummary } from "../signals/service";
 import { RECORDED_ANALYSIS } from "@/scenario/signals";
 
@@ -246,6 +247,7 @@ export function getOpsState(atIso?: string | null) {
     reviews: store.reviews.forIncident(INCIDENT_ID),
     guidance: store.guidance.forIncident(INCIDENT_ID),
     pendingSimulation: store.schedule.pending(),
+    automation: automationStatus(INCIDENT_ID),
     events: store.auditLog.recent(60).filter((e) => !(e.actor.startsWith("sim:") && e.type === "response.safe")),
   };
 }

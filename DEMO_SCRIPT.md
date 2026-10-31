@@ -16,7 +16,7 @@ The challenge gives each team 15 minutes: about 10 to present, 5 for the judges'
 **Live demo beats (Presentation Mode):**
 
 1. **Calm city** — digital twin of Al Majaz.
-2. **A verified alert arrives** — simulated government feed.
+2. **A verified alert arrives** — simulated government feed; the AMAN agent prepares everything on its own and stops at *Ready to send*.
 3. **Social intelligence** — Claude has read the public posts in six languages; reports cluster over
    Al Majaz; the operator clicks *Request verification* (the only thing a hotspot can do).
 4. **Geographic & safety intelligence** — who is inside, who is driving into the closure, who gets nothing.
@@ -39,7 +39,11 @@ the buildings. The computer applies the same rule to all of them; the operator a
 only sees the squares and the people who need a human — here, the three squares to check first and
 more than a thousand projected help requests, which is exactly why Claude orders the queue."
 
-**Live extras for Q&A** (by hand): type *"Water is coming into our flat and my grandmother cannot
+**Live extras for Q&A** (by hand): *"Why not let the AI send it?"* → Settings → switch on
+**Auto-send pre-authorised warnings**. The message is re-prepared from approved templates only and a
+15-second countdown appears with **Hold**: "For pre-authorised life-safety warnings an authority can
+allow automatic sending — official feed, approved wording, every check passed — and any operator
+can stop it. Social media can never trigger it." Then type *"Water is coming into our flat and my grandmother cannot
 walk"* on Priya's English phone — the keyword rule says P2, Claude raises it to P1. On Ramesh's SMS
 phone (Devices → Ramesh K.) press **2**, then type *"पानी घर में आ गया है, मेरी माँ चल नहीं सकती"* —
 the case appears as *Help request by SMS* with Claude's English summary. In a post, press
@@ -84,13 +88,15 @@ same steps. Times are approximate.
 > OpenStreetMap. Everything you'll see happen to people today is a training scenario with synthetic
 > data."
 
-**00:15 — A verified alert arrives**
+**00:15 — A verified alert arrives** *(don't click anything)*
 Point at the incident card (right) and the amber dashed boundary on the map.
 > "A simulated meteorological feed reports heavy rainfall, a localized flood-risk zone, and a
-> confirmed closure on Al Wahda Street. Nothing has been sent to anyone yet."
+> confirmed closure on Al Wahda Street. Watch — nobody touches anything. AMAN's agent verifies the
+> source, finds who is affected and drafts the message in Arabic and English, in about eight
+> seconds. Then it stops: *Ready to send*. Nothing has been sent to anyone."
 
-**00:35 — Geographic intelligence** → click **Activate incident**
-> "AMAN verifies the source, then matches every recipient geographically. 106 people are inside the
+**00:35 — Geographic intelligence** → **Impact** in the left rail
+> "AMAN verified the source, then matched every recipient geographically. 106 people are inside the
 > zone, 14 drivers are heading toward the closure, 32 are outside and get nothing, and 4 have no
 > usable location — so we don't guess, we flag them for review."
 Click the closure marker: "This exact segment is closed. There is no approved diversion, so AMAN
@@ -102,13 +108,13 @@ will not invent one."
 > no emergency message. This is a deterministic, versioned policy — **why this action?** is always
 > answerable."
 
-**01:20 — Communication** → **Prepare message**
+**01:20 — Communication** → **Review**
 > "Here is the same approved action in English and Arabic, side by side, with locked facts
 > highlighted. Switch to *Plain language* — an accessible variant. The AI may simplify wording, but
 > a validator checks that the action, steps, place, time, numbers and claims are unchanged, and
 > that both languages are consistent."
-Click **Approve message** → **Send to 120 people** (simulated channels).
-> "Nothing reaches the public without a human approval."
+Click **Approve & send to 120 people** (simulated channels).
+> "AI does the work in seconds. A human makes one decision. Nothing reaches the public without it."
 
 **01:45 — Citizen interaction** *(phones open automatically)*
 > "Daniel taps *I am safe*. Mariam taps *I need help*: water is entering the ground floor and her

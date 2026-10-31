@@ -1,11 +1,12 @@
 "use client";
 
-import { Car, House, Ban, MessageSquareText, ChevronRight, ArrowRight } from "lucide-react";
+import { Car, House, Ban, MessageSquareText, ChevronRight } from "lucide-react";
 import { Button, Chip, cn, Section, Stat } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
 import { ACTION_LABEL } from "../workflow";
 import { ActionBar, PanelHeader } from "./PanelHeader";
+import { ApproveSendBar } from "./AgentCard";
 import { ScaleLine } from "./ScaleCard";
 
 const CASE_ORDER = ["mariam", "daniel", "omar"] as const;
@@ -31,8 +32,11 @@ export function ImpactPanel() {
   const prepared = state.guidance.length > 0;
   const personas = CASE_ORDER.map((p) => state.personas.find((x) => x.persona === p)).filter(Boolean) as typeof state.personas;
 
+  const preparing = state.automation.agent.status === "running" || busy === "pipeline";
+
+  // Same pipeline the agent runs (shares an in-flight run), then show the result.
   const prepare = async () => {
-    const ok = await incidentAction("prepare");
+    const ok = await incidentAction("pipeline");
     if (ok) setView("guidance");
   };
 
@@ -118,13 +122,11 @@ export function ImpactPanel() {
       </Section>
 
       <ActionBar>
-        {prepared ? (
-          <Button tone="primary" size="lg" className="w-full" onClick={() => setView("guidance")} icon={<ArrowRight size={16} className="rtl:rotate-180" />}>
-            {lang === "ar" ? "مراجعة الرسالة" : "Review the message"}
-          </Button>
+        {prepared && !preparing ? (
+          <ApproveSendBar review />
         ) : (
-          <Button tone="primary" size="lg" className="w-full" onClick={prepare} busy={busy === "prepare"} disabled={!canAct || !gate.ok} icon={<MessageSquareText size={17} />}>
-            {busy === "prepare" ? t("preparing") : t("prepareGuidance")}
+          <Button tone="primary" size="lg" className="w-full" onClick={prepare} busy={preparing} disabled={!canAct || !gate.ok} icon={<MessageSquareText size={17} />}>
+            {preparing ? t("preparing") : t("prepareGuidance")}
           </Button>
         )}
       </ActionBar>

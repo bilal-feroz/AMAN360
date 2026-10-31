@@ -1,11 +1,12 @@
 "use client";
 
-import { ArrowRight, Ban, CloudRain, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Ban, CloudRain, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Button, Chip, Disclosure, Field } from "@/components/ui";
 import { fmtDateTime, fmtTime } from "@/lib/format";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
 import { ActionBar, PanelHeader } from "./PanelHeader";
+import { AgentCard, ApproveSendBar } from "./AgentCard";
 
 const SEVERITY = { advisory: ["Advisory", "استشاري"], watch: ["Watch", "مراقبة"], warning: ["Warning", "تحذير"], emergency: ["Emergency", "طوارئ"] } as const;
 
@@ -19,10 +20,13 @@ export function QueuePanel() {
   const blocked = inc.state === "blocked";
   const sev = SEVERITY[inc.severity as keyof typeof SEVERITY];
 
+  const running = state.automation.agent.status === "running" || busy === "pipeline";
+  const prepared = state.guidance.length > 0;
+
+  // Runs the agent's full preparation now instead of waiting for it to pick the alert up.
   const activate = async () => {
     flyTo({ kind: "zone" });
-    const ok = await incidentAction("activate");
-    if (ok) setView("impact");
+    await incidentAction("pipeline");
   };
 
   return (
@@ -37,6 +41,9 @@ export function QueuePanel() {
           <Chip tone={v.status === "verified" ? "teal" : v.status === "conflicting" ? "coral" : "neutral"} dot>
             {v.status === "verified" ? t("verified") : v.status === "conflicting" ? t("conflicting") : t("unverified")}
           </Chip>
+        </div>
+        <div className="mt-4">
+          <AgentCard />
         </div>
         <dl className="mt-4 divide-y divide-line rounded-2xl bg-surface-2/70 px-4 py-1 ring-1 ring-line">
           <Fact label={lang === "ar" ? "المنطقة" : "Zone"} onClick={() => flyTo({ kind: "zone" })}>
@@ -91,23 +98,12 @@ export function QueuePanel() {
       </div>
 
       <ActionBar>
-        {!assessed && !blocked && (
-          <>
-            <p className="mb-2.5 text-center text-[12px] leading-snug text-muted">
-              {lang === "ar"
-                ? "يتحقق أمان من المصدر، ويحدّد المتأثرين، ويجهّز رسائل لموافقتك. لا يُرسل شيء قبل موافقتك."
-                : "AMAN checks the source, finds who is affected and drafts messages for you to approve. Nothing is sent until you approve."}
-            </p>
-            <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={busy === "activate"} disabled={!canAct} icon={<CloudRain size={17} />}>
-              {busy === "activate" ? t("activating") : t("activate")}
-            </Button>
-          </>
-        )}
-        {assessed && (
-          <Button tone="primary" size="lg" className="w-full" onClick={() => setView("impact")} icon={<ArrowRight size={16} className="rtl:rotate-180" />}>
-            {lang === "ar" ? "عرض المتأثرين" : "See who is affected"}
+        {!blocked && (running || !prepared) && !["active", "resolved"].includes(inc.state) && (
+          <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={running} disabled={!canAct} icon={<CloudRain size={17} />}>
+            {running ? (lang === "ar" ? "أمان يجهّز…" : "AMAN is preparing…") : assessed ? t("prepareGuidance") : t("activate")}
           </Button>
         )}
+        {!blocked && ((prepared && !running) || ["active", "resolved"].includes(inc.state)) && <ApproveSendBar review />}
         {blocked && (
           <Button size="lg" className="w-full" onClick={() => setView("audit")}>
             {lang === "ar" ? "عرض سجل التدقيق" : "Open audit log"}

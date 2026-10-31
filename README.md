@@ -28,7 +28,14 @@ Built for the **Universities Challenge 2026, Sharjah**.
 4. **Communicates** the approved action in Arabic and English, including plain-language and
    audio/screen-reader variants. AI may only simplify approved wording; a deterministic validator
    blocks anything that changes the action, facts, severity, routes or contacts.
-5. **Requires operator approval**, then issues to simulated channels (in-app inbox, two-way SMS).
+5. **Prepares itself, then asks one human question.** When a verified alert lands, the AMAN agent
+   verifies the source, matches who is affected and prepares and validates the bilingual message on
+   its own (≈8 s), then stops at a *Ready to send* card: one tap, **Approve & send**, issues it to
+   simulated channels (in-app inbox, two-way SMS). An optional **pre-authorised auto-send** policy
+   (off by default, off after every reset) may send without that tap only when every condition
+   holds — official verified feed, warning severity or higher, approved template wording only (no
+   AI text), every safety check passed, no conflicting reports — and only after a 15-second hold
+   window any operator can stop. Social media can never trigger either path.
 6. **Closes the loop:** citizens tap *I am safe*, *I need help* or *I need clarification* on a
    mobile-first app. Help requests become prioritised, human-reviewed cases.
 7. **Explains every decision:** verified event → geographic match → approved rule →

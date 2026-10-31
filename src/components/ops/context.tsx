@@ -23,6 +23,8 @@ interface OpsCtx {
   demo: (action: string, json?: unknown) => Promise<boolean>;
   caseAction: (id: string, action: "acknowledge" | "follow_up" | "resolve", note?: string) => Promise<boolean>;
   reviewAction: (id: string, resolution: string) => Promise<boolean>;
+  /** Automation policy: agent auto-prepare and pre-authorised auto-send. */
+  policy: (patch: { autoPrepare?: boolean; autoSend?: boolean }) => Promise<boolean>;
   refresh: () => Promise<void>;
 }
 
@@ -83,6 +85,7 @@ export function OpsProvider({
       demo: (action, json) => run(`demo:${action}`, () => demoAction(action, json ?? {})),
       caseAction: (id, action, note) => run(`case:${action}`, () => api(`/api/ops/cases/${id}`, { json: { action, note } })),
       reviewAction: (id, resolution) => run(`review:${id}`, () => api(`/api/ops/reviews/${id}`, { json: { resolution } })),
+      policy: (patch) => run("policy", () => api("/api/ops/policy", { json: patch })),
       refresh,
     }),
     [state, lang, operator, signInRequired, busy, error, run, refresh],

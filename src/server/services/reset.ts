@@ -6,6 +6,7 @@ import { buildClosures, buildHazardGeometry, buildIncident, buildSourcePayload, 
 import { db, installationSecret, setMeta, tx } from "../db";
 import { audit } from "../bus";
 import * as store from "../store";
+import { resetAutomation } from "./automation";
 
 /** Opaque, unguessable citizen token, stable for this installation (HMAC of the recipient id). */
 export function citizenToken(recipientId: string): string {
@@ -39,6 +40,7 @@ export function resetScenario(actor = "system"): void {
       data: { feed: payload.feed, ref: payload.ref, severity: payload.severity },
     });
   });
+  resetAutomation(INCIDENT_ID);
 }
 
 export function ensureSeeded(): void {

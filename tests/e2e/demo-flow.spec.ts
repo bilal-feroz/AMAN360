@@ -46,11 +46,14 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   const skip = page.getByRole("button", { name: /Skip intro/ });
   await skip.click({ timeout: 2500 }).catch(() => undefined); // the intro may already have finished
   await page.waitForTimeout(5000);
-  await expect(page.getByText("Incoming alert").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Heavy rainfall — localized flood risk/ })).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/02-sharjah-overview.png` });
 
-  // Activate → geographic matching (computed by the backend, not animated counters)
-  await page.getByRole("button", { name: /Activate incident/ }).click();
+  // Nobody clicks: the agent verifies the source, matches people and prepares the message, then waits.
+  await expect(page.getByText("Ready to send").first()).toBeVisible({ timeout: 60_000 });
+  expect((await (await ops.request.get("/api/ops/state")).json()).metrics.alertsSent).toBe(0);
+  const rail = page.getByRole("navigation", { name: "Primary" });
+  await rail.getByRole("button", { name: /Impact/ }).click();
   await expect(page.getByRole("heading", { name: "Who is affected" })).toBeVisible();
   await expect(page.getByText("106", { exact: true }).first()).toBeVisible();
   await page.waitForTimeout(4500);
@@ -80,18 +83,15 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   await page.screenshot({ path: `${SHOTS}/05c-why-outside-zone.png` });
   await panel.getByRole("button", { name: "Back" }).click();
 
-  // Guidance: prepare → inspect bilingual + accessible variants → approve → publish
-  await page.getByRole("button", { name: /Prepare message/ }).click();
+  // Guidance: inspect bilingual + accessible variants → one human decision: approve & send
+  await panel.getByRole("button", { name: "Review", exact: true }).click();
   await expect(page.getByText("Bilingual consistency:", { exact: false })).toBeVisible();
   await page.waitForTimeout(2500);
   await page.screenshot({ path: `${SHOTS}/06-guidance-approval.png` });
   await page.getByRole("radio", { name: "Plain language" }).click();
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${SHOTS}/06b-guidance-plain-language.png` });
-  await expect(page.getByRole("button", { name: /Send to 120 people/ })).toBeDisabled();
-  await page.getByRole("button", { name: /Approve message/ }).click();
-  await expect(page.getByRole("button", { name: /Send to 120 people/ })).toBeEnabled();
-  await page.getByRole("button", { name: /Send to 120 people/ }).click();
+  await page.getByRole("button", { name: /Approve & send to 120 people/ }).click();
   await page.waitForTimeout(7000);
   await page.screenshot({ path: `${SHOTS}/07-citizen-devices-in-command-center.png` });
   await page.getByRole("button", { name: "Close devices" }).click();
@@ -119,7 +119,6 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   const before = await metrics(ops);
   expect(before.alertsSent).toBe(120);
 
-  const rail = page.getByRole("navigation", { name: "Primary" });
   await rail.getByRole("button", { name: /Responses/ }).click();
   await daniel.getByRole("button", { name: "I am safe" }).click();
   await expect(daniel.getByText(/your status is recorded/)).toBeVisible();

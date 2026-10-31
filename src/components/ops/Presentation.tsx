@@ -66,20 +66,17 @@ export function Presentation() {
   const st = () => stateRef.current;
   // Prerequisites are checked against fresh server state, so skipping to any stage is safe.
   const fresh = () => api<OpsState>("/api/ops/state");
+  // "pipeline" joins the agent's run if it is already working, so these never duplicate its steps.
   const ensureActivated = async () => {
-    if ((await fresh()).incident.state === "draft") await opsRef.current.incidentAction("activate");
+    if ((await fresh()).incident.state === "draft") await opsRef.current.incidentAction("pipeline");
   };
   const ensurePrepared = async () => {
-    await ensureActivated();
-    if (!(await fresh()).guidance.length) await opsRef.current.incidentAction("prepare");
-  };
-  const ensureApproved = async () => {
-    await ensurePrepared();
-    if ((await fresh()).incident.state === "assessed") await opsRef.current.incidentAction("approve");
+    const s = await fresh();
+    if (s.incident.state === "draft" || !s.guidance.length) await opsRef.current.incidentAction("pipeline");
   };
   const ensurePublished = async () => {
-    await ensureApproved();
-    if ((await fresh()).incident.state === "approved") await opsRef.current.incidentAction("publish");
+    await ensurePrepared();
+    if (["assessed", "approved"].includes((await fresh()).incident.state)) await opsRef.current.incidentAction("approve_send");
   };
   const freshCase = async (recipientId: string) => (await fresh()).cases.find((c) => c.recipientId === recipientId);
   /** Taps a button inside the live citizen device; resolves when the device confirms (or times out). */
@@ -146,7 +143,10 @@ export function Presentation() {
       id: "incident",
       clock: "00:15",
       title: { en: "A verified alert arrives", ar: "وصول تنبيه موثّق" },
-      caption: { en: "Heavy rainfall. Localized hazard zone. Confirmed road closure — from a simulated government feed.", ar: "أمطار غزيرة. منطقة خطر موضعية. إغلاق طريق مؤكد — من موجز حكومي محاكى." },
+      caption: {
+        en: "Heavy rainfall, a hazard zone and a road closure arrive from a simulated government feed. AMAN's agent verifies it, finds who is affected and drafts the bilingual message on its own — then waits for a human.",
+        ar: "تصل أمطار غزيرة ومنطقة خطر وإغلاق طريق من موجز حكومي محاكى. يتحقق وكيل أمان منه ويحدّد المتأثرين ويصوغ الرسالة باللغتين بنفسه — ثم ينتظر قرار إنسان.",
+      },
       hold: 9000,
       run: async () => {
         ui.setView("queue");
@@ -209,7 +209,7 @@ export function Presentation() {
       id: "comms",
       clock: "01:20",
       title: { en: "Communication", ar: "التواصل" },
-      caption: { en: "Approved actions become clear Arabic and English guidance — including an accessible variant — validated, then approved by a human.", ar: "تتحول الإجراءات المعتمدة إلى إرشادات واضحة بالعربية والإنجليزية — مع نسخة ميسّرة — يتم التحقق منها ثم يعتمدها إنسان." },
+      caption: { en: "Approved actions become clear Arabic and English guidance — including an accessible variant — validated, then approved and sent by a human in one tap.", ar: "تتحول الإجراءات المعتمدة إلى إرشادات واضحة بالعربية والإنجليزية — مع نسخة ميسّرة — يتم التحقق منها ثم يعتمدها إنسان ويرسلها بنقرة واحدة." },
       hold: 3000,
       run: async ({ wait }) => {
         await ensurePrepared();
@@ -221,7 +221,7 @@ export function Presentation() {
         await wait(5000);
         ui.setGuidance({ actionId: "ACT-ROAD-02", variant: "standard" });
         await wait(4000);
-        await ensureApproved();
+        ui.setView("queue");
         await wait(2500);
         await ensurePublished();
         ui.setView("responses");

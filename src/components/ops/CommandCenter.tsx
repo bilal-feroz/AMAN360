@@ -8,6 +8,7 @@ import type { Operator } from "@/server/auth";
 import type { IntroStage } from "@/components/map/CityMap";
 import { useOpsState } from "@/lib/use-ops-state";
 import { hydratePreferences, useUi } from "@/lib/ui-store";
+import { cn } from "@/components/ui";
 import type { Lang } from "@/lib/i18n";
 import { OpsProvider, useOps } from "./context";
 import { TopBar } from "./TopBar";
@@ -189,6 +190,9 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         selectedHotspotId={ui.signals.hotspotId}
         onSelectPost={(id) => ui.setSignals({ postId: id })}
         onSelectHotspot={(id) => ui.setSignals({ hotspotId: id, postId: null })}
+        showScale={ui.scale.on}
+        selectedScaleId={ui.scale.cellId}
+        onSelectScale={(id) => (ui.setScale({ cellId: id }), ui.setView("responses"))}
       />
 
       {/* Top bar */}
@@ -350,19 +354,40 @@ function ClosureCard({ onClose }: { onClose: () => void }) {
   );
 }
 
-/** Before alerts go out the map needs a key; afterwards the metric dots in the timeline are the key. */
+/**
+ * Map key. The squares (city scale, an estimate) can be switched off; the drill people's colours are
+ * listed until alerts go out, after which the metric dots in the timeline are their key.
+ */
 function Legend() {
   const { lang, state } = useOps();
-  if (state?.metrics.alertsSent) return null;
-  const items: [string, string][] = state?.assessment
-    ? [
-        ["#f39a80", lang === "ar" ? "متأثر" : "Affected"],
-        ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside"],
-        ["#e8ac45", lang === "ar" ? "مراجعة" : "Review"],
-      ]
-    : [["#6fa3ab", lang === "ar" ? "السكان (بيانات اصطناعية)" : "Residents (synthetic)"]];
+  const { scale, setScale } = useUi();
+  const total = state?.scale.totals.residents ?? 0;
+  const items: [string, string][] = state?.metrics.alertsSent
+    ? []
+    : state?.assessment
+      ? [
+          ["#f39a80", lang === "ar" ? "متأثر" : "Affected"],
+          ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside"],
+          ["#e8ac45", lang === "ar" ? "مراجعة" : "Review"],
+        ]
+      : [["#6fa3ab", lang === "ar" ? "أشخاص التمرين (120)" : "Drill people (120)"]];
   return (
     <ul className="absolute end-4 top-4 flex items-center gap-3 rounded-full bg-white/90 px-3 py-1.5 text-[11.5px] font-medium text-ink-2 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
+      {total > 0 && (
+        <li>
+          <button
+            onClick={() => setScale({ on: !scale.on })}
+            aria-pressed={scale.on}
+            title={lang === "ar" ? "تقدير السكان لكل مربع 250 م من حجم المباني — إظهار/إخفاء" : "Estimated residents per 250 m square, from building size — show / hide"}
+            className="flex items-center gap-1.5 hover:text-ink"
+          >
+            <span className={cn("h-2.5 w-6 rounded-[3px] transition-opacity", !scale.on && "opacity-30")} style={{ background: "linear-gradient(90deg,#e2f3f1,#6cc9bd,#0b6f6a)" }} />
+            <span className={cn(!scale.on && "line-through decoration-muted")}>
+              {lang === "ar" ? `≈ ${Math.round(total / 10_000) * 10} ألف ساكن (تقدير)` : `≈ ${Math.round(total / 10_000) * 10}k residents (estimate)`}
+            </span>
+          </button>
+        </li>
+      )}
       {items.map(([c, l]) => (
         <li key={l} className="flex items-center gap-1.5">
           <span className="h-2 w-2 rounded-full" style={{ background: c }} />

@@ -28,6 +28,8 @@ describe what a responsible path to real use would require.
   through the same approved-template process.
 - **Accessibility:** testing with screen-reader users, people with low vision, cognitive
   disabilities and limited literacy; WCAG 2.2 AA audit; sign-language video variants considered.
+- **Population at scale:** replace the building-size estimates (city scale view) with census blocks
+  or anonymous telecom area counts, and validate the projection against real response rates.
 - **Spatial accuracy:** compare against authoritative municipal GIS (parcels, building heights,
   drainage/low-lying areas); measure boundary and route-intersection error.
 - **Response handling:** independent red-team of the validator and classifiers; live-LLM

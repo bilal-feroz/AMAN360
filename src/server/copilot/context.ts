@@ -54,6 +54,18 @@ export function buildSnapshot(s: OpsState) {
       scenario: { funnel: s.signals.funnel, hotspots: s.signals.hotspots.map((h) => ({ place: h.label.en, posts: h.posts, independentSources: h.sources, corroborated: h.corroborated, status: h.status, insideVerifiedZone: h.insideZone })), rumours: s.signals.rumours, publicQuestions: s.signals.confusion },
       realReplay: { description: "Real public posts, 10–25 Oct 2026 storm, Emirate of Sharjah (Oriane video search)", postsRead: s.ai.postsRead - s.signals.funnel.analysed, videosWatched: s.ai.framesViewed },
     },
+    cityScale: {
+      note: "ESTIMATES from building size (not counts of real people). The drill itself has 120 synthetic people; projections apply the drill replies to the estimated residents.",
+      residentsCentralSharjah: s.scale.totals.residents,
+      residentsInWarningZone: s.scale.totals.zone,
+      projectedInZone: s.scale.projected,
+      squaresToCheckFirst: s.scale.cells
+        .filter((c) => c.projected && c.zone >= 100)
+        .sort((x, y) => y.projected!.noReply + y.projected!.help - (x.projected!.noReply + x.projected!.help))
+        .slice(0, 3)
+        .map((c) => ({ square: c.name, residents: c.zone, noReplyOrHelp: c.projected!.noReply + c.projected!.help })),
+    },
+    network: { cellOutageDrill: s.network.outage, deliveredViaMesh: s.network.viaMesh, waitingForNetwork: s.network.waiting, sms: s.network.sms },
     openReviews: s.reviews.filter((r) => r.status === "open").map((r) => ({ id: r.id, kind: r.kind, recipientId: r.recipientId })),
     namedPeople: s.personas.map((p) => ({
       recipientId: p.id,

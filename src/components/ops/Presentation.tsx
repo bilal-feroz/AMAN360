@@ -8,6 +8,11 @@ import { useUi } from "@/lib/ui-store";
 import type { OpsState } from "@/lib/use-ops-state";
 import { useOps } from "./context";
 import { api } from "@/lib/api";
+import scaleData from "@/scenario/city-scale.json";
+
+/** Estimated residents (city pack and warning zone), rounded for speech. */
+const CITY_K = Math.round(scaleData.totals.residents / 10_000) * 10;
+const ZONE_N = (Math.round(scaleData.totals.zone / 100) * 100).toLocaleString("en");
 import { signalAction, useSignalsStore, type SignalsView } from "@/lib/use-signals";
 
 /**
@@ -119,15 +124,21 @@ export function Presentation() {
       id: "calm",
       clock: "00:00",
       title: { en: "A calm city", ar: "مدينة هادئة" },
-      caption: { en: "A digital twin of Al Majaz, Sharjah — real streets, real buildings, synthetic people.", ar: "توأم رقمي لمنطقة المجاز في الشارقة — شوارع ومبانٍ حقيقية وأشخاص اصطناعيون." },
-      hold: 7000,
-      run: async () => {
+      caption: {
+        en: `A digital twin of central Sharjah: real streets and buildings. Each square shows how many people live there — about ${CITY_K}k, estimated from building size. The drill follows 120 synthetic people so every decision can be opened.`,
+        ar: `توأم رقمي لوسط الشارقة: شوارع ومبانٍ حقيقية. يُظهر كل مربع عدد من يسكنه — نحو ${CITY_K} ألفًا، تقديرًا من حجم المباني. يتابع التمرين 120 شخصًا اصطناعيًا ليمكن فتح كل قرار.`,
+      },
+      hold: 4000,
+      run: async ({ wait }) => {
         if ((await fresh()).incident.state !== "draft") await opsRef.current.demo("reset");
         ui.setFinale(false);
         ui.closePhones();
         ui.setCopilotOpen(false);
         ui.setViewAt(null);
         ui.setView("queue");
+        ui.setScale({ on: true, cellId: null });
+        ui.flyTo({ kind: "city" });
+        await wait(5000);
         ui.flyTo({ kind: "overview" });
       },
     },
@@ -282,7 +293,10 @@ export function Presentation() {
       id: "return",
       clock: "02:10",
       title: { en: "The picture updates", ar: "الصورة تتحدّث" },
-      caption: { en: "Responses flow back in near real time: metrics, map columns and the priority queue all change from stored records.", ar: "تعود الردود بشكل شبه فوري: تتغير المؤشرات وأعمدة الخريطة وقائمة الأولوية من السجلات المخزنة." },
+      caption: {
+        en: `Responses flow back in near real time: metrics, map columns and the priority queue change from stored records — and "At real scale" projects them onto the ${ZONE_N} people who live in the zone, square by square.`,
+        ar: `تعود الردود بشكل شبه فوري: تتغير المؤشرات وأعمدة الخريطة وقائمة الأولوية من السجلات المخزنة — ويُسقطها قسم «على نطاق الواقع» على ${ZONE_N} ساكن في المنطقة، مربعًا مربعًا.`,
+      },
       hold: 10000,
       run: async () => {
         ui.closePhones();
@@ -385,7 +399,10 @@ export function Presentation() {
       id: "final",
       clock: "03:35",
       title: { en: "Every response changes the picture", ar: "كل رد يغيّر الصورة" },
-      caption: { en: "AMAN 360 — from a warning to the right next step.", ar: "أمان 360 — من التحذير إلى الخطوة الصحيحة التالية." },
+      caption: {
+        en: `AMAN 360 — from a warning to the right next step: for 120 drill people today, for the ${ZONE_N} people who live in this zone tomorrow.`,
+        ar: `أمان 360 — من التحذير إلى الخطوة الصحيحة التالية: لـ120 شخصًا في التمرين اليوم، ولـ${ZONE_N} ساكن في هذه المنطقة غدًا.`,
+      },
       hold: 600000,
       run: async () => {
         ui.setSignals({ dataset: "scenario", postId: null, hotspotId: null });

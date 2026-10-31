@@ -6,6 +6,7 @@ import { SAFETY_POLICY } from "@/scenario/policy";
 import { INCIDENT_ID, SCENARIO_LABEL } from "@/scenario/scenario";
 import { getMeta } from "../db";
 import { networkSummary } from "./network";
+import { cityScale } from "./scale";
 import { currentVersion } from "../bus";
 import { providerStatus } from "../comms/providers";
 import * as store from "../store";
@@ -177,6 +178,11 @@ export function getOpsState(atIso?: string | null) {
   const clusters = computeClusters(INCIDENT_ID, statuses, { assessed });
 
   const recipients = new Map(store.recipients.all().map((r) => [r.id, r]));
+  const msgByRecipient = new Map(store.messages.forIncident(INCIDENT_ID).map((m) => [m.recipientId, m]));
+  const scale = cityScale([...recipients.values()], (r) => {
+    const m = msgByRecipient.get(r.id);
+    return assessed && m ? (statuses.get(m.id) ?? m.state) : null;
+  });
   const cases = store.cases.forIncident(INCIDENT_ID).map((c) => {
     const r = recipients.get(c.recipientId);
     return { ...c, recipient: r ? { id: r.id, displayName: r.displayName, language: r.language, areaLabel: r.areaLabel, vulnerability: r.vulnerability, channel: r.channel } : null };
@@ -234,6 +240,7 @@ export function getOpsState(atIso?: string | null) {
     assessment,
     metrics: metricValues,
     clusters,
+    scale,
     personas,
     cases,
     reviews: store.reviews.forIncident(INCIDENT_ID),

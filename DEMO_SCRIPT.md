@@ -33,6 +33,12 @@ The challenge gives each team 15 minutes: about 10 to present, 5 for the judges'
     the 12–20 Oct 2026 storm, Claude watched the videos, hotspots at Mleiha, Al Madam, Al Dhaid. Open a
     post and press **Play original** to show the real video.
 
+**If a judge asks "why only three or four people?"** — "Those are examples you can open. Look at the
+squares: about 18,600 people live in this zone and about 890,000 in the area on the map, estimated from
+the buildings. The computer applies the same rule to all of them; the operator approves once and then
+only sees the squares and the people who need a human — here, the three squares to check first and
+more than a thousand projected help requests, which is exactly why Claude orders the queue."
+
 **Live extras for Q&A** (by hand): type *"Water is coming into our flat and my grandmother cannot
 walk"* on Priya's English phone — the keyword rule says P2, Claude raises it to P1. On Ramesh's SMS
 phone (Devices → Ramesh K.) press **2**, then type *"पानी घर में आ गया है, मेरी माँ चल नहीं सकती"* —

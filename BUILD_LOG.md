@@ -99,12 +99,19 @@ A concise record of what was built, tested and verified — kept so work can res
       triage never re-reading late details; escalation-topic questions still sent to the model; the
       no-AI keyword fallback only knowing English and Arabic; triage log showing code words.
 
+16. **City scale (2026-10-31)** — residents per 250 m square estimated from 29,145 OSM buildings
+    (≈ 891k in the map area, ≈ 18.6k in the zone); zone squares clipped to the zone so the warning area
+    never looks bigger than it is; live projection of drill replies; "At real scale" card with squares
+    to check first; legend toggle; Presentation opens on the city view; copilot snapshot includes the
+    estimates. Found and fixed: a dev-server reload loop (≈ every 150 ms) caused by stale production
+    build output in `.next` — clearing `.next` fixed it.
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` | 264 / 264 passed (incl. 132 red-team cases, gazetteer/hotspot/rumour logic, triage rule, SMS parser and mesh routing) |
+| `npm test` | 270 / 270 passed (incl. 132 red-team cases, gazetteer/hotspot/rumour logic, triage rule, SMS parser, mesh routing, city-scale estimates) |
 | `npm run build` | succeeds |
 | `npm run test:e2e` against production build | 2 / 2 passed, also with live Claude enabled (demo loop 1.5 min, presentation 3.5 min) |
 | `npm run evaluate` | results recorded in EVALUATION.md |

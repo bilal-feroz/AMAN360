@@ -56,6 +56,9 @@ interface UiState {
   closePhones: () => void;
   setPresenting: (p: boolean) => void;
   setHover: (h: UiState["hoverInfo"]) => void;
+  /** City scale: estimated residents per 250 m square on the map, and the selected square. */
+  scale: { on: boolean; cellId: string | null };
+  setScale: (p: Partial<UiState["scale"]>) => void;
 }
 
 const persisted = <T,>(key: string, fallback: T): T => {
@@ -125,6 +128,8 @@ export const useUi = create<UiState>((set) => ({
   closePhones: () => set((s) => ({ phone: { ...s.phone, open: false } })),
   setPresenting: (presenting) => set({ presenting }),
   setHover: (hoverInfo) => set({ hoverInfo }),
+  scale: { on: true, cellId: null },
+  setScale: (p) => set((s) => ({ scale: { ...s.scale, ...p } })),
 }));
 
 /** Restores per-viewer preferences after hydration. */

@@ -131,6 +131,15 @@ Bengali and Tagalog urgent texts to P1.
 with towers down before sending: 84 app users reached over the mesh (1–2 radio hops), 22 SMS-only
 phones waited; after service returned, 120 / 120 delivered.
 
+**City scale:** residents per 250 m square = Σ building footprint × floors (height ÷ 3.3 m) × 70 %
+residential ÷ 40 m² per resident, over 29,145 OpenStreetMap buildings ≥ 30 m² (footprints over
+2,500 m² with one or two floors count at 5 %: warehouses, malls, schools). Result: ≈ 891,000 residents
+in the 7 × 7 km map area and ≈ 18,600 in the 0.48 km² warning zone. Caveats: about 95 % of OSM
+buildings in the area have no height tag (8 m default), so towers without tags are undercounted and
+low-rise commercial blocks overcounted; the figures are planning estimates to be replaced by census
+or anonymous telecom area counts. Projections apply the replies of the nearest ≥ 6 in-zone drill
+people to each square (unit-tested: parts always add up to the residents).
+
 **Found and fixed in the citizen-flow audit:** a failed *I need help* send showed no error at all
 (now an error notice, or — when offline — the reply is saved on the phone and resent once with the
 same idempotency key); after *I need help* there was no way to add details (now *Add more details*;

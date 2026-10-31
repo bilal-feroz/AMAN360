@@ -124,6 +124,15 @@ cell outage (drill) ──► deliver(): smartphone in zone → nearest relay (�
                                    SMS-only phone   → queued, retried until service returns
 ```
 
+## City scale
+
+`scripts/build-city-scale.mts` turns the city pack's buildings into `src/scenario/city-scale.json`
+(691 squares of 250 m, residents per square, the clipped part of each square inside the warning zone).
+`services/scale.ts` projects the drill's live replies onto the zone squares on every state read
+(nearest ≥ 6 in-zone drill people per square), so the projection follows time travel and every new
+reply. The map draws the squares under the zone (MapLibre fill layers) and fades them out at street
+level, where the drill's own columns take over.
+
 ## Derived state & time travel
 
 `state.ts` never stores counters. Metrics are computed from records (`messages`, `responses`,

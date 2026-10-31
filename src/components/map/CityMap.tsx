@@ -16,6 +16,7 @@ import type { CameraTarget } from "@/lib/ui-store";
 import type { SignalsView } from "@/lib/use-signals";
 import { addSignalLayers, clearSignals, prefetchReplay, setReplayMode, updateSignals } from "./signals-layer";
 import { addMeshLayers, updateMesh } from "./mesh-layer";
+import { addScaleLayers, scaleAt, syncScaleLabels, updateScale } from "./scale-layer";
 
 export type IntroStage = "earth" | "approach" | "city" | "data" | "done";
 
@@ -40,6 +41,10 @@ interface Props {
   selectedHotspotId?: string | null;
   onSelectPost?: (id: string) => void;
   onSelectHotspot?: (id: string) => void;
+  /** City scale: estimated residents per 250 m square (on by default). */
+  showScale?: boolean;
+  selectedScaleId?: string | null;
+  onSelectScale?: (id: string) => void;
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -173,6 +178,7 @@ export default function CityMap(props: Props) {
       map.addLayer(layer, "road-label");
       addSignalLayers(map);
       addMeshLayers(map);
+      addScaleLayers(map);
       // Warm the tile cache for the real-world replay (imagery + terrain) once the city is up.
       const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 4000));
       idle(() => prefetchReplay(window.location.origin));
@@ -261,8 +267,21 @@ export default function CityMap(props: Props) {
         best = c;
       }
     }
-    if (!best) return propsRef.current.onHover(null);
     const lang = propsRef.current.lang;
+    if (!best) {
+      // No drill people under the cursor: describe the city square instead.
+      const sq = propsRef.current.showScale !== false && propsRef.current.signals?.dataset !== "replay" ? scaleAt(map, p) : null;
+      if (!sq || sq.residents <= 0) return propsRef.current.onHover(null);
+      return propsRef.current.onHover({
+        x: p.x,
+        y: p.y,
+        title: lang === "ar" ? `≈ ${sq.residents.toLocaleString("en")} ساكن في هذا المربع` : `≈ ${sq.residents.toLocaleString("en")} residents in this square`,
+        lines: [
+          ...(sq.zone > 0 ? [lang === "ar" ? `≈ ${sq.zone.toLocaleString("en")} داخل منطقة التحذير` : `≈ ${sq.zone.toLocaleString("en")} inside the warning zone`] : []),
+          lang === "ar" ? "تقدير من حجم المباني · مربع 250 م" : "Estimate from building size · 250 m square",
+        ],
+      });
+    }
     const labels: Record<string, [string, string]> = {
       acknowledged: ["Safe", "بخير"],
       assistance_requested: ["Assistance requested", "طلب مساعدة"],
@@ -286,7 +305,7 @@ export default function CityMap(props: Props) {
     propsRef.current.onHover({
       x: p.x,
       y: p.y,
-      title: lang === "ar" ? `${best.count} مستلمين اصطناعيين (خلية ≈120 م)` : `${best.count} synthetic recipients (≈120 m cell)`,
+      title: lang === "ar" ? `${best.count} من أشخاص التمرين (سجلات اصطناعية)` : `${best.count} drill ${best.count === 1 ? "person" : "people"} (synthetic records)`,
       lines,
     });
   }
@@ -304,6 +323,17 @@ export default function CityMap(props: Props) {
     syncLandmarks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.lang, ready]);
+
+  // ---------------------------------------------------------------- city scale
+  const scaleVisible = props.showScale !== false && props.signals?.dataset !== "replay";
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const scale = props.state?.scale ?? null;
+    updateScale(map, scale, scaleVisible, props.selectedScaleId ?? null);
+    syncScaleLabels(map, scale, scaleVisible, markers.current, (id) => propsRef.current.onSelectScale?.(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.state?.scale, scaleVisible, props.selectedScaleId, ready]);
 
   // ---------------------------------------------------------------- mesh relay drill
   const network = props.state?.network;

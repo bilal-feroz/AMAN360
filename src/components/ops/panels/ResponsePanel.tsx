@@ -11,6 +11,7 @@ import { TriageTags } from "./TriageCard";
 import { PanelHeader } from "./PanelHeader";
 import { Bar, Empty } from "./ImpactPanel";
 import { ReachCard } from "./ReachCard";
+import { ScaleCard } from "./ScaleCard";
 
 export function ResponsePanel() {
   const { state, t, lang, reviewAction, canAct } = useOps();
@@ -88,6 +89,7 @@ export function ResponsePanel() {
         </p>
       </div>
 
+      <ScaleCard />
       <ReachCard />
 
       <Section

@@ -6,6 +6,7 @@ import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
 import { ACTION_LABEL } from "../workflow";
 import { ActionBar, PanelHeader } from "./PanelHeader";
+import { ScaleLine } from "./ScaleCard";
 
 const CASE_ORDER = ["mariam", "daniel", "omar"] as const;
 
@@ -68,6 +69,7 @@ export function ImpactPanel() {
         <p className="mt-3 rounded-xl bg-surface-2 px-3.5 py-2.5 text-[13px] text-ink">
           <b className="tnum font-semibold">{s.send}</b> {lang === "ar" ? "شخصًا سيتلقون رسالة معتمدة" : "people will receive an approved message"}
         </p>
+        <ScaleLine />
       </div>
 
       <Section title={t("threeCases")}>

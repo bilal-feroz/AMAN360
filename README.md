@@ -75,6 +75,12 @@ Built for the **Universities Challenge 2026, Sharjah**.
     Wi-Fi and alerts hop to a gateway with a satellite uplink; SMS-only phones show *No service* and are
     retried automatically when service returns. The citizen app also keeps a reply that could not be
     sent and resends it once (idempotent) when the connection is back.
+15. **City scale — thousands of people, not three.** The map shades every 250 m square of central
+    Sharjah by its estimated residents (≈ 890,000 in the map area, ≈ 18,600 in the warning zone),
+    estimated from the size and height of 29,000 OpenStreetMap buildings. Once alerts go out, the
+    drill's replies are projected onto the zone square by square (after the full drill preset: *≈ 12,500
+    safe · ≈ 1,200 need help · ≈ 4,200 no reply yet*) and the operator gets the **squares to check first**. The 120 drill
+    people stay as real records anyone can open; the city numbers are labelled as estimates.
 
 The key boundary: **AI communicates safety decisions. AI does not invent safety decisions.**
 
@@ -190,7 +196,7 @@ More in [docs/screenshots](docs/screenshots).
 - **Social intelligence:** Oriane video search (real posts), Claude vision over video frames,
   OpenStreetMap gazetteer (1,600+ places, 230+ roads) with deterministic fuzzy matching, MapLibre
   raster-DEM terrain + hillshade for the 3D replay
-- **Vitest** (264 tests) and **Playwright** (full demo loop + Presentation Mode)
+- **Vitest** (270 tests) and **Playwright** (full demo loop + Presentation Mode)
 
 ## Data & attribution
 

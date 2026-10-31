@@ -198,6 +198,9 @@ export function generateRecipients(opts: GenerateOptions): Recipient[] {
 
   assignPersonas(recipients, inside);
   assignSimulatedResponses(recipients, r);
+  // Ramesh: the SMS-only basic phone in the demo (reads Hindi). A unique name is the only change.
+  const sms = recipients.find((x) => x.id === "RES-053");
+  if (sms?.channel === "sms_sim") sms.displayName = "Ramesh K.";
   return recipients;
 }
 

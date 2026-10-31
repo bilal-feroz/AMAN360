@@ -13,6 +13,7 @@ import { ACTION_LABEL } from "../workflow";
 import { ActionBar, PanelHeader } from "./PanelHeader";
 import { Empty } from "./ImpactPanel";
 import { RedTeamCard } from "./RedTeamCard";
+import { SmsPreview } from "./SmsPreview";
 
 export function highlightFacts(text: string, facts: string[]): ReactNode {
   const present = facts.filter((f) => f && text.includes(f));
@@ -57,8 +58,20 @@ export function GuidancePanel() {
       <div>
         <PanelHeader title={t("messages")} />
         <Empty
-          text={lang === "ar" ? "لم تُعدّ الرسالة بعد." : "No message prepared yet."}
-          action={<Button onClick={() => setView("impact")}>{lang === "ar" ? "عرض المتأثرين" : "See who is affected"}</Button>}
+          text={
+            state.assessment
+              ? lang === "ar"
+                ? "لم تُعدّ الرسائل بعد. جهّزها من خطوة الأثر."
+                : "No messages prepared yet. Prepare them from the Impact step."
+              : lang === "ar"
+                ? "فعّل الحادثة أولًا. يجهّز أمان بعدها رسائل من قوالب معتمدة لتراجعها وتوافق عليها."
+                : "Activate the incident first. AMAN then drafts messages from approved templates for you to review and approve."
+          }
+          action={
+            <Button onClick={() => setView(state.assessment ? "impact" : "queue")}>
+              {state.assessment ? (lang === "ar" ? "عرض المتأثرين" : "See who is affected") : lang === "ar" ? "الذهاب إلى التنبيه" : "Go to Alert"}
+            </Button>
+          }
         />
       </div>
     );
@@ -165,6 +178,7 @@ export function GuidancePanel() {
               : "AI may only simplify wording. The action, steps, zone, closure and time are locked — any change is rejected and the approved template is used."}
           </p>
         </Disclosure>
+        <SmsPreview actionId={current} />
         <RedTeamCard actionId={current} variant={variant} lang={lang} />
       </div>
 

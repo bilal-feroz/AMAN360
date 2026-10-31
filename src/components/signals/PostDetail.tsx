@@ -11,6 +11,7 @@ import { useOps } from "@/components/ops/context";
 import { ApiError } from "@/lib/api";
 import { CategoryChip, DEPTH, embedUrl, fmtPostTime, L, PLATFORM } from "./meta";
 import { SectionTitle } from "./SignalsPanel";
+import { LANGUAGE_NAMES } from "@/domain/language";
 
 const mmss = (t: number) => `${Math.floor(t / 60)}:${String(Math.round(t % 60)).padStart(2, "0")}`;
 
@@ -42,6 +43,7 @@ export function PostDetail({ item, view, onBack }: { item: SignalItemView; view:
       <Media item={item} />
 
       <div className="mx-5 mt-3">
+        <LanguageLine written={p.language} spoken={p.speechLanguage ?? null} />
         <p className="whitespace-pre-line text-[13px] leading-relaxed text-ink" dir="auto">{p.text}</p>
         {p.transcript && (
           <p className="mt-2 text-[12px] leading-relaxed text-ink-2" dir="auto">
@@ -56,6 +58,22 @@ export function PostDetail({ item, view, onBack }: { item: SignalItemView; view:
       <Where item={item} view={view} />
       <Details item={item} />
     </div>
+  );
+}
+
+/** Which language the post was written and spoken in, so operators see who is posting. */
+function LanguageLine({ written, spoken }: { written: string | null; spoken: string | null }) {
+  const { lang } = useOps();
+  const name = (c: string | null) => (c && LANGUAGE_NAMES[c] ? L(lang, LANGUAGE_NAMES[c].en, LANGUAGE_NAMES[c].native) : null);
+  const w = name(written);
+  const sp = name(spoken);
+  if (!w && !sp) return null;
+  return (
+    <p className="mb-1.5 text-[11px] text-muted">
+      {w && L(lang, `Written in ${w}`, `لغة الكتابة: ${w}`)}
+      {w && sp && " · "}
+      {sp && L(lang, `spoken in ${sp}`, `لغة الكلام: ${sp}`)}
+    </p>
   );
 }
 

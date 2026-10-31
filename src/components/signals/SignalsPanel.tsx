@@ -9,6 +9,7 @@ import { signalAction, useSignalsStore, type HotspotView, type SignalItemView, t
 import { useOps } from "@/components/ops/context";
 import { CATEGORY, CategoryChip, fmtPostTime, L, n, PLATFORM, VIOLET_BTN } from "./meta";
 import { PostDetail } from "./PostDetail";
+import { LANGUAGE_NAMES } from "@/domain/language";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -72,14 +73,16 @@ export function SignalsPanel() {
 
 function Overview({ view, canAct, act }: { view: SignalsView; canAct: boolean; act: (a: "request_verification" | "issue_clarification" | "dismiss", id: string) => Promise<void> }) {
   const { lang } = useOps();
+  const [langFilter, setLangFilter] = useState<string | null>(null);
   return (
     <div className="pb-6">
       <SourceLine view={view} />
       <Funnel view={view} />
+      <Languages view={view} value={langFilter} onChange={setLangFilter} />
       {view.rumours.length > 0 && <Rumours view={view} canAct={canAct} act={act} />}
       <Hotspots view={view} canAct={canAct} act={act} />
       {view.confusion.length > 0 && <Questions view={view} />}
-      <Feed view={view} />
+      <Feed view={view} langFilter={langFilter} onClearLang={() => setLangFilter(null)} />
       <p className="mx-5 mt-5 flex items-center gap-1.5 text-[11.5px] text-muted">
         <ShieldCheck size={13} className="shrink-0 text-teal" />
         {L(lang, "A hotspot can only trigger a human verification request.", "لا يمكن للبؤرة إلا أن تطلب تحققًا بشريًا.")}
@@ -155,6 +158,41 @@ function Funnel({ view }: { view: SignalsView }) {
         ))}
       </div>
       <p className="mt-2.5 border-t border-line pt-2 text-[11px] text-muted">{extra.join(" · ")}</p>
+    </div>
+  );
+}
+
+/** The languages people posted in — tap one to read only those posts. */
+function Languages({ view, value, onChange }: { view: SignalsView; value: string | null; onChange: (code: string | null) => void }) {
+  const { lang } = useOps();
+  const rows = view.languages.filter((l) => l.relevant > 0);
+  if (rows.length < 2) return null;
+  return (
+    <div className="mx-5 mt-3">
+      <div className="mb-1.5 text-[11.5px] font-medium text-muted">
+        {L(lang, `Relevant posts came in ${rows.length} languages`, `جاءت المنشورات ذات الصلة بـ ${rows.length} لغات`)}
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {rows.map((l) => {
+          const name = LANGUAGE_NAMES[l.code];
+          const on = value === l.code;
+          return (
+            <button
+              key={l.code}
+              onClick={() => onChange(on ? null : l.code)}
+              aria-pressed={on}
+              title={name ? L(lang, name.en, name.native) : l.code}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] ring-1 transition-colors",
+                on ? "bg-violet text-white ring-violet" : "bg-surface text-ink ring-line hover:ring-violet/40",
+              )}
+            >
+              <span lang={l.code}>{name?.native ?? l.code}</span>
+              <span className={cn("tnum text-[11px]", on ? "text-white/80" : "text-muted")}>{l.relevant}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -354,7 +392,7 @@ function Questions({ view }: { view: SignalsView }) {
   );
 }
 
-function Feed({ view }: { view: SignalsView }) {
+function Feed({ view, langFilter, onClearLang }: { view: SignalsView; langFilter: string | null; onClearLang: () => void }) {
   const { lang } = useOps();
   const [tab, setTab] = useState<"kept" | "noise" | "all">("kept");
   const now = useNow(30_000);
@@ -364,10 +402,11 @@ function Feed({ view }: { view: SignalsView }) {
   const items = useMemo(() => {
     let list = view.items;
     if (hotspot) list = list.filter((i) => hotspot.postIds.includes(i.post.id));
+    if (langFilter) list = list.filter((i) => i.post.language === langFilter);
     if (tab === "kept") list = list.filter((i) => i.analysis?.relevant);
     if (tab === "noise") list = list.filter((i) => i.analysis && !i.analysis.relevant);
     return list;
-  }, [view.items, tab, hotspot]);
+  }, [view.items, tab, hotspot, langFilter]);
   const rel = view.dataset === "scenario" ? now : null;
   return (
     <section className="mt-5 px-5">
@@ -387,10 +426,19 @@ function Feed({ view }: { view: SignalsView }) {
           />
         }
       />
-      {hotspot && (
-        <button onClick={() => setSignals({ hotspotId: null })} className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-violet-soft px-2.5 py-1 text-[11.5px] font-medium text-violet-ink">
-          {L(lang, `Showing ${hotspot.label.en}`, `عرض ${hotspot.label.ar}`)} <span aria-hidden>×</span>
-        </button>
+      {(hotspot || langFilter) && (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {hotspot && (
+            <button onClick={() => setSignals({ hotspotId: null })} className="inline-flex items-center gap-1.5 rounded-full bg-violet-soft px-2.5 py-1 text-[11.5px] font-medium text-violet-ink">
+              {L(lang, `Showing ${hotspot.label.en}`, `عرض ${hotspot.label.ar}`)} <span aria-hidden>×</span>
+            </button>
+          )}
+          {langFilter && (
+            <button onClick={onClearLang} className="inline-flex items-center gap-1.5 rounded-full bg-violet-soft px-2.5 py-1 text-[11.5px] font-medium text-violet-ink">
+              {LANGUAGE_NAMES[langFilter] ? L(lang, LANGUAGE_NAMES[langFilter].en, LANGUAGE_NAMES[langFilter].native) : langFilter} <span aria-hidden>×</span>
+            </button>
+          )}
+        </div>
       )}
       <ul className="-mx-2.5 space-y-0.5">
         {items.slice(0, 60).map((it) => (
@@ -426,6 +474,9 @@ function PostRow({ it, rel, onOpen }: { it: SignalItemView; rel: number | null; 
             <span>{PLATFORM[it.post.platform]?.en ?? it.post.platform}</span>
             <span>·</span>
             <span className="tnum">{fmtPostTime(it.post.publishedAt, lang, rel)}</span>
+            {it.post.language && it.post.language !== "en" && it.post.language !== "ar" && LANGUAGE_NAMES[it.post.language] && (
+              <span className="rounded bg-surface-2 px-1 text-[9.5px] font-semibold text-ink-2">{L(lang, LANGUAGE_NAMES[it.post.language].en, LANGUAGE_NAMES[it.post.language].native)}</span>
+            )}
             {it.liveAt && <span className="rounded bg-violet-soft px-1 text-[9.5px] font-semibold text-violet-ink">{L(lang, "NEW", "جديد")}</span>}
           </div>
           <p className="mt-0.5 line-clamp-2 text-[12.5px] leading-snug text-ink" dir="auto">{it.post.text || "—"}</p>

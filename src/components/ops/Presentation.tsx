@@ -102,6 +102,16 @@ export function Presentation() {
     await done;
   };
 
+  /** Types a message on the live SMS phone (a basic phone has no app: this is its keypad). */
+  const sendSms = async (recipientId: string, text: string) => {
+    for (let i = 0; i < 40; i++) {
+      const frame = document.querySelector<HTMLIFrameElement>(`iframe[data-recipient="${recipientId}"]`);
+      if (frame?.contentWindow) return frame.contentWindow.postMessage({ type: "aman:sms-send", text }, window.location.origin);
+      await new Promise((r) => setTimeout(r, 150));
+    }
+  };
+  const setOutage = (outage: boolean) => opsRef.current.run("network", () => api("/api/ops/network", { json: { outage } }));
+
   const L = (b: Bi) => b[ops.lang];
 
   const steps: Step[] = [
@@ -241,6 +251,31 @@ export function Presentation() {
         await wait(3000);
         await tapDevice("RES-014", { kind: "help", text: "المياه دخلت إلى الطابق الأرضي، ووالدي كبير في السن ولا يستطيع صعود الدرج." });
         await wait(5000);
+      },
+    },
+    {
+      id: "nointernet",
+      clock: "02:03",
+      title: { en: "No internet? SMS. No towers? Mesh relay.", ar: "لا إنترنت؟ رسائل SMS. لا أبراج؟ مُرحِّل شبكي." },
+      caption: {
+        en: "Ramesh has a basic phone and no data. The alert reached him by SMS in Hindi; he asks a question and gets an approved answer back in Hindi. If the towers fail, smartphones join mesh relays over Wi-Fi.",
+        ar: "لدى راميش هاتف بسيط دون بيانات. وصله التنبيه برسالة SMS بالهندية؛ يسأل سؤالًا فتصله إجابة معتمدة بالهندية. وإذا تعطّلت الأبراج، تتصل الهواتف الذكية بمُرحِّلات شبكية عبر Wi-Fi.",
+      },
+      hold: 4000,
+      run: async ({ wait }) => {
+        await ensurePublished();
+        ui.openPhones(["RES-053"]);
+        await wait(4500);
+        await sendSms("RES-053", "3");
+        await wait(3500);
+        await sendSms("RES-053", "क्या मैं गाड़ी चला सकता हूँ?");
+        await wait(5500);
+        ui.closePhones();
+        ui.setView("responses");
+        ui.flyTo({ kind: "zone" });
+        await setOutage(true);
+        await wait(9000);
+        await setOutage(false);
       },
     },
     {

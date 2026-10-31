@@ -39,7 +39,7 @@ export function CasePanel() {
         eyebrow={
           <span className="flex items-center gap-1.5">
             <span className={c.priority === "P1" ? "rounded bg-coral-ink px-1 text-[10.5px] font-bold text-white" : "rounded bg-amber-soft px-1 text-[10.5px] font-bold text-amber-ink"}>{c.priority}</span>
-            {lang === "ar" ? "طلب مساعدة" : "Help request"} · <span className="tnum">{fmtTime(c.openedAt, lang, true)}</span>
+            {lang === "ar" ? "طلب مساعدة" : "Help request"}{c.recipient?.channel === "sms_sim" ? (lang === "ar" ? " عبر SMS" : " by SMS") : ""} · <span className="tnum">{fmtTime(c.openedAt, lang, true)}</span>
           </span>
         }
         title={<bdi>{c.recipient?.displayName}</bdi>}

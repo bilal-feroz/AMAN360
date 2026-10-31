@@ -23,6 +23,9 @@ The challenge gives each team 15 minutes: about 10 to present, 5 for the judges'
 5. **Communication** — bilingual guidance, Claude's plain-language rewrite, validated, approved by a human.
 6. **Try to break the AI** — "help is on the way" injected → blocked by the validator.
 7. **Citizen interaction** — Daniel is safe; Mariam asks for help. *Claude triage* orders the queue.
+7b. **No internet? SMS. No towers? Mesh relay.** — Ramesh has a basic phone: the alert arrived by SMS
+   in Hindi; he asks *"can I drive?"* and gets the approved answer in Hindi. Then the towers "go
+   down": the map shows the relay nodes, and smartphones in the zone stay reachable over Wi-Fi.
 8. **Stopping a rumour** — posts claiming the Al Wahda bridge collapsed keep spreading; an approved clarification is issued (and appears on the citizens' phones).
 9. **Ask AMAN** — the copilot builds evidence cards from records.
 10. **Explainability & follow-up** — the full decision chain for Mariam.
@@ -31,7 +34,9 @@ The challenge gives each team 15 minutes: about 10 to present, 5 for the judges'
     post and press **Play original** to show the real video.
 
 **Live extras for Q&A** (by hand): type *"Water is coming into our flat and my grandmother cannot
-walk"* on Priya's English phone — the keyword rule says P2, Claude raises it to P1. In a post, press
+walk"* on Priya's English phone — the keyword rule says P2, Claude raises it to P1. On Ramesh's SMS
+phone (Devices → Ramesh K.) press **2**, then type *"पानी घर में आ गया है, मेरी माँ चल नहीं सकती"* —
+the case appears as *Help request by SMS* with Claude's English summary. In a post, press
 **Re-run live with Claude** to show a fresh reading in a few seconds.
 
 **Judge questions about the new parts**

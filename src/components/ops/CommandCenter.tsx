@@ -360,7 +360,7 @@ function Legend() {
         ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside"],
         ["#e8ac45", lang === "ar" ? "مراجعة" : "Review"],
       ]
-    : [["#6fa3ab", lang === "ar" ? "السكان (≈120 م)" : "Population (≈120 m)"]];
+    : [["#6fa3ab", lang === "ar" ? "السكان (بيانات اصطناعية)" : "Residents (synthetic)"]];
   return (
     <ul className="absolute end-4 top-4 flex items-center gap-3 rounded-full bg-white/90 px-3 py-1.5 text-[11.5px] font-medium text-ink-2 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
       {items.map(([c, l]) => (

@@ -28,7 +28,19 @@ export interface ClarificationMatch {
 const ESCALATE_TOPICS = [
   "shelter", "rescue", "boat", "ambulance", "injur", "hospital", "medicine", "school", "water level", "reach my", "electric shock", "trapped",
   "ايواء", "مركز ايواء", "انقاذ", "اسعاف", "مصاب", "اصابه", "مستشفي", "دواء", "مدرسه", "منسوب", "ستصل", "محاصر", "عالق",
+  // SMS languages: Hindi, Urdu, Malayalam, Bengali, Tagalog (and romanised Hindi / Urdu)
+  "बचाव", "नाव", "एम्बुलेंस", "अस्पताल", "आश्रय", "दवा", "स्कूल", "फंस", "फँस", "bachav", "naav", "aspatal",
+  "ریسکیو", "کشتی", "ایمبولینس", "ہسپتال", "پناہ", "دوائی", "اسکول", "پھنس",
+  "രക്ഷാപ്രവർത്തന", "ബോട്ട്", "ആംബുലൻസ്", "ആശുപത്രി", "ക്യാമ്പ്", "മരുന്ന്", "സ്കൂൾ", "കുടുങ്ങി",
+  "উদ্ধার", "নৌকা", "অ্যাম্বুলেন্স", "হাসপাতাল", "আশ্রয়", "ওষুধ", "স্কুল", "আটকে",
+  "bangka", "ambulansya", "ospital", "evacuation", "gamot", "paaralan", "naipit",
 ];
+
+/** True when a question touches a topic only a person may answer (rescue, shelter, medical…). */
+export function isEscalationTopic(text: string): boolean {
+  const t = norm(text);
+  return ESCALATE_TOPICS.some((k) => t.includes(norm(k)));
+}
 
 export function matchClarification(text: string, actionId: string | null, predefinedId?: string | null): ClarificationMatch {
   const candidates = APPROVED_ANSWERS.filter((a) => !actionId || a.appliesTo.includes(actionId));
@@ -63,6 +75,13 @@ export interface ResponseClassification {
 const URGENT = [
   "trapped", "can't move", "cannot move", "wheelchair", "elderly", "child", "baby", "pregnant", "injur", "bleeding", "breath", "medical", "oxygen", "dialysis", "water is rising", "water entering", "water inside", "flooding inside",
   "محاصر", "عالق", "لا استطيع الحركه", "كرسي متحرك", "كبير السن", "مسن", "والدي", "والدتي", "طفل", "رضيع", "حامل", "مصاب", "نزيف", "تنفس", "اكسجين", "غسيل كلوي", "المياه ترتفع", "دخلت المياه", "المياه داخل",
+  // The no-AI fallback must also catch urgent needs written in the SMS languages.
+  "फंस", "फँस", "चल नहीं", "व्हीलचेयर", "बुजुर्ग", "बूढ़", "बच्च", "शिशु", "गर्भवती", "घायल", "खून", "सांस", "ऑक्सीजन", "डायलिसिस", "पानी घर में", "पानी अंदर", "पानी बढ़",
+  "phans", "chal nahi", "buzurg", "bachcha", "pani ghar", "pani andar",
+  "پھنس", "چل نہیں", "وہیل چیئر", "بزرگ", "بچہ", "بچے", "حاملہ", "زخمی", "خون", "سانس", "آکسیجن", "پانی گھر میں", "پانی اندر",
+  "കുടുങ്ങി", "നടക്കാൻ കഴിയില്ല", "വീൽചെയർ", "പ്രായമായ", "കുഞ്ഞ്", "കുട്ടി", "ഗർഭിണി", "പരിക്ക്", "ശ്വാസ", "ഓക്സിജൻ", "വെള്ളം കയറി",
+  "আটকে", "হাঁটতে পার", "হুইলচেয়ার", "বয়স্ক", "শিশু", "বাচ্চা", "গর্ভবতী", "আহত", "রক্ত", "শ্বাস", "অক্সিজেন", "পানি ঢুক",
+  "naipit", "hindi makalakad", "matanda", "sanggol", "buntis", "sugatan", "dugo", "hininga", "pumapasok ang tubig", "baha sa loob",
 ];
 
 /** Classifies a help request's free text into a review priority. Never decides a rescue action. */

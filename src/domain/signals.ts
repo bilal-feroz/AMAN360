@@ -36,7 +36,10 @@ export interface SignalPost {
   /** Pseudonymous author key — used only to count independent sources, never displayed. */
   author: string;
   text: string;
+  /** Caption language (ISO 639-1), falling back to the spoken language. */
   language: string | null;
+  /** Language spoken in the video, when the platform transcribed it. */
+  speechLanguage?: string | null;
   transcript: string | null;
   onScreenText: string[];
   hashtags: string[];

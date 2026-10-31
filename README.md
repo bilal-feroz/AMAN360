@@ -28,7 +28,7 @@ Built for the **Universities Challenge 2026, Sharjah**.
 4. **Communicates** the approved action in Arabic and English, including plain-language and
    audio/screen-reader variants. AI may only simplify approved wording; a deterministic validator
    blocks anything that changes the action, facts, severity, routes or contacts.
-5. **Requires operator approval**, then issues to simulated channels (in-app inbox, SMS simulator).
+5. **Requires operator approval**, then issues to simulated channels (in-app inbox, two-way SMS).
 6. **Closes the loop:** citizens tap *I am safe*, *I need help* or *I need clarification* on a
    mobile-first app. Help requests become prioritised, human-reviewed cases.
 7. **Explains every decision:** verified event → geographic match → approved rule →
@@ -47,11 +47,15 @@ Built for the **Universities Challenge 2026, Sharjah**.
    and the only thing a hotspot can trigger is a **verification request** to a human. Rumours (*"Al
    Wahda bridge collapsed"*) get an approved clarification template; public questions are matched to
    the approved-answer library.
-10. **Proof on real data — the 12–20 October 2026 storm in Sharjah.** 88 real public Instagram, TikTok
-    and YouTube posts retrieved through the **Oriane** video-search API. Claude read every post and
-    **watched 49 videos frame by frame**; 39 were rejected as noise; 39 reports were placed on the map
-    in 13 hotspots (Mleiha, Al Madam, Al Dhaid, Wadi Al Helo…), drawn over **3D satellite terrain** of
-    the Hajar mountains. Each original video plays inside AMAN through the platform's official embed.
+10. **Proof on real data — the 12–20 October 2026 storm in Sharjah.** 116 real public Instagram, TikTok
+    and YouTube posts retrieved through the **Oriane** video-search API, including searches in Hindi,
+    Urdu, Malayalam, Tamil, Bengali and Tagalog. Claude read every post and **watched 55 videos frame
+    by frame**; 61 were rejected as noise; 45 reports were placed on the map in 14 hotspots (Mleiha,
+    Al Madam, Al Dhaid, Wadi Al Helo…), drawn over **3D satellite terrain** of the Hajar mountains.
+    Relevant posts came in five languages (Arabic 32, English 17, Malayalam 3, Persian 2, Tagalog 1):
+    posts in community languages rarely name a Sharjah place, which is exactly why official alerts
+    have to reach people in their own language. Each original video plays inside AMAN through the
+    platform's official embed.
 11. **AI triage of help requests.** Claude reads each help request (any language or spelling) and names
     the needs it states. The deterministic rule always runs too and the queue takes the *higher*
     priority — **the model can raise a case to P1, never lower one**.
@@ -59,6 +63,18 @@ Built for the **Universities Challenge 2026, Sharjah**.
     edits (invented evacuation, "help is on the way", a detour, a new phone number, a changed time…) to
     the real approved message and runs them through the exact validator every Claude output must
     pass. Writing this test found — and we fixed — an Arabic medical-advice gap in the validator.
+13. **Two-way SMS for phones without internet (U-Report style).** Basic phones get the approved action
+    as an SMS in English, Arabic, Hindi, Urdu, Malayalam, Bengali or Tagalog. People reply **1** (safe),
+    **2** (help), **3** (question) — in any digit script — or in their own words. Replies are parsed by
+    code; help texts go to AI triage and the duty officer, questions get approved answers only, and
+    anything unclear goes to a person (nothing is dropped). Replies follow the language a person writes
+    in. Templates other than English and Arabic are marked as draft translations awaiting
+    native-speaker sign-off.
+14. **When the towers go down: mesh relay drill (Project OWL-style).** One switch simulates a
+    cell-tower outage in the warning zone. Smartphones join the nearest of six proposed relay nodes over
+    Wi-Fi and alerts hop to a gateway with a satellite uplink; SMS-only phones show *No service* and are
+    retried automatically when service returns. The citizen app also keeps a reply that could not be
+    sent and resends it once (idempotent) when the connection is back.
 
 The key boundary: **AI communicates safety decisions. AI does not invent safety decisions.**
 
@@ -174,7 +190,7 @@ More in [docs/screenshots](docs/screenshots).
 - **Social intelligence:** Oriane video search (real posts), Claude vision over video frames,
   OpenStreetMap gazetteer (1,600+ places, 230+ roads) with deterministic fuzzy matching, MapLibre
   raster-DEM terrain + hillshade for the 3D replay
-- **Vitest** (247 tests) and **Playwright** (full demo loop + Presentation Mode)
+- **Vitest** (264 tests) and **Playwright** (full demo loop + Presentation Mode)
 
 ## Data & attribution
 

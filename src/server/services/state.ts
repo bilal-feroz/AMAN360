@@ -5,6 +5,7 @@ import { checkIncidentGate } from "@/domain/safety-engine";
 import { SAFETY_POLICY } from "@/scenario/policy";
 import { INCIDENT_ID, SCENARIO_LABEL } from "@/scenario/scenario";
 import { getMeta } from "../db";
+import { networkSummary } from "./network";
 import { currentVersion } from "../bus";
 import { providerStatus } from "../comms/providers";
 import * as store from "../store";
@@ -178,7 +179,7 @@ export function getOpsState(atIso?: string | null) {
   const recipients = new Map(store.recipients.all().map((r) => [r.id, r]));
   const cases = store.cases.forIncident(INCIDENT_ID).map((c) => {
     const r = recipients.get(c.recipientId);
-    return { ...c, recipient: r ? { id: r.id, displayName: r.displayName, language: r.language, areaLabel: r.areaLabel, vulnerability: r.vulnerability } : null };
+    return { ...c, recipient: r ? { id: r.id, displayName: r.displayName, language: r.language, areaLabel: r.areaLabel, vulnerability: r.vulnerability, channel: r.channel } : null };
   });
   const personas = [...recipients.values()]
     .filter((r) => r.persona || r.id === "RES-022")
@@ -221,6 +222,7 @@ export function getOpsState(atIso?: string | null) {
     viewAt: atIso ?? null,
     signals,
     ai,
+    network: networkSummary(),
     scenario: { label: SCENARIO_LABEL, resetAt: getMeta("reset_at"), simSpeed: Number(getMeta("sim_speed") ?? 1) },
     provider: providerStatus(),
     policy: { version: SAFETY_POLICY.version, name: SAFETY_POLICY.name, status: SAFETY_POLICY.status, expiresAt: SAFETY_POLICY.expiresAt, rules: SAFETY_POLICY.rules },

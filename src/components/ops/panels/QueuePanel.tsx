@@ -92,9 +92,16 @@ export function QueuePanel() {
 
       <ActionBar>
         {!assessed && !blocked && (
-          <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={busy === "activate"} disabled={!canAct} icon={<CloudRain size={17} />}>
-            {busy === "activate" ? t("activating") : t("activate")}
-          </Button>
+          <>
+            <p className="mb-2.5 text-center text-[12px] leading-snug text-muted">
+              {lang === "ar"
+                ? "يتحقق أمان من المصدر، ويحدّد المتأثرين، ويجهّز رسائل لموافقتك. لا يُرسل شيء قبل موافقتك."
+                : "AMAN checks the source, finds who is affected and drafts messages for you to approve. Nothing is sent until you approve."}
+            </p>
+            <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={busy === "activate"} disabled={!canAct} icon={<CloudRain size={17} />}>
+              {busy === "activate" ? t("activating") : t("activate")}
+            </Button>
+          </>
         )}
         {assessed && (
           <Button tone="primary" size="lg" className="w-full" onClick={() => setView("impact")} icon={<ArrowRight size={16} className="rtl:rotate-180" />}>

@@ -92,13 +92,14 @@ smoke test, not a benchmark.
 | Metric | Result |
 |---|---|
 | Unique public posts retrieved | 88 (Instagram, TikTok, YouTube) |
-| Read by Claude (caption + speech + on-screen text) | 88 / 88 |
-| Kept as relevant | 49 |
-| Rejected as noise | 39 — e.g. "Savings Storm" retail sale, footballer Ismail *Matar*, TV show *Madam*, Rain Room attraction, coastal flooding in California, *Abu Hail* (a place, not hail) |
-| Videos watched frame by frame (≤ 3 frames each) | 49 |
-| Relevant reports placed on the map | 39 (town- or road-level; emirate/country mentions never pinned) |
-| Hotspots / corroborated by ≥ 2 independent sources | 13 / 4 (Mleiha, Al Madam, Al Dhaid, Wadi Al Helo) |
-| Model cost to build the dataset | ≈ $2.74 (54 calls; recorded, so demo runs cost nothing) |
+| Read by Claude (caption + speech + on-screen text) | 116 / 116 |
+| Kept as relevant | 55 |
+| Rejected as noise | 61 — e.g. "Savings Storm" retail sale, footballer Ismail *Matar*, TV show *Madam*, Rain Room attraction, coastal flooding in California, *Abu Hail* (a place, not hail) |
+| Videos watched frame by frame (≤ 3 frames each) | 55 |
+| Relevant reports placed on the map | 45 (town- or road-level; emirate/country mentions never pinned) |
+| Hotspots / corroborated by ≥ 2 independent sources | 14 / 4 (Mleiha, Al Madam, Al Dhaid, Wadi Al Helo) |
+| Languages (all posts / relevant) | 10 / 5 — relevant: Arabic 32, English 17, Malayalam 3, Persian 2, Tagalog 1. Language is taken from the caption's script (platform tags were wrong for short or romanised text) |
+| Model cost | ≈ $3.9 for all recorded AI work during the build (dataset, triage cache, drill readings); recorded, so demo runs cost nothing |
 
 **Training scenario** (40 synthetic posts in 7 languages, written for the drill): 35 relevant,
 5 noise, 2 old reposts flagged, 2 rumour groups (6 posts claiming an Al Wahda bridge collapse; 2 a
@@ -115,6 +116,27 @@ grandmother cannot walk"*: rule P2, Claude P1 → queue P1).
 
 **Red-team suite:** 11 attacks × 2 actions × 2 languages × 3 variants = 132 unsafe candidates,
 132 blocked after the Arabic medical-advice fix.
+
+**Two-way SMS** (`tests/unit/sms.test.ts`, 17 tests): numbered replies in five digit scripts
+(Latin, Arabic-Indic, Urdu/Persian, Devanagari, Bengali, Malayalam); help and safe words in seven
+languages; *"not safe"* in five languages becomes a help request; *"12 people trapped"* and *"2nd
+floor"* are not read as menu choices; rescue / boat / ambulance questions are never auto-answered,
+even when a road is mentioned; every template keeps facts locked and offers 999. Segment counts:
+English alert 2 SMS (GSM-7), Hindi 4 SMS (Unicode). Checked end to end through the API: a Hindi
+conversation (menu → question answered in Hindi → help → details), language switching by command or
+by writing in another script, and the no-AI keyword fallback raising Hindi, Urdu, Malayalam,
+Bengali and Tagalog urgent texts to P1.
+
+**Mesh relay drill:** all 107 in-zone residents are within 260 m of a relay (unit-tested). Drill run
+with towers down before sending: 84 app users reached over the mesh (1–2 radio hops), 22 SMS-only
+phones waited; after service returned, 120 / 120 delivered.
+
+**Found and fixed in the citizen-flow audit:** a failed *I need help* send showed no error at all
+(now an error notice, or — when offline — the reply is saved on the phone and resent once with the
+same idempotency key); after *I need help* there was no way to add details (now *Add more details*;
+the case summary is replaced and Claude triage re-reads it — tested: no-details P2 → details →
+P1 *water entering, mobility*); in-app questions on rescue / shelter / medical topics were still
+passed to the model to pick an answer (now always sent to a person).
 
 ## Caveats
 

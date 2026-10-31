@@ -23,7 +23,8 @@ describe what a responsible path to real use would require.
   templates; scenario library expanded (sandstorm, extreme heat, fog, coastal flooding, chemical
   release) with rule coverage tests.
 - **Language fidelity:** qualified translators and emergency-terminology experts review all Arabic
-  and English wording; add priority community languages (e.g. Urdu, Hindi, Tagalog, Bengali)
+  and English wording; SMS templates are already drafted in Hindi, Urdu, Malayalam, Bengali and
+  Tagalog and need native-speaker sign-off; then extend the in-app guidance to the same languages
   through the same approved-template process.
 - **Accessibility:** testing with screen-reader users, people with low vision, cognitive
   disabilities and limited literacy; WCAG 2.2 AA audit; sign-language video variants considered.

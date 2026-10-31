@@ -15,6 +15,7 @@ import scenarioGeometry from "@/scenario/geometry.json";
 import type { CameraTarget } from "@/lib/ui-store";
 import type { SignalsView } from "@/lib/use-signals";
 import { addSignalLayers, clearSignals, prefetchReplay, setReplayMode, updateSignals } from "./signals-layer";
+import { addMeshLayers, updateMesh } from "./mesh-layer";
 
 export type IntroStage = "earth" | "approach" | "city" | "data" | "done";
 
@@ -171,6 +172,7 @@ export default function CityMap(props: Props) {
       addScenarioLayers(map);
       map.addLayer(layer, "road-label");
       addSignalLayers(map);
+      addMeshLayers(map);
       // Warm the tile cache for the real-world replay (imagery + terrain) once the city is up.
       const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 4000));
       idle(() => prefetchReplay(window.location.origin));
@@ -302,6 +304,15 @@ export default function CityMap(props: Props) {
     syncLandmarks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.lang, ready]);
+
+  // ---------------------------------------------------------------- mesh relay drill
+  const network = props.state?.network;
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    updateMesh(map, network ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [network?.outage, ready]);
 
   // ---------------------------------------------------------------- quality
   useEffect(() => {

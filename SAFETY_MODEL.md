@@ -98,6 +98,18 @@ two**: the model can raise a case to P1 and can never lower one (unit-tested). T
 queue only — it never decides a response and is never shown to the citizen. Without a model, the rule
 result stands and the UI says "Keyword triage".
 
+### SMS and outage fallback (`src/domain/comms/sms.ts`, `src/domain/mesh.ts`)
+
+| Step | Who does it | Guard |
+|---|---|---|
+| Write the SMS | Code | Short approved templates per action; facts (place, closure, time) filled by code. English and Arabic follow the approved wording; Hindi, Urdu, Malayalam, Bengali and Tagalog are marked *draft — native-speaker sign-off needed* in the UI |
+| Read a reply | Code | Deterministic: 1 / 2 / 3 in any digit script, then keywords per language. *"Not safe"* counts as help. Unclear short replies get the menu again; longer ones go to a person — never dropped |
+| Answer a question | Code | Approved answers only. Rescue, shelter, boat, ambulance, hospital and medical questions are never auto-answered — not by keywords, not by the model |
+| Read a help text | Claude + rule | Same triage as the app: the model can raise a case, never lower one. Without a model, the keyword rule now covers urgent words in all SMS languages |
+| Tower outage | Simulation | Operator switch, off by default, labelled as a drill. Relay sites are proposed positions; ranges are planning assumptions |
+
+Every reply says this is not an emergency call and gives 999. No reply ever says help is coming.
+
 ### Red-team stress test (`src/domain/comms/redteam.ts`)
 
 Eleven typical unsafe model edits — invented evacuation, "help is on the way", a detour, a new phone

@@ -3,6 +3,8 @@ import { getMeta } from "../db";
 import { audit, touch } from "../bus";
 import * as store from "../store";
 import { submitResponse } from "./citizen";
+import { meshDetail, networkFor } from "./network";
+import { logAlertSms } from "./sms";
 
 /**
  * Deterministic delivery & response simulator. Scheduled items live in SQLite (sim_schedule), so
@@ -24,7 +26,7 @@ export async function processDue(now = Date.now()): Promise<number> {
         else if (item.kind === "sim_response") await simResponse(item.payload as { messageId: string }, item.dueAt);
         else if (item.kind === "flag_no_response") flagNoResponse(item.payload as { incidentId: string });
         else if (item.kind === "signal_verify") (await import("../signals/service")).completeVerification(item.payload as { dataset: "scenario"; hotspotId: string });
-        else if (item.kind === "case_triage") await (await import("./triage")).triageCase(item.payload as { caseId: string });
+        else if (item.kind === "case_triage") await (await import("./triage")).triageCase(item.payload as { caseId: string; again?: boolean });
       } catch (e) {
         console.warn(`[sim] ${item.kind} failed:`, (e as Error).message);
       }
@@ -55,11 +57,23 @@ function deliver({ messageId, attempt }: { messageId: string; attempt: number },
     store.schedule.add(dueAt + Math.round(3000 / speed), "deliver", { messageId, attempt: attempt + 1 });
     return;
   }
+  // Cell-outage drill: no service in the zone. Smartphones go over the mesh relay; SMS waits.
+  const r = store.recipients.get(m.recipientId);
+  const net = r ? networkFor(r) : { status: "ok" as const, route: null };
+  if (net.status === "none") {
+    store.messages.transition(m.id, ["queued"], "queued", {}, true);
+    store.messages.recordAttempt(m.id, attempt, m.channel, "failed", at, m.channel === "sms_sim" ? "No cell service in the zone (simulated outage) — SMS waits for the network" : "No cell service and no mesh relay in range (simulated) — retrying");
+    store.schedule.add(dueAt + Math.round(8000 / speed), "deliver", { messageId, attempt: attempt + 1 });
+    return;
+  }
+  const channel = net.status === "mesh" ? "mesh_sim" : m.channel;
   store.messages.transition(m.id, ["queued"], "sent", { sent_at: at }, true);
-  store.messages.recordAttempt(m.id, attempt, m.channel, "sent", at);
-  const deliveredAt = new Date(dueAt + Math.round((350 + (Number(m.recipientId.replace(/\D/g, "")) % 7) * 120) / speed)).toISOString();
+  store.messages.recordAttempt(m.id, attempt, channel, "sent", at);
+  const hopsMs = net.route ? net.route.hops * 400 : 0;
+  const deliveredAt = new Date(dueAt + Math.round((350 + hopsMs + (Number(m.recipientId.replace(/\D/g, "")) % 7) * 120) / speed)).toISOString();
   store.messages.transition(m.id, ["sent"], "delivered", { delivered_at: deliveredAt });
-  store.messages.recordAttempt(m.id, attempt, m.channel, "delivered", deliveredAt, m.channel === "in_app" ? "In-app simulation inbox" : "SMS simulator");
+  store.messages.recordAttempt(m.id, attempt, channel, "delivered", deliveredAt, net.route ? meshDetail(net.route) : m.channel === "in_app" ? "In-app simulation inbox" : "SMS simulator");
+  if (m.channel === "sms_sim") logAlertSms(m, deliveredAt);
 }
 
 async function simResponse({ messageId }: { messageId: string }, dueAt: number) {

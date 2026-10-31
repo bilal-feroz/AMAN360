@@ -114,6 +114,7 @@ export function signalsView(dataset: SignalDataset, atIso?: string | null) {
         ? { label: { en: "Real storm · 12–20 Oct 2026", ar: "عاصفة حقيقية · 12–20 أكتوبر 2026" }, window: REPLAY_META.window, source: "Oriane video search · public posts", synthetic: false, queries: REPLAY_META.queries }
         : { label: { en: "Training scenario · synthetic posts", ar: "سيناريو تدريبي · منشورات اصطناعية" }, window: null, source: "Synthetic posts written for the training scenario", synthetic: true, queries: 0 },
     funnel: funnel(all, hotspots, rumours, confusion),
+    languages: languageSummary(all),
     hotspots: hotspotView,
     rumours: rumourView,
     // Public questions are matched (deterministically) to the approved answer library, so the
@@ -131,6 +132,20 @@ export function signalsView(dataset: SignalDataset, atIso?: string | null) {
 }
 
 export type SignalsView = ReturnType<typeof signalsView>;
+
+/** Which languages people posted in (relevant posts first) — Sharjah's residents speak dozens. */
+function languageSummary(all: SignalItem[]) {
+  const by = new Map<string, { code: string; posts: number; relevant: number }>();
+  for (const it of all) {
+    if (!it.analysis) continue;
+    const code = it.post.language ?? "und";
+    const row = by.get(code) ?? { code, posts: 0, relevant: 0 };
+    row.posts++;
+    if (it.analysis.relevant) row.relevant++;
+    by.set(code, row);
+  }
+  return [...by.values()].filter((r) => r.code !== "und").sort((a, b) => b.relevant - a.relevant || b.posts - a.posts);
+}
 
 /** Compact summary for the operations state, the map and the copilot snapshot. */
 export function signalsSummary(atIso?: string | null) {

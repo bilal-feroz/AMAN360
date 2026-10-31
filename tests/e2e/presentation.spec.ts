@@ -32,6 +32,7 @@ test("presentation mode completes the guided demo on real records", async ({ bro
     "Communication",
     "Try to break the AI",
     "Citizen interaction",
+    "No internet? SMS. No towers? Mesh relay.",
     "The picture updates",
     "Stopping a rumour",
     "Ask AMAN — AI you can check",
@@ -71,6 +72,13 @@ test("presentation mode completes the guided demo on real records", async ({ bro
       await expect(page.getByRole("complementary", { name: "Ask AMAN copilot" }).getByText(/Priority cases|Who needs help first/).first()).toBeVisible({ timeout: 30_000 });
       await page.waitForTimeout(4000);
       await page.screenshot({ path: `${SHOTS}/16b-presentation-copilot.png` });
+    }
+    if (title === "No internet? SMS. No towers? Mesh relay.") {
+      await expect(page.frameLocator('iframe[data-recipient="RES-053"]').getByText(/AMAN: .*गाड़ी/).first()).toBeVisible({ timeout: 30_000 });
+      await page.screenshot({ path: `${SHOTS}/23-presentation-sms-hindi.png` });
+      await expect(page.getByRole("switch", { name: /cell towers down/ })).toHaveAttribute("aria-checked", "true", { timeout: 20_000 });
+      await page.waitForTimeout(2500);
+      await page.screenshot({ path: `${SHOTS}/24-presentation-mesh-relay.png` });
     }
     if (title === "Citizen interaction") {
       await page.waitForTimeout(16_000);

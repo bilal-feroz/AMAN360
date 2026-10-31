@@ -10,6 +10,7 @@ import { STATUS_COLOR } from "../Timeline";
 import { TriageTags } from "./TriageCard";
 import { PanelHeader } from "./PanelHeader";
 import { Bar, Empty } from "./ImpactPanel";
+import { ReachCard } from "./ReachCard";
 
 export function ResponsePanel() {
   const { state, t, lang, reviewAction, canAct } = useOps();
@@ -29,6 +30,7 @@ export function ResponsePanel() {
       <div>
         <PanelHeader title={t("responses")} />
         <Empty text={lang === "ar" ? "لم تُرسل أي تنبيهات بعد. ستظهر الردود هنا فور وصولها." : "No alerts sent yet. Responses appear here the moment they arrive."} />
+        <ReachCard />
       </div>
     );
   }
@@ -86,6 +88,8 @@ export function ResponsePanel() {
         </p>
       </div>
 
+      <ReachCard />
+
       <Section
         title={t("priorityQueue")}
         aside={
@@ -115,6 +119,7 @@ export function ResponsePanel() {
                     <div className="flex items-center gap-2">
                       <span className={cn("rounded-md px-1.5 py-[1px] text-[10.5px] font-bold", c.priority === "P1" ? "bg-coral-ink text-white" : "bg-amber-soft text-amber-ink")}>{c.priority}</span>
                       <bdi className="truncate text-[13px] font-semibold text-ink">{c.recipient?.displayName}</bdi>
+                      {c.recipient?.channel === "sms_sim" && <span className="rounded bg-surface-2 px-1 text-[10px] font-semibold text-ink-2 ring-1 ring-line">SMS</span>}
                       {c.status !== "open" && (
                         <span className="ms-auto shrink-0">
                           <CaseStatusChip status={c.status} />
@@ -124,6 +129,12 @@ export function ResponsePanel() {
                     <p className="mt-1.5 line-clamp-2 text-[12.5px] leading-snug text-ink-2" dir="auto">
                       {c.summary}
                     </p>
+                    {c.triage?.summary && c.triage.language && !c.triage.language.toLowerCase().startsWith(lang === "ar" ? "arabic" : "english") && (
+                      <p className="mt-1 line-clamp-2 text-[12px] leading-snug text-ink">
+                        <span className="me-1 font-semibold text-violet-ink">{lang === "ar" ? `Claude · من ${c.triage.language}:` : `Claude · from ${c.triage.language}:`}</span>
+                        {c.triage.summary[lang]}
+                      </p>
+                    )}
                     <div className="mt-2 flex items-center gap-2 text-[11px] text-muted">
                       <TriageTags triage={c.triage} lang={lang} />
                       <span className="tnum ms-auto shrink-0">{fmtTime(c.openedAt, lang)}</span>

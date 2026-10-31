@@ -32,6 +32,7 @@ export function resetScenario(actor = "system"): void {
     setMeta("scenario", SCENARIO_ID);
     setMeta("reset_at", now.toISOString());
     setMeta("sim_speed", "1");
+    setMeta("cell_outage", "0");
     audit(actor, "scenario.reset", "Training scenario reset to baseline (synthetic data)", { entity: SCENARIO_ID });
     audit("SIM-MET", "source.ingested", `Simulated hazard feed ${payload.ref} received — awaiting verification`, {
       entity: INCIDENT_ID,

@@ -20,10 +20,13 @@ function, and there is no distributed infrastructure to fail during a live demo.
 │   sim        scheduled delivery/response simulator (DB-backed)     │
 │   state      derived metrics, clusters, stages (time-travel)       │
 │   explain    per-recipient decision chain                          │
+│   sms        two-way SMS gateway (simulated): templates, replies   │
+│   network    cell-outage drill → mesh relay route or SMS waits     │
 │ domain/ (pure, no I/O)                                             │
 │   geo.ts            Turf.js spatial checks                         │
 │   safety-engine.ts  deterministic policy evaluation + gate         │
-│   comms/            facts · validator · classifiers                │
+│   comms/            facts · validator · classifiers · sms          │
+│   mesh.ts           relay nodes, Wi-Fi range, fewest-hop route     │
 │ comms/providers.ts  template provider | Anthropic (optional)      │
 │ copilot/            Ask AMAN: snapshot · display tools · resolver │
 │                     · rule fallback · streamed run (SSE)          │
@@ -89,7 +92,7 @@ re-fetch derived state. If the stream drops, clients poll and reconnect automati
 ## Social intelligence pipeline
 
 ```
-Oriane video search ──(9 cached queries)──► .data/oriane/raw-*.json   (gitignored, full API response)
+Oriane video search ──(12 cached queries)─► .data/oriane/raw-*.json   (gitignored, full API response)
         │ scripts/build-replay.mts — reduce: no handles/names/profile data; author → one-way hash
         ▼
 replay-posts.json ──► Stage A: Claude reads caption + speech + on-screen text (batches of 20)
@@ -109,6 +112,17 @@ and highlighted roads as MapLibre layers. The real-world replay switches the map
 imagery over a raster-DEM terrain with hillshade (Hajar mountains, 1.7× exaggeration) and hides the
 Three.js city layer; leaving the replay restores the calm city style. Imagery and terrain tiles go
 through the same allow-listed tile cache, and are prefetched once the city loads.
+
+## Reaching people without internet
+
+```
+approved action ──► in-app guidance (EN/AR, plain, audio)          /c/<token>   needs data or Wi-Fi
+               └──► SMS template (7 languages, facts by code)      /sms/<token> any phone, no data
+inbound SMS ──► parseSms(): 1/2/3 in any digit script → keywords → menu or a person
+            └──► submitResponse() — the same path as the app: cases, AI triage, approved answers
+cell outage (drill) ──► deliver(): smartphone in zone → nearest relay (≤ 260 m Wi-Fi) → hops → gateway
+                                   SMS-only phone   → queued, retried until service returns
+```
 
 ## Derived state & time travel
 

@@ -9,6 +9,8 @@ import { useOps } from "./context";
 
 export interface Device {
   id: string;
+  kind: "app" | "sms";
+  smsLang: string | null;
   displayName: string;
   language: "en" | "ar";
   mobility: string;
@@ -16,6 +18,9 @@ export interface Device {
   areaLabel: { en: string; ar: string };
   token: string;
 }
+
+/** The page a device opens: the citizen app, or the SMS thread on a basic phone. */
+export const deviceUrl = (d: Device, embed = false) => `${d.kind === "sms" ? "/sms" : "/c"}/${d.token}${embed ? "?embed=1" : ""}`;
 
 export function useDevices() {
   const [devices, setDevices] = useState<Device[]>([]);
@@ -55,19 +60,18 @@ export function PhonePreview() {
               onClick={(e) => e.stopPropagation()}
               className="flex flex-col items-center gap-3"
             >
-              <div className="relative h-[700px] w-[340px] rounded-[48px] bg-[#0d1f24] p-[11px] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] ring-1 ring-black/40">
-                <div className="absolute left-1/2 top-[18px] z-10 h-[26px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
-                <iframe
-                  title={`${d.displayName} — citizen device`}
-                  src={`/c/${d.token}?embed=1`}
-                  data-recipient={d.id}
-                  className="h-full w-full rounded-[38px] bg-bg"
-                />
-              </div>
+              {d.kind === "sms" ? (
+                <iframe title={`${d.displayName} — basic phone (SMS)`} src={deviceUrl(d, true)} data-recipient={d.id} className="h-[700px] w-[350px] bg-transparent" />
+              ) : (
+                <div className="relative h-[700px] w-[340px] rounded-[48px] bg-[#0d1f24] p-[11px] shadow-[0_40px_80px_-30px_rgb(0_0_0/0.6)] ring-1 ring-black/40">
+                  <div className="absolute left-1/2 top-[18px] z-10 h-[26px] w-[96px] -translate-x-1/2 rounded-full bg-black" />
+                  <iframe title={`${d.displayName} — citizen device`} src={deviceUrl(d, true)} data-recipient={d.id} className="h-full w-full rounded-[38px] bg-bg" />
+                </div>
+              )}
               <div className="flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-[12px] shadow">
                 <span className="font-semibold text-ink">{d.displayName}</span>
-                <span className="text-muted">· {d.language === "ar" ? "العربية" : "English"}</span>
-                <a href={`/c/${d.token}`} target="_blank" rel="noopener" className="ms-1 grid h-5 w-5 place-items-center text-teal hover:text-teal-ink" title={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"} aria-label={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"}>
+                <span className="text-muted">· {d.kind === "sms" ? (lang === "ar" ? "رسائل SMS فقط" : "SMS only") : d.language === "ar" ? "العربية" : "English"}</span>
+                <a href={deviceUrl(d)} target="_blank" rel="noopener" className="ms-1 grid h-5 w-5 place-items-center text-teal hover:text-teal-ink" title={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"} aria-label={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"}>
                   <ExternalLink size={13} />
                 </a>
               </div>
@@ -96,6 +100,7 @@ export function DevicesDrawer({ onClose }: { onClose: () => void }) {
     priya: { en: "Resident inside the zone · English · plain language", ar: "مقيمة داخل المنطقة · الإنجليزية · لغة مبسّطة" },
     daniel: { en: "Driver approaching the closure · English", ar: "سائق متجه إلى الإغلاق · الإنجليزية" },
     omar: { en: "Resident outside the zone · Arabic", ar: "مقيم خارج المنطقة · العربية" },
+    ramesh: { en: "Inside the zone · basic phone, SMS only · Hindi", ar: "داخل المنطقة · هاتف بسيط، رسائل SMS فقط · الهندية" },
   } as Record<string, { en: string; ar: string }>;
   return (
     <motion.aside
@@ -119,7 +124,7 @@ export function DevicesDrawer({ onClose }: { onClose: () => void }) {
             </button>
             <a
               className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-teal hover:bg-surface hover:text-teal-ink"
-              href={`/c/${d.token}`}
+              href={deviceUrl(d)}
               target="_blank"
               rel="noopener"
               title={lang === "ar" ? "فتح في نافذة جديدة" : "Open in new window"}

@@ -85,12 +85,26 @@ A concise record of what was built, tested and verified — kept so work can res
       `scrollIntoView` scrolling the full-screen shell during Presentation Mode; and — via the new
       red-team suite — Arabic first-aid advice not caught by the validator.
 
+15. **Reaching everyone (2026-10-31)** — multilingual real data, two-way SMS, mesh relay drill and a
+    citizen-flow audit, on top of the operator-first UI.
+    - Real data: 3 more Oriane searches in community languages (12 in total); 116 unique posts; the
+      language of each post is now taken from its script (platform tags called English captions
+      "su" or "af" and Malayalam speech "ta").
+    - Two-way SMS: approved short templates in 7 languages, deterministic reply parser, a basic-phone
+      screen (`/sms/<token>`), SMS persona Ramesh K. (only his name changed in the generated
+      population), SMS preview in the Message step, *by SMS* on cases.
+    - Mesh relay drill: six proposed relays and one gateway cover all 107 in-zone residents within
+      260 m; outage switch in Responses; amber relay layer on the map; mesh banner on phones.
+    - Found and fixed: silent failure of *I need help*; no way to add details after asking for help;
+      triage never re-reading late details; escalation-topic questions still sent to the model; the
+      no-AI keyword fallback only knowing English and Arabic; triage log showing code words.
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` | 247 / 247 passed (incl. 132 red-team cases, gazetteer/hotspot/rumour logic, triage rule) |
+| `npm test` | 264 / 264 passed (incl. 132 red-team cases, gazetteer/hotspot/rumour logic, triage rule, SMS parser and mesh routing) |
 | `npm run build` | succeeds |
 | `npm run test:e2e` against production build | 2 / 2 passed, also with live Claude enabled (demo loop 1.5 min, presentation 3.5 min) |
 | `npm run evaluate` | results recorded in EVALUATION.md |

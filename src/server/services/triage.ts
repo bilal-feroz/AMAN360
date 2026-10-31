@@ -94,12 +94,16 @@ export function combine(rule: "P1" | "P2", raw: TriageRaw | null, meta: { model:
 }
 
 /** Runs triage for one case (scheduled right after the case opens, so the citizen never waits). */
-export async function triageCase({ caseId }: { caseId: string }) {
+export async function triageCase({ caseId, again = false }: { caseId: string; again?: boolean }) {
   const c = store.cases.get(caseId);
-  if (!c || c.triage) return;
+  if (!c || (c.triage && !again)) return;
   const r = store.recipients.get(c.recipientId);
-  const response = store.responses.forIncident(c.incidentId).find((x) => x.id === c.responseId);
-  const text = response?.text ?? "";
+  // Every help message this person sent since the case opened (details often arrive later).
+  const text = store.responses
+    .forIncident(c.incidentId)
+    .filter((x) => x.recipientId === c.recipientId && x.kind === "help" && x.text && x.receivedAt >= c.openedAt)
+    .map((x) => x.text)
+    .join("\n");
   const vulnerability = r?.vulnerability ?? [];
   const rule = classifyHelpText(text, vulnerability);
   const model = process.env.AMAN_LLM_MODEL?.trim() || "claude-opus-5-5";
@@ -132,14 +136,16 @@ export async function triageCase({ caseId }: { caseId: string }) {
   const triage = combine(rule.priority ?? "P2", raw, { model: usedModel, cached, ms: Date.now() - t0 }, vulnerability, rule.signals);
   const fresh = store.cases.get(caseId);
   if (!fresh) return;
+  // A re-run can raise a case, never lower one (nor undo an operator's P1).
+  if (fresh.priority === "P1") triage.finalPriority = "P1";
   store.cases.save({ ...fresh, priority: triage.finalPriority, triage });
   const who = triage.method === "llm" ? `Claude (${usedModel})` : "Keyword rules";
   audit(
     triage.method === "llm" ? "ai:triage" : "rules:triage",
     "case.triaged",
     triage.raised
-      ? `${who} raised ${caseId} from P2 to P1 — ${triage.needs.join(", ")}`
-      : `${who} triaged ${caseId} as ${triage.finalPriority}${triage.needs.length ? ` — ${triage.needs.join(", ")}` : ""}`,
+      ? `${who} raised ${caseId} from P2 to P1 — ${triage.needs.map((n) => n.replace(/_/g, " ")).join(", ")}`
+      : `${who} triaged ${caseId} as ${triage.finalPriority}${triage.needs.length ? ` — ${triage.needs.map((n) => n.replace(/_/g, " ")).join(", ")}` : ""}`,
     { entity: caseId, data: { needs: triage.needs, rule: triage.rulePriority, suggested: triage.suggestedPriority, final: triage.finalPriority } },
   );
 }

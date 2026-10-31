@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CircleCheck, LifeBuoy, MessageCircleQuestion, Volume2, Square, Accessibility, ShieldCheck, Clock, MapPin, Car, Info, X, Send, Wifi } from "lucide-react";
+import { CircleCheck, LifeBuoy, MessageCircleQuestion, Volume2, Square, Accessibility, ShieldCheck, Clock, MapPin, Car, Info, X, Send, Wifi, RadioTower, CloudOff } from "lucide-react";
 import type { CitizenInbox } from "@/server/services/inbox";
 import { AmanMark, cn } from "@/components/ui";
 import { fmtTime } from "@/lib/format";
@@ -31,6 +31,11 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
   const [speaking, setSpeaking] = useState(false);
   const [helpText, setHelpText] = useState("");
   const pendingTap = useRef<null | { kind: "safe" | "help"; text?: string }>(null);
+  // A safe/help reply that could not reach the server waits here (and in storage) and is resent
+  // with the same idempotency key, so a retry can never be recorded twice.
+  const [queued, setQueued] = useState<null | { kind: "safe" | "help"; text: string | null; messageId: string; key: string }>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const queueKey = `aman:queued:${token.slice(0, 8)}`;
 
   const load = useCallback(async () => {
     try {
@@ -127,13 +132,33 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
     async (kind: "safe" | "help" | "clarify", extra: { text?: string; questionId?: string } = {}) => {
       if (!alert) return;
       setBusy(kind);
+      setNotice(null);
+      const key = newKey();
+      const keep = () => {
+        if (kind === "clarify") return setNotice(CITIZEN_COPY[lang].sendFailed);
+        const q = { kind, text: extra.text ?? null, messageId: alert.messageId, key };
+        setQueued(q);
+        try {
+          localStorage.setItem(queueKey, JSON.stringify(q));
+        } catch {
+          /* storage unavailable: the in-memory copy still retries */
+        }
+        if (kind === "help") (setSheet(null), setHelpText(""));
+      };
       try {
-        const res = await fetch(`/api/citizen/${token}/respond`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kind, messageId: alert.messageId, idempotencyKey: newKey(), text: extra.text ?? null, questionId: extra.questionId ?? null }),
-        });
-        const data = await res.json();
+        let res: Response;
+        try {
+          res = await fetch(`/api/citizen/${token}/respond`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ kind, messageId: alert.messageId, idempotencyKey: key, text: extra.text ?? null, questionId: extra.questionId ?? null }),
+          });
+        } catch {
+          return keep(); // no connection
+        }
+        if (res.status >= 500) return keep();
+        const data = await res.json().catch(() => ({}));
+        if (res.status === 410) return setNotice(CITIZEN_COPY[lang].alertEnded);
         if (!res.ok) throw new Error(data.error ?? "Failed");
         if (kind === "clarify") setAnswer({ text: data.answer?.text ?? null, escalated: data.escalated });
         // Show the recorded state immediately; the reload below confirms it from the server.
@@ -157,14 +182,56 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
           setHelpText("");
         }
         await load();
-      } catch (e) {
-        setError((e as Error).message);
+      } catch {
+        setNotice(CITIZEN_COPY[lang].sendFailed);
       } finally {
         setBusy(null);
       }
     },
-    [alert, token, load],
+    [alert, token, load, lang, queueKey],
   );
+
+  // Resend a queued reply when the connection is back (on "online", and every few seconds).
+  useEffect(() => {
+    if (!queued) {
+      try {
+        const saved = localStorage.getItem(queueKey);
+        if (saved) setQueued(JSON.parse(saved));
+      } catch {
+        /* ignore */
+      }
+      return;
+    }
+    let stop = false;
+    const flush = async () => {
+      try {
+        const res = await fetch(`/api/citizen/${token}/respond`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kind: queued.kind, messageId: queued.messageId, idempotencyKey: queued.key, text: queued.text }),
+        });
+        if (res.status >= 500 || stop) return;
+        // Sent, or no longer possible (alert ended): either way it leaves the queue.
+        setQueued(null);
+        try {
+          localStorage.removeItem(queueKey);
+        } catch {
+          /* ignore */
+        }
+        if (res.status === 410) setNotice(CITIZEN_COPY[lang].alertEnded);
+        await load();
+      } catch {
+        /* still offline */
+      }
+    };
+    const timer = setInterval(() => void flush(), 5000);
+    window.addEventListener("online", flush);
+    return () => {
+      stop = true;
+      clearInterval(timer);
+      window.removeEventListener("online", flush);
+    };
+  }, [queued, token, queueKey, load, lang]);
 
   // Presentation-mode taps from the command center (same-origin parent only) drive the real UI.
   // A tap that arrives before the alert has loaded is queued and performed once it is on screen.
@@ -261,6 +328,20 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
           <Wifi size={14} /> {c.offline}
         </div>
       )}
+      {inbox?.network.status === "mesh" && inbox.network.node && (
+        <div role="status" className="mx-5 mt-2 flex items-start gap-2.5 rounded-xl bg-amber-soft px-3 py-2.5 text-[13px] leading-snug text-ink ring-1 ring-amber/40">
+          <RadioTower size={16} className="mt-0.5 shrink-0 text-amber-ink" />
+          <span>
+            <b className="block font-semibold text-amber-ink">{c.meshTitle}</b>
+            {c.meshSub.replace("{node}", inbox.network.node.id).replace("{hops}", String(inbox.network.node.hops))}
+          </span>
+        </div>
+      )}
+      {inbox?.network.status === "none" && (
+        <div role="status" className="mx-5 mt-2 flex items-start gap-2.5 rounded-xl bg-surface-2 px-3 py-2.5 text-[13px] text-ink-2 ring-1 ring-line">
+          <CloudOff size={16} className="mt-0.5 shrink-0" /> {c.noNetwork}
+        </div>
+      )}
 
       <main className="flex-1 overflow-y-auto px-5 pb-6 pt-3" aria-live="polite">
         {inbox?.clarifications.map((n) => (
@@ -319,7 +400,26 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
               </ol>
             </section>
 
-            <ResponseArea c={c} lang={lang} alert={alert} lastResponse={lastResponse} busy={busy} onSafe={() => void respond("safe")} onHelp={() => setSheet("help")} onClarify={() => (setAnswer(null), setSheet("clarify"))} />
+            {queued && (
+              <div role="status" className="mt-5 rounded-2xl bg-amber-soft p-4 ring-1 ring-amber/40">
+                <div className="flex items-center gap-2 text-[15px] font-semibold text-amber-ink">
+                  <CloudOff size={18} /> {c.notSent}
+                </div>
+                <p className="mt-1 text-[14px] leading-relaxed text-ink-2">
+                  {queued.kind === "help" ? c.help : c.safe}
+                  {queued.text ? ` — “${queued.text}”` : ""}
+                </p>
+                <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{c.queuedSub}</p>
+                <p className="mt-2 text-[13px] font-semibold text-coral-ink">{c.lifeThreat}</p>
+              </div>
+            )}
+            {notice && (
+              <p role="alert" className="mt-4 rounded-xl bg-coral-soft px-3 py-2.5 text-[14px] font-medium text-coral-ink">
+                {notice}
+              </p>
+            )}
+
+            <ResponseArea c={c} lang={lang} alert={alert} lastResponse={lastResponse} busy={busy ?? (queued ? "queued" : null)} onSafe={() => void respond("safe")} onHelp={() => setSheet("help")} onClarify={() => (setAnswer(null), setSheet("clarify"))} />
 
             {alert.geography.zone && (
               <figure className="mt-5 overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
@@ -515,6 +615,11 @@ function ResponseArea({
             <p className="tnum mt-2 text-[13px] text-muted" title={helpCase!.id}>
               {fmtTime(alert.responses.find((r) => r.kind === "help")?.at, lang, true)}
             </p>
+            {helpCase!.status !== "resolved" && (
+              <button onClick={onHelp} disabled={!!busy} className="mt-3 inline-flex h-11 items-center gap-2 rounded-xl bg-white px-4 text-[14px] font-semibold text-coral-ink ring-1 ring-coral/30 hover:bg-coral-soft disabled:opacity-60">
+                <Send size={15} className="rtl:-scale-x-100" /> {c.addDetails}
+              </button>
+            )}
             {helpCase!.notes.map((n) => (
               <div key={n.at} className="mt-3 rounded-xl bg-white/80 p-3 text-[14px] text-ink">
                 <div className="text-[13px] font-semibold text-muted">{c.operatorNote}</div>

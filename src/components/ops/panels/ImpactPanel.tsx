@@ -18,7 +18,10 @@ export function ImpactPanel() {
     return (
       <div>
         <PanelHeader title={t("impact")} />
-        <Empty text={lang === "ar" ? "لم يتم تقييم أي حادثة بعد." : "No incident assessed yet."} action={<Button onClick={() => setView("queue")}>{lang === "ar" ? "فتح التنبيه" : "Open the alert"}</Button>} />
+        <Empty
+          text={lang === "ar" ? "فعّل الحادثة في خطوة التنبيه أولًا. بعدها يحدّد أمان من هم داخل المنطقة ومن يقترب من الإغلاق." : "Activate the incident on the Alert step first. AMAN then works out who is inside the zone and who is driving toward the closure."}
+          action={<Button onClick={() => setView("queue")}>{lang === "ar" ? "الذهاب إلى التنبيه" : "Go to Alert"}</Button>}
+        />
       </div>
     );
   }
@@ -130,7 +133,7 @@ export function ImpactPanel() {
 export function Empty({ text, action }: { text: string; action?: React.ReactNode }) {
   return (
     <div className="px-5 py-12 text-center">
-      <p className="text-[13px] text-muted">{text}</p>
+      <p className="mx-auto max-w-[300px] text-[13px] leading-relaxed text-muted">{text}</p>
       {action && <div className="mt-4">{action}</div>}
     </div>
   );

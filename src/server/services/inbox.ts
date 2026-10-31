@@ -7,6 +7,7 @@ import { fillText } from "@/domain/comms/facts";
 import * as store from "../store";
 import { recipientForToken } from "./citizen";
 import { messageFacts } from "./workflow";
+import { networkFor } from "./network";
 
 /**
  * The citizen's inbox in the in-app simulation channel. Only messages that reached the device
@@ -78,6 +79,10 @@ export function citizenInbox(token: string) {
       channel: r.channel,
     },
     scenarioLabel: SCENARIO_LABEL,
+    network: (() => {
+      const net = networkFor(r);
+      return { status: net.status, node: net.route ? { id: net.route.entry.id, name: net.route.entry.name, hops: net.route.hops, path: net.route.path } : null };
+    })(),
     alerts,
     // Approved rumour clarifications reach the same people as the alert (simulated channel).
     clarifications: alerts.length

@@ -1,7 +1,7 @@
 {
  "version": "signals-v1",
  "model": "claude-opus-5-5",
- "builtAt": "2026-10-31T07:31:08.884Z",
+ "builtAt": "2026-10-31T09:32:37.462Z",
  "items": {
   "ig:DeTGj_PCcQt": {
    "postId": "ig:DeTGj_PCcQt",
@@ -81,6 +81,289 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:23:17.597Z",
    "inputHash": "3b37ad9a3155325d"
+  },
+  "tt:7694954315538107655": {
+   "postId": "tt:7694954315538107655",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Travel agency advertisement for a group tour to Southeast Asia.",
+   "places": [
+    {
+     "text": "Malaysia",
+     "nameEn": "Malaysia",
+     "nameAr": "ماليزيا",
+     "kind": "country"
+    },
+    {
+     "text": "Indonesia",
+     "nameEn": "Indonesia",
+     "nameAr": "إندونيسيا",
+     "kind": "country"
+    },
+    {
+     "text": "Singapore",
+     "nameEn": "Singapore",
+     "nameAr": "سنغافورة",
+     "kind": "country"
+    },
+    {
+     "text": "Dubai",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for a November group tour to Malaysia, Indonesia and Singapore.",
+    "ar": "إعلان عن رحلة جماعية في نوفمبر إلى ماليزيا وإندونيسيا وسنغافورة."
+   },
+   "evidence": [
+    "Caption: November 3-Country Adventure group tour",
+    "Caption: tags a Dubai tourism company"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "60c5973be466a050"
+  },
+  "tt:7695013159475727637": {
+   "postId": "tt:7695013159475727637",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Real estate sales advertisement.",
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for a 127-shop market property for sale in Sharjah.",
+    "ar": "إعلان عن بيع سوق تجاري يضم 127 محلاً في الشارقة."
+   },
+   "evidence": [
+    "Caption: Market Bazaar for Sale in Sharjah",
+    "Speech: describes shops, area and profit"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "6119dcd07ace488c"
+  },
+  "ig:DeUG3VbEa8k": {
+   "postId": "ig:DeUG3VbEa8k",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Product sale advertisement for brass serveware.",
+   "places": [
+    {
+     "text": "شارجہ سنٹر",
+     "nameEn": "Sharjah Centre",
+     "nameAr": "مركز الشارقة",
+     "kind": "landmark"
+    },
+    {
+     "text": "لاہور",
+     "nameEn": "Lahore",
+     "nameAr": "لاهور",
+     "kind": "town"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for discounted brass pots and serveware.",
+    "ar": "إعلان عن تخفيضات على أوانٍ نحاسية."
+   },
+   "evidence": [
+    "Caption: Flat 25% Off online sale",
+    "Speech: describes brass pots at a Sharjah shop"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "38d1a39aa3cb2f18"
+  },
+  "ig:DeUwFnSz0mH": {
+   "postId": "ig:DeUwFnSz0mH",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Book excerpt using flood as a metaphor; no weather report.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Persian book promotion about resilience and Stoicism by Alain de Botton.",
+    "ar": "ترويج لكتاب بالفارسية عن المرونة والرواقية لآلان دو بوتون."
+   },
+   "evidence": [
+    "Caption: The School of Life (Alain de Botton)",
+    "Caption: flood mentioned hypothetically"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "eb4c30d8b0899903"
+  },
+  "tt:7695112945189047558": {
+   "postId": "tt:7695112945189047558",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Medical clinic promotion about vitiligo.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video promoting vitiligo treatment at a medical centre.",
+    "ar": "مقطع يروج لعلاج البهاق في مركز طبي."
+   },
+   "evidence": [
+    "Speech: discusses vitiligo",
+    "On screen: Vitiligo, MEDICAL CENTER"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "40613e685afd55e1"
+  },
+  "ig:DeU73f3AD0K": {
+   "postId": "ig:DeU73f3AD0K",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Real estate sales advertisement.",
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for a 127-shop market property for sale in Sharjah.",
+    "ar": "إعلان عن بيع سوق تجاري يضم 127 محلاً في الشارقة."
+   },
+   "evidence": [
+    "Caption: Market Bazaar for Sale in Sharjah",
+    "Speech: same ad as earlier TikTok post"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "d096ab1284d29c83"
+  },
+  "yt:lzS6cMM4Aw8": {
+   "postId": "yt:lzS6cMM4Aw8",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Scripted family drama video; 'Madam' is a character, not weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Scripted moral-story family drama video.",
+    "ar": "مقطع درامي عائلي ذو طابع أخلاقي."
+   },
+   "evidence": [
+    "Caption: moral story drama",
+    "Speech: family dialogue, no weather"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "374050b148c33a3e"
   },
   "ig:DeYfVfOtVfR": {
    "postId": "ig:DeYfVfOtVfR",
@@ -611,6 +894,273 @@
    "analyzedAt": "2026-10-31T07:29:40.849Z",
    "inputHash": "de0204f4b4cf64db"
   },
+  "ig:DeZlTjyJeoU": {
+   "postId": "ig:DeZlTjyJeoU",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "ഷാർജ മദാം",
+     "nameEn": "Madam, Sharjah",
+     "nameAr": "مدام، الشارقة",
+     "kind": "town"
+    },
+    {
+     "text": "യുഎഇ",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "हத்தாரோடில்லே",
+     "nameEn": "Hatta Road",
+     "nameAr": "طريق حتا",
+     "kind": "road"
+    },
+    {
+     "text": "ராசல் கைமியிலே",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    },
+    {
+     "text": "சாவக்கியிலும்",
+     "nameEn": "Shawka",
+     "nameAr": "شوكة",
+     "kind": "village"
+    },
+    {
+     "text": "துபை",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    },
+    {
+     "text": "ஷார்ஜா",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "அல்லையின்",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    }
+   ],
+   "severity": "high",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": false,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "MediaOne news video reports heavy rain and hail across parts of the UAE, showing fast-flowing muddy water and flooded roads labelled Sharjah Madam, with the National Center of Meteorology warning of possible flash flood…",
+    "ar": "يعرض مقطع إخباري لقناة ميديا ون أمطاراً غزيرة وبَرَداً في مناطق من الإمارات، مع مياه جارفة موحلة وطرق مغمورة في منطقة مدام بالشارقة، وتحذير المركز الوطني للأرصاد من سيول محتملة في المناطق الجبلية."
+   },
+   "evidence": [
+    "On screen: 'ഷാർജ മദാം' (Sharjah Madam) location tag with date 'oct 12 2026'",
+    "Frame 0:09: water pouring from an overpass onto a flooded road with a vehicle in the background",
+    "Frame 0:14: fast-flowing muddy torrent beside a car's side mirror",
+    "Speech: mentions heavy rain and hail on Hatta road and in Shawka, Ras Al Khaimah, and NCM flash-flood warning"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:19.973Z",
+   "inputHash": "7bc112c40d543d29"
+  },
+  "ig:DeZrOb0DfI_": {
+   "postId": "ig:DeZrOb0DfI_",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "امارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    },
+    {
+     "text": "شوکه",
+     "nameEn": "Shawka",
+     "nameAr": "شوكة",
+     "kind": "village"
+    },
+    {
+     "text": "ملیحه",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "شارجه",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "جاده الوطن–حتا",
+     "nameEn": "Al Watan–Hatta Road",
+     "nameAr": "طريق الوطن–حتا",
+     "kind": "road"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Persian-language UAE news page reports heavy rain and hail on 12 October in parts of the UAE, including west of Shawka and east of Mleiha in Sharjah and hail on the Al Watan–Hatta road with water flowing in nearby val…",
+    "ar": "تفيد صفحة إخبارية ناطقة بالفارسية بهطول أمطار غزيرة وبَرَد في أجزاء من الإمارات يوم 12 أكتوبر، منها غرب شوكة وشرق مليحة في الشارقة وطريق الوطن–حتا مع جريان المياه في الأودية المجاورة، مستشهدة بتوقعات المركز الوطني للأرص…"
+   },
+   "evidence": [
+    "Caption: Heavy rain and hail on Monday 12 October; rain reported west of Shawka and east of Mleiha in Sharjah.",
+    "Caption: Hail on the Al Watan–Hatta road with heavy rain caused water to flow in surrounding valleys.",
+    "On screen: 'Rain and hail reached the UAE; weather still unstable; rain may continue until Thursday 15 October'.",
+    "Frame 0:00: Hazy rainy desert scene with shallow water flowing across ground and a vehicle on a wet road."
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:19.437Z",
+   "inputHash": "d7c01a8a20c992cb"
+  },
+  "ig:DeZu9QfMH-u": {
+   "postId": "ig:DeZu9QfMH-u",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Fashion store advertisement.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for a Pakistani clothing wholesale store.",
+    "ar": "إعلان عن متجر ملابس باكستانية بأسعار الجملة."
+   },
+   "evidence": [
+    "Caption: BASEENA FASHION wholesale deals",
+    "Speech: shopping for lawn dresses"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "dc190a7487e24977"
+  },
+  "ig:DeZ3FXiR0J9": {
+   "postId": "ig:DeZ3FXiR0J9",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "യുഎഇ",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "ஷார்ஜையில்",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "அல்மதாம்",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "மலிகா",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "ராசல் கை",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    },
+    {
+     "text": "அல்லையன்",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    },
+    {
+     "text": "துபாய்",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    },
+    {
+     "text": "ஹத்தா",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Asianet News Malayalam reports rain, strong winds and hail in several parts of the UAE, including Sharjah areas such as Al Madam and Mleiha, with footage of a vehicle driving through muddy water and hail covering a dirt…",
+    "ar": "تفيد قناة آسيانت نيوز المالايالامية بهطول أمطار ورياح قوية وبرد في عدة مناطق من الإمارات، منها مناطق في الشارقة مثل المدام ومليحة، مع لقطات لمركبة تسير عبر مياه موحلة وبرد يغطي طريقاً ترابياً."
+   },
+   "evidence": [
+    "Caption: Malayalam text says rain brings relief to UAE with strong wind and hail",
+    "On screen: Frame 0:39 headline 'hail too in UAE' with hailstones covering a dirt track",
+    "Frame 0:17: windscreen view of vehicle driving through muddy brown water on a road, wipers active",
+    "Speech: mentions heavy rain in Sharjah's Al Madam and Mleiha, plus Ras Al Khaimah, Al Ain, Dubai and Hatta"
+   ],
+   "confidence": 0.72,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:19.501Z",
+   "inputHash": "96fd168e99f79c9f"
+  },
   "tt:7695869758800923937": {
    "postId": "tt:7695869758800923937",
    "relevant": false,
@@ -674,6 +1224,46 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:23:17.597Z",
    "inputHash": "e8e2dd5eb2465648"
+  },
+  "yt:yBTzVOY8ulw": {
+   "postId": "yt:yBTzVOY8ulw",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Food vlog in India, unrelated to UAE weather.",
+   "places": [
+    {
+     "text": "IIT Delhi",
+     "nameEn": "IIT Delhi",
+     "nameAr": "المعهد الهندي للتكنولوجيا دلهي",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Food tour vlog at IIT Delhi college festival.",
+    "ar": "مدونة فيديو عن جولة طعام في مهرجان جامعي بدلهي."
+   },
+   "evidence": [
+    "Caption: IIT Delhi Food Tour",
+    "On screen: IIT Delhi Food Tour"
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "80e06abf5e6020c5"
   },
   "tt:7696052786236034324": {
    "postId": "tt:7696052786236034324",
@@ -1013,6 +1603,90 @@
    "analyzedAt": "2026-10-31T07:24:33.459Z",
    "inputHash": "1b683e0dd1a8ca31"
   },
+  "ig:DecDdyzorsg": {
+   "postId": "ig:DecDdyzorsg",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "امارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "شارجه",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "ملیحه",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الاخیضر",
+     "nameEn": "Al Ukhaidhar",
+     "nameAr": "الأخيضر",
+     "kind": "village"
+    },
+    {
+     "text": "حمده",
+     "nameEn": "Hamda",
+     "nameAr": "حمدة",
+     "kind": "village"
+    },
+    {
+     "text": "العین",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    },
+    {
+     "text": "شوکه",
+     "nameEn": "Shawka",
+     "nameAr": "شوكة",
+     "kind": "village"
+    }
+   ],
+   "severity": "high",
+   "observed": {
+    "waterDepth": "knee",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Persian-language UAE community news page reports rain, hail and lightning on 12 October in parts of the UAE, including hail in Mleiha, Al Madam and Al Ukhaidhar in central Sharjah, with footage of hail-covered tracks …",
+    "ar": "تنشر صفحة إخبارية ناطقة بالفارسية في الإمارات تقريراً عن أمطار وبَرَد وبرق يوم 12 أكتوبر في أجزاء من الإمارات، منها تساقط البَرَد في مليحة والمدام والأخيضر بالمنطقة الوسطى في الشارقة، مع لقطات لطرق مغطاة بالبَرَد ومركبا…"
+   },
+   "evidence": [
+    "Caption: says Mleiha, Al Madam and Al Ukhaidhar in central Sharjah saw hail on Monday 12 October, citing Storm Center videos",
+    "Frame 0:14: dirt track covered with hailstones under hazy sky",
+    "Frame 0:42: police vehicle and SUVs driving through muddy flowing water in an underpass, water around bumper level",
+    "On screen: text says rain may continue until Friday 16 October"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:21.832Z",
+   "inputHash": "0f7252f8b5dbaf8c"
+  },
   "ig:DecICS6iDcS": {
    "postId": "ig:DecICS6iDcS",
    "relevant": true,
@@ -1096,6 +1770,120 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:29:52.737Z",
    "inputHash": "449f7e591fb3bd1c"
+  },
+  "ig:DecI5z4MdPG": {
+   "postId": "ig:DecI5z4MdPG",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Buhays Geology Park",
+     "nameEn": "Buhais Geology Park",
+     "nameAr": "منتزه البحيص الجيولوجي",
+     "kind": "landmark"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Dubai",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A lifestyle vlog from Buhais Geology Park in Sharjah mentions that it had been raining heavily, with frames showing a wet road and wet outdoor terrace under clearing clouds.",
+    "ar": "مقطع ترفيهي من منتزه البحيص الجيولوجي في الشارقة يذكر هطول أمطار غزيرة، وتُظهر اللقطات طريقاً مبللاً وساحة خارجية مبللة مع انقشاع الغيوم."
+   },
+   "evidence": [
+    "Speech: says it rained ('Umulan') and that few people were there because the rain was heavy ('malakas yung ulan')",
+    "Speech: names Buhays Geology Park in Sharjah, about one hour from Dubai",
+    "Frame 0:11: wet asphalt road and raindrops on car through desert, with broken clouds",
+    "Frame 1:12: wet terrace surface at the venue; no standing or flowing water visible"
+   ],
+   "confidence": 0.55,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:32.041Z",
+   "inputHash": "9c8eb3824e16910c"
+  },
+  "ig:DecQYbwpcyA": {
+   "postId": "ig:DecQYbwpcyA",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "യുഎഇ / UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "ஹத்தா",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    },
+    {
+     "text": "அல்லையின்",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    },
+    {
+     "text": "சார்ஜிவுட",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "MediaOne news reports renewed heavy rain and hail across parts of the UAE, including Hatta, Al Ain and Sharjah, with flowing water in valleys, waterlogged roads, and further rain forecast by the National Center of Meteo…",
+    "ar": "تفيد قناة ميديا وان بتجدد الأمطار الغزيرة وتساقط البَرَد في أنحاء من الإمارات، منها حتا والعين والشارقة، مع جريان المياه في الأودية وتجمعها على بعض الطرق، وتوقعات المركز الوطني للأرصاد باستمرار الأمطار."
+   },
+   "evidence": [
+    "Frame 0:05: hailstones held in a palm next to wet ground, dated Oct 13 2026",
+    "Frame 0:21: windshield view with very poor visibility in heavy rain",
+    "Frame 0:31: muddy brown water flowing across ground beside a vehicle",
+    "Speech: mentions heavy rain in hilly areas including Hatta, Al Ain and Sharjah, waterlogged low roads and advice to drivers to slow down"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:31:32.651Z",
+   "inputHash": "1c03f14dad1af1cb"
   },
   "ig:Decgu3suv7H": {
    "postId": "ig:Decgu3suv7H",
@@ -1325,6 +2113,77 @@
    "analyzedAt": "2026-10-31T07:30:07.431Z",
    "inputHash": "db25da950b36b9bc"
   },
+  "ig:Ded9-LXEUOu": {
+   "postId": "ig:Ded9-LXEUOu",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Lottery winner news, unrelated to weather.",
+   "places": [
+    {
+     "text": "شارجه",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "News about a Sharjah resident winning a UAE lottery prize.",
+    "ar": "خبر عن فوز مقيم في الشارقة بجائزة يانصيب الإمارات."
+   },
+   "evidence": [
+    "Caption: 5 million dirham lottery prize"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "a4e10b0c07541abb"
+  },
+  "ig:DeeCPNUOXxV": {
+   "postId": "ig:DeeCPNUOXxV",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Interview about Persian language abroad, unrelated to weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Interview with a journalist about how emigration affects the Persian language.",
+    "ar": "مقابلة مع صحفية حول تأثير الهجرة على اللغة الفارسية."
+   },
+   "evidence": [
+    "Caption: book 'Persian in a Suitcase'"
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "4e031ea05bb3dc19"
+  },
   "ig:DeeEhTmxjXq": {
    "postId": "ig:DeeEhTmxjXq",
    "relevant": false,
@@ -1363,6 +2222,46 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:24:33.459Z",
    "inputHash": "84686e7a09ae1358"
+  },
+  "ig:DeeHkpxIDq0": {
+   "postId": "ig:DeeHkpxIDq0",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Restaurant food review.",
+   "places": [
+    {
+     "text": "Abu Dhabi",
+     "nameEn": "Abu Dhabi",
+     "nameAr": "أبوظبي",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Food vlog reviewing a Peshawari restaurant in Abu Dhabi.",
+    "ar": "مدونة طعام تستعرض مطعماً بيشاورياً في أبوظبي."
+   },
+   "evidence": [
+    "Caption: Abu Dhabi hidden spot",
+    "Speech: reviewing mutton karahi"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "efb3ff299aceed54"
   },
   "ig:DeeOfHRBtE0": {
    "postId": "ig:DeeOfHRBtE0",
@@ -1853,6 +2752,39 @@
    "analyzedAt": "2026-10-31T07:24:33.459Z",
    "inputHash": "28a26509ee518e51"
   },
+  "ig:Dehu9RCT-rK": {
+   "postId": "ig:Dehu9RCT-rK",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Book excerpt using flood as a metaphor; no weather report.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Persian book promotion about resilience, reposted text by the same account.",
+    "ar": "ترويج لكتاب بالفارسية عن المرونة، بنص منشور سابقاً."
+   },
+   "evidence": [
+    "Caption: identical text to an earlier book post",
+    "Caption: flood mentioned hypothetically"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "eb4c30d8b0899903"
+  },
   "ig:DejTcUbsUuo": {
    "postId": "ig:DejTcUbsUuo",
    "relevant": true,
@@ -2059,6 +2991,52 @@
    "analyzedAt": "2026-10-31T07:30:19.261Z",
    "inputHash": "7456ba60d842dc14"
   },
+  "ig:Dej_cABoTV3": {
+   "postId": "ig:Dej_cABoTV3",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Supermarket sale advertisement.",
+   "places": [
+    {
+     "text": "Industrial Area 1, Ajman",
+     "nameEn": "Industrial Area 1",
+     "nameAr": "المنطقة الصناعية 1",
+     "kind": "district"
+    },
+    {
+     "text": "अजमान",
+     "nameEn": "Ajman",
+     "nameAr": "عجمان",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Advertisement for a 48-hour sale at a hypermarket in Ajman.",
+    "ar": "إعلان عن تخفيضات لمدة 48 ساعة في متجر بعجمان."
+   },
+   "evidence": [
+    "Caption: 48 hours big sale 17-18 October",
+    "On screen: MARK & SAVE"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:16.165Z",
+   "inputHash": "b9a87285de651904"
+  },
   "ig:Dej_zqItS2G": {
    "postId": "ig:Dej_zqItS2G",
    "relevant": true,
@@ -2205,6 +3183,64 @@
    "analyzedAt": "2026-10-31T07:25:51.748Z",
    "inputHash": "91518783a6fa4f51"
   },
+  "ig:Del_ZvcIy9f": {
+   "postId": "ig:Del_ZvcIy9f",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Real estate advertisement for a property in Dubai; no weather content.",
+   "places": [
+    {
+     "text": "Dubai",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    },
+    {
+     "text": "Dubai, Silicon Oasis",
+     "nameEn": "Dubai Silicon Oasis",
+     "nameAr": "واحة دبي للسيليكون",
+     "kind": "district"
+    },
+    {
+     "text": "Alain Road",
+     "nameEn": "Al Ain Road",
+     "nameAr": "طريق العين",
+     "kind": "road"
+    },
+    {
+     "text": "Wadi Al Safa 2",
+     "nameEn": "Wadi Al Safa 2",
+     "nameAr": "وادي الصفا 2",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An advertisement promotes a 30/70 payment plan for a commercial property in Dubai.",
+    "ar": "إعلان يروّج لخطة دفع 30/70 لعقار تجاري في دبي."
+   },
+   "evidence": [
+    "Caption: 30/70 Payment Plan – Own Your Dream Home in Dubai",
+    "Speech: Location given as opposite Dubai Silicon Oasis on Al Ain Road"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "0bbdab3bd345737f"
+  },
   "ig:DemIEcfjdS8": {
    "postId": "ig:DemIEcfjdS8",
    "relevant": false,
@@ -2302,6 +3338,52 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:25:51.748Z",
    "inputHash": "09cf98fe7e95d797"
+  },
+  "yt:sg-khy0IFkU": {
+   "postId": "yt:sg-khy0IFkU",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Cricket discussion; rain mentioned refers to a match in Bengaluru, India, outside the UAE.",
+   "places": [
+    {
+     "text": "பெங்களூர்",
+     "nameEn": "Bengaluru",
+     "nameAr": "بنغالور",
+     "kind": "town"
+    },
+    {
+     "text": "India",
+     "nameEn": "India",
+     "nameAr": "الهند",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A cricket show discusses Shai Hope, IPL 2027 and a rain-affected match in Bengaluru.",
+    "ar": "برنامج كريكيت يناقش اللاعب شاي هوب ودوري IPL 2027 ومباراة تأثرت بالمطر في بنغالور."
+   },
+   "evidence": [
+    "Caption: SHAI HOPE TO IPL 2027? MUMBAI INDIANS' BIGGEST QUESTIONS",
+    "Speech: refers to rain in Bengaluru during the India match"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "6fd4975e0db9aeb7"
   },
   "ig:Deo0yvIs4e2": {
    "postId": "ig:Deo0yvIs4e2",
@@ -2406,6 +3488,58 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:25:51.748Z",
    "inputHash": "4f04185a3de3a8d7"
+  },
+  "yt:lIbr7ooyyMw": {
+   "postId": "yt:lIbr7ooyyMw",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Store advertisement in Haryana, India; no weather content.",
+   "places": [
+    {
+     "text": "यमुनानगर",
+     "nameEn": "Yamunanagar",
+     "nameAr": "يامونا ناغار",
+     "kind": "town"
+    },
+    {
+     "text": "जगाधरी",
+     "nameEn": "Jagadhri",
+     "nameAr": "جاغادري",
+     "kind": "town"
+    },
+    {
+     "text": "हरियाणा",
+     "nameEn": "Haryana",
+     "nameAr": "هاريانا",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video promotes discounts at a store in Yamunanagar, India.",
+    "ar": "فيديو يروّج لتخفيضات في متجر بمدينة يامونا ناغار في الهند."
+   },
+   "evidence": [
+    "Caption: BuyJee Store, Jagadhri, Yamunanagar, Haryana",
+    "Caption: 50%, 60% and 70% discounts"
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "8a8c87656e263b51"
   },
   "ig:DeqgXOSCIi1": {
    "postId": "ig:DeqgXOSCIi1",
@@ -3977,6 +5111,39 @@
    "analyzedAt": "2026-10-31T07:27:02.081Z",
    "inputHash": "856d220148597535"
   },
+  "ig:DexLC2yooph": {
+   "postId": "ig:DexLC2yooph",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Persian book excerpt on resilience; flood mentioned only hypothetically.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A post shares a Persian translation of an Alain de Botton essay on resilience in crises.",
+    "ar": "منشور يعرض ترجمة فارسية لمقالة لآلان دو بوتون عن الصمود في الأزمات."
+   },
+   "evidence": [
+    "Caption: The School of Life (Alain de Botton) book excerpt",
+    "Caption: 'If a flood comes' used as a hypothetical example"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "f548fbd3d376c91b"
+  },
   "ig:Dey2nZWjbXj": {
    "postId": "ig:Dey2nZWjbXj",
    "relevant": false,
@@ -4022,6 +5189,53 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:27:02.081Z",
    "inputHash": "73b00e4c6ef707ca"
+  },
+  "yt:O9B-gH196u4": {
+   "postId": "yt:O9B-gH196u4",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Personal festival travel vlog; no weather content.",
+   "places": [
+    {
+     "text": "देहरादून",
+     "nameEn": "Dehradun",
+     "nameAr": "دهرادون",
+     "kind": "town"
+    },
+    {
+     "text": "INVEST IN DUBAI",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A vlogger travels to Dehradun for the Dashain and Diwali festivals.",
+    "ar": "صانع محتوى يسافر إلى دهرادون للاحتفال بمهرجاني داشين وديوالي."
+   },
+   "evidence": [
+    "Caption: Dashain vlog",
+    "Speech: going to the airport to travel to Dehradun",
+    "On screen: INVEST IN DUBAI advertisement"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "4271297c1e651aaf"
   },
   "ig:De0_XPqoLV3": {
    "postId": "ig:De0_XPqoLV3",
@@ -4189,6 +5403,53 @@
    "analyzedAt": "2026-10-31T07:27:30.583Z",
    "inputHash": "7bf6f73cbbdc648b"
   },
+  "yt:XDpzpV_0_ck": {
+   "postId": "yt:XDpzpV_0_ck",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Malayalam talk show clip; rain mentioned only in a song.",
+   "places": [
+    {
+     "text": "Kerala",
+     "nameEn": "Kerala",
+     "nameAr": "كيرالا",
+     "kind": "district"
+    },
+    {
+     "text": "Dubai South",
+     "nameEn": "Dubai South",
+     "nameAr": "دبي الجنوب",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An entertainment show features actor Sreenath Bhasi singing a song that mentions rain.",
+    "ar": "برنامج ترفيهي يستضيف الممثل سريناث باسي وهو يغني أغنية تذكر المطر."
+   },
+   "evidence": [
+    "Caption: Sreenath Bhasi joins the Pearle Maaney Show",
+    "Speech: song lyrics about rain falling",
+    "Caption: sponsor ad for residential communities in Dubai South"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "58cf663a8bb9920f"
+  },
   "ig:De4MLmbslvM": {
    "postId": "ig:De4MLmbslvM",
    "relevant": true,
@@ -4309,6 +5570,64 @@
    "analyzedAt": "2026-10-31T07:31:06.549Z",
    "inputHash": "a6908af484fa51a2"
   },
+  "yt:p8CXHHsY4iQ": {
+   "postId": "yt:p8CXHHsY4iQ",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Conflict news about Yemen and Saudi Arabia; unrelated to UAE weather.",
+   "places": [
+    {
+     "text": "यमन",
+     "nameEn": "Yemen",
+     "nameAr": "اليمن",
+     "kind": "country"
+    },
+    {
+     "text": "सौधी अरप",
+     "nameEn": "Saudi Arabia",
+     "nameAr": "السعودية",
+     "kind": "country"
+    },
+    {
+     "text": "सना",
+     "nameEn": "Sanaa",
+     "nameAr": "صنعاء",
+     "kind": "town"
+    },
+    {
+     "text": "तुर्की",
+     "nameEn": "Turkey",
+     "nameAr": "تركيا",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news video discusses the conflict between the Houthis and Saudi Arabia in Yemen.",
+    "ar": "فيديو إخباري يتناول النزاع بين الحوثيين والسعودية في اليمن."
+   },
+   "evidence": [
+    "Caption: hashtags #yemen #houthis #conflict",
+    "Speech: reports attacks in the Sanaa area"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "b599123553863987"
+  },
   "ig:De6j113i6SQ": {
    "postId": "ig:De6j113i6SQ",
    "relevant": false,
@@ -4340,6 +5659,64 @@
    "model": "claude-opus-5-5",
    "analyzedAt": "2026-10-31T07:27:30.583Z",
    "inputHash": "816643223371bedf"
+  },
+  "tt:7700587044539567368": {
+   "postId": "tt:7700587044539567368",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Lottery winners news; 'gold rain' is a figure of speech.",
+   "places": [
+    {
+     "text": "துபாயில்",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    },
+    {
+     "text": "அஜ்மானில்",
+     "nameEn": "Ajman",
+     "nameAr": "عجمان",
+     "kind": "emirate"
+    },
+    {
+     "text": "ஆந்திராவைச்",
+     "nameEn": "Andhra Pradesh",
+     "nameAr": "أندرا براديش",
+     "kind": "district"
+    },
+    {
+     "text": "கரெளாோவைச்",
+     "nameEn": "Kerala",
+     "nameAr": "كيرالا",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Two Indian residents of the UAE won gold bars in the Big Ticket draw.",
+    "ar": "فاز مقيمان هنديان في الإمارات بسبائك ذهبية في سحب بيغ تيكت."
+   },
+   "evidence": [
+    "Caption: South Indians who won gold bars in Big Ticket",
+    "On screen: 'gold rain' headline about winners in Dubai and Ajman"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T09:30:46.059Z",
+   "inputHash": "24dbd5a437e796dc"
   },
   "ig:De7Bl7KDeDi": {
    "postId": "ig:De7Bl7KDeDi",

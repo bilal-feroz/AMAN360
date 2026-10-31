@@ -348,6 +348,8 @@ export function wipeScenarioTables() {
     "audit_events",
     "signal_actions",
     "signal_analysis_live",
+    "sms_log",
+    "sms_prefs",
   ]) {
     d.prepare(`DELETE FROM ${t}`).run();
   }
@@ -407,5 +409,55 @@ export const aiCache = {
   },
   set(key: string, data: unknown) {
     db().prepare("INSERT OR REPLACE INTO ai_cache (key, at, data) VALUES (?, ?, ?)").run(key, new Date().toISOString(), J.str(data));
+  },
+};
+
+// ---------------------------------------------------------------------------------------------
+// Two-way SMS (simulated gateway): the thread per handset and the handset's chosen language
+// ---------------------------------------------------------------------------------------------
+
+export interface SmsEntry {
+  id: number;
+  recipientId: string;
+  dir: "out" | "in";
+  at: string;
+  text: string;
+  lang: string | null;
+  data: Record<string, unknown> | null;
+}
+
+const smsRow = (r: Record<string, unknown>): SmsEntry => ({
+  id: r.id as number,
+  recipientId: r.recipient_id as string,
+  dir: r.dir as SmsEntry["dir"],
+  at: r.at as string,
+  text: r.text as string,
+  lang: (r.lang as string | null) ?? null,
+  data: J.parse<Record<string, unknown> | null>(r.data as string | null),
+});
+
+export const sms = {
+  thread(recipientId: string): SmsEntry[] {
+    return (db().prepare("SELECT * FROM sms_log WHERE recipient_id = ? ORDER BY id").all(recipientId) as Record<string, unknown>[]).map(smsRow);
+  },
+  recent(limit = 50): SmsEntry[] {
+    return (db().prepare("SELECT * FROM sms_log ORDER BY id DESC LIMIT ?").all(limit) as Record<string, unknown>[]).map(smsRow);
+  },
+  counts(): { out: number; in: number } {
+    const rows = db().prepare("SELECT dir, COUNT(*) c FROM sms_log GROUP BY dir").all() as { dir: string; c: number }[];
+    return { out: rows.find((r) => r.dir === "out")?.c ?? 0, in: rows.find((r) => r.dir === "in")?.c ?? 0 };
+  },
+  add(e: Omit<SmsEntry, "id">): number {
+    return Number(
+      db()
+        .prepare("INSERT INTO sms_log (recipient_id, dir, at, text, lang, data) VALUES (?, ?, ?, ?, ?, ?)")
+        .run(e.recipientId, e.dir, e.at, e.text, e.lang, e.data ? J.str(e.data) : null).lastInsertRowid,
+    );
+  },
+  lang(recipientId: string): string | null {
+    return (db().prepare("SELECT lang FROM sms_prefs WHERE recipient_id = ?").get(recipientId) as { lang: string } | undefined)?.lang ?? null;
+  },
+  setLang(recipientId: string, lang: string) {
+    db().prepare("INSERT OR REPLACE INTO sms_prefs (recipient_id, lang) VALUES (?, ?)").run(recipientId, lang);
   },
 };

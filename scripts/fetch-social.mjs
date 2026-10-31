@@ -33,6 +33,29 @@ const WEATHER = [
 ];
 const WEATHER_TAGS = ["مركز_العاصفة", "الشارقة_للأخبار", "امطار_الامارات", "أمطار_الإمارات", "uaerain", "uaeweather", "sharjahrain", "stormcenter", "uae_weather"];
 
+// Most of Sharjah's residents are not Arabic or English speakers: the same storm in the languages
+// of its largest communities (Hindi, Urdu, Malayalam, Tamil, Bengali, Tagalog, Persian, Nepali).
+const SHARJAH_ANY_SCRIPT = [
+  ...SHARJAH_PLACES,
+  "शारजाह", "शारजा", "ഷാർജ", "ഷാര്‍ജ", "ஷார்ஜா", "শারজাহ", "শারজা", "شارجہ", "شارجه", "शारजाह में", "Sharjah me", "Sharjah mein",
+];
+const WEATHER_ANY_LANGUAGE = [
+  ...WEATHER,
+  // Hindi (Devanagari + romanised)
+  "बारिश", "बाढ़", "ओले", "तूफान", "बरसात", "baarish", "barish", "toofan", "olay",
+  // Urdu / Persian
+  "بارش", "سیلاب", "اولے", "طوفان", "باران", "سیل", "تگرگ",
+  // Malayalam
+  "മഴ", "വെള്ളപ്പൊക്കം", "ആലിപ്പഴ", "കൊടുങ്കാറ്റ്",
+  // Tamil
+  "மழை", "வெள்ளம்", "ஆலங்கட்டி", "புயல்",
+  // Bengali
+  "বৃষ্টি", "বন্যা", "শিলাবৃষ্টি", "ঝড়",
+  // Tagalog / Nepali
+  "ulan", "baha", "bagyo", "yelo", "वर्षा", "असिना",
+];
+const OTHER_LANGUAGES = ["hi", "ur", "ml", "ta", "bn", "tl", "fil", "fa", "ne", "ps", "si", "te"];
+
 const inc = (values) => ({ includesExactly: { values } });
 
 const QUERIES = {
@@ -58,6 +81,53 @@ const QUERIES = {
       queries: [
         { operator: "or", filters: { transcript: inc(SHARJAH_PLACES), onScreenText: inc(SHARJAH_PLACES) } },
         { operator: "or", filters: { caption: inc(WEATHER), transcript: inc(WEATHER), onScreenText: inc(WEATHER) } },
+      ],
+    },
+  },
+  // 4. Spoken in another community language, naming Sharjah (any script) and the weather
+  "languages-speech": {
+    limit: 50,
+    sort: "viewsCount:desc",
+    body: {
+      operator: "and",
+      filters: { publishedAt: WINDOW, transcriptLanguage: { includes: OTHER_LANGUAGES } },
+      queries: [
+        { operator: "or", filters: { caption: inc(SHARJAH_ANY_SCRIPT), transcript: inc(SHARJAH_ANY_SCRIPT), onScreenText: inc(SHARJAH_ANY_SCRIPT) } },
+        { operator: "or", filters: { caption: inc(WEATHER_ANY_LANGUAGE), transcript: inc(WEATHER_ANY_LANGUAGE), onScreenText: inc(WEATHER_ANY_LANGUAGE) } },
+      ],
+    },
+  },
+  // 5. Captioned in another community language
+  "languages-caption": {
+    limit: 50,
+    sort: "viewsCount:desc",
+    body: {
+      operator: "and",
+      filters: { publishedAt: WINDOW, captionLanguage: { includes: OTHER_LANGUAGES } },
+      queries: [
+        { operator: "or", filters: { caption: inc(SHARJAH_ANY_SCRIPT), transcript: inc(SHARJAH_ANY_SCRIPT), onScreenText: inc(SHARJAH_ANY_SCRIPT), hashtags: inc(["sharjah", "uae", "dubai"]) } },
+        { operator: "or", filters: { caption: inc(WEATHER_ANY_LANGUAGE), transcript: inc(WEATHER_ANY_LANGUAGE), onScreenText: inc(WEATHER_ANY_LANGUAGE) } },
+      ],
+    },
+  },
+  // 6. South Asian speech about the UAE weather (the place is often only "UAE"; Claude and the
+  //    gazetteer then decide whether a Sharjah place is actually named or shown)
+  "languages-uae-weather": {
+    limit: 50,
+    sort: "viewsCount:desc",
+    body: {
+      operator: "and",
+      filters: { publishedAt: WINDOW, transcriptLanguage: { includes: ["hi", "ur", "ml", "ta", "bn", "ne", "te", "pa"] } },
+      queries: [
+        {
+          operator: "or",
+          filters: {
+            caption: inc([...SHARJAH_ANY_SCRIPT, "UAE", "uae", "यूएई", "യുഎഇ", "யுஏஇ", "Dubai", "دبئی", "दुबई", "ദുബായ്"]),
+            hashtags: inc(["uae", "dubai", "sharjah", "uaerain", "uaeweather", "dubairain"]),
+            onScreenText: inc(["UAE", "Sharjah", "Dubai"]),
+          },
+        },
+        { operator: "or", filters: { caption: inc(WEATHER_ANY_LANGUAGE), transcript: inc(WEATHER_ANY_LANGUAGE), onScreenText: inc(WEATHER_ANY_LANGUAGE) } },
       ],
     },
   },

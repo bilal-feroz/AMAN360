@@ -14,6 +14,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import type { SignalAnalysis, SignalPost } from "@/domain/signals";
+import { detectLanguage, reconcileSpeech } from "@/domain/language";
 
 const { createAnalyzer } = await import("@/server/signals/analyze");
 
@@ -55,7 +56,8 @@ function toPost(id: string, r: Raw): SignalPost {
     publishedAt: new Date(r.publishedAt).toISOString(),
     author: hash(r.profileId ?? r.profilePlatformId ?? id),
     text: (r.caption ?? r.title ?? "").replace(/[⁨⁩]/g, "").trim().slice(0, 1200),
-    language: r.captionLanguage ?? null,
+    language: detectLanguage(String(r.caption ?? r.title ?? ""), r.captionLanguage ?? m.transcriptLanguage ?? null),
+    speechLanguage: reconcileSpeech(detectLanguage(String(r.caption ?? ""), r.captionLanguage ?? null), m.transcriptLanguage ?? null),
     transcript: m.transcript ? String(m.transcript).trim().slice(0, 900) : null,
     onScreenText: onScreen.slice(0, 16),
     hashtags: (r.hashtags ?? []).slice(0, 16),

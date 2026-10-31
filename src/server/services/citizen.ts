@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { CitizenResponse, MessageState, Recipient, ResponseKind } from "@/domain/types";
-import { matchClarification, classifyHelpText } from "@/domain/comms/classify";
+import { matchClarification, classifyHelpText, isEscalationTopic } from "@/domain/comms/classify";
 import { fillText } from "@/domain/comms/facts";
 import { APPROVED_ANSWERS } from "@/scenario/policy";
 import { audit } from "../bus";
@@ -89,7 +89,8 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
   if (input.kind === "clarify") {
     let match = matchClarification(text ?? "", message.actionId, input.questionId ?? null);
     const provider = getProvider();
-    if (!match.answerId && text && provider.id !== "template" && !input.questionId) {
+    // Rescue, shelter, medical… questions always reach a person: the model is not asked to pick an answer.
+    if (!match.answerId && text && provider.id !== "template" && !input.questionId && !isEscalationTopic(text)) {
       try {
         const allowed = APPROVED_ANSWERS.filter((a) => a.appliesTo.includes(message.actionId)).map((a) => a.id);
         const llm = await provider.selectAnswer(text, allowed, recipient.language);
@@ -133,7 +134,14 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
       const c = classifyHelpText(text, recipient.vulnerability);
       if (open) {
         caseId = open.id;
-        store.cases.save({ ...open, notes: [...open.notes, { at: now, by: actor, text: `Additional help request: ${text ?? "(no text)"}` }] });
+        // Details sent after a bare "I need help" replace the placeholder summary, and triage reads them.
+        const firstText = !store.responses.forMessage(message.id).some((x) => x.kind === "help" && x.text && x.id !== response.id);
+        store.cases.save({
+          ...open,
+          summary: text && firstText ? text : open.summary,
+          notes: [...open.notes, { at: now, by: actor, text: `Additional help request: ${text ?? "(no text)"}` }],
+        });
+        if (text) store.schedule.add(Date.now(), "case_triage", { caseId, again: true });
       } else {
         caseId = store.cases.nextId();
         store.cases.save({

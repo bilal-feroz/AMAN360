@@ -9,7 +9,7 @@ import { SettingsMenu } from "./SettingsMenu";
 import { api } from "@/lib/api";
 
 export function TopBar({ connection, onPresent }: { connection: "live" | "reconnecting" | "polling"; onPresent: () => void }) {
-  const { t, lang, state, operator } = useOps();
+  const { t, lang, state, operator, signInRequired } = useOps();
   const setLang = useUi((s) => s.setLang);
   const presenting = useUi((s) => s.presenting);
   const copilotOpen = useUi((s) => s.copilot.open);
@@ -121,17 +121,19 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
               .map((p) => p[0])
               .join("")}
           </div>
-          <button
-            className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
-            aria-label={t("signOut")}
-            title={t("signOut")}
-            onClick={async () => {
-              await api("/api/auth/logout", { method: "POST" });
-              window.location.href = "/login";
-            }}
-          >
-            <LogOut size={15} />
-          </button>
+          {signInRequired && (
+            <button
+              className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
+              aria-label={t("signOut")}
+              title={t("signOut")}
+              onClick={async () => {
+                await api("/api/auth/logout", { method: "POST" });
+                window.location.href = "/login";
+              }}
+            >
+              <LogOut size={15} />
+            </button>
+          )}
         </div>
       </div>
     </header>

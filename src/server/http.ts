@@ -1,7 +1,7 @@
 import "server-only";
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
-import { readSession, SESSION_COOKIE, type Operator, type Role } from "./auth";
+import { resolveOperator, SESSION_COOKIE, type Operator, type Role } from "./auth";
 import { ensureSeeded } from "./services/reset";
 import { processDue } from "./services/sim";
 import { WorkflowError } from "./services/workflow";
@@ -36,7 +36,7 @@ export function clientKey(req: NextRequest) {
 }
 
 export function requireOperator(req: NextRequest, role?: Role): Operator {
-  const op = readSession(req.cookies.get(SESSION_COOKIE)?.value);
+  const op = resolveOperator(req.cookies.get(SESSION_COOKIE)?.value);
   if (!op) throw new HttpError(401, "Operator sign-in required");
   if (role && op.role !== role) throw new HttpError(403, "Your role does not permit this action");
   return op;

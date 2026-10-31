@@ -136,8 +136,9 @@ in-process bus. The domain layer is I/O-free, so this swap does not touch the sa
 
 ## Security boundaries
 
-- Operator APIs require an HMAC-signed HttpOnly session with role claims; approval/publication
-  require the `duty_officer` role. Citizens use opaque per-recipient tokens (HMAC of the id with a
+- Demo mode opens without sign-in as the duty officer. With `AMAN_REQUIRE_LOGIN=1`, operator APIs
+  require an HMAC-signed HttpOnly session with role claims; approval/publication always require the
+  `duty_officer` role. Citizens use opaque per-recipient tokens (HMAC of the id with a
   per-installation secret stored in `.data/secret`, never committed).
 - Zod validation on every request body; rate limits on login, inbox and responses.
 - LLM credentials are server-side only (`ANTHROPIC_API_KEY`); prompts contain only approved wording.

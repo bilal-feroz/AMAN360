@@ -34,7 +34,7 @@ const CityMap = dynamic(() => import("@/components/map/CityMap"), {
 const TOP = 56;
 const RAIL = 76;
 
-export default function CommandCenter({ operator, initialLang }: { operator: Operator; initialLang: Lang }) {
+export default function CommandCenter({ operator, initialLang, signInRequired = false }: { operator: Operator; initialLang: Lang; signInRequired?: boolean }) {
   const ui = useUi();
   const { state, refresh, connection } = useOpsState(ui.viewAt);
 
@@ -51,7 +51,7 @@ export default function CommandCenter({ operator, initialLang }: { operator: Ope
   }, [initialLang]);
 
   return (
-    <OpsProvider state={state} lang={ui.lang} operator={operator} refresh={refresh}>
+    <OpsProvider state={state} lang={ui.lang} operator={operator} signInRequired={signInRequired} refresh={refresh}>
       <Shell connection={connection} />
     </OpsProvider>
   );

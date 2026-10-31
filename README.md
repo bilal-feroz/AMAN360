@@ -55,15 +55,12 @@ npm run setup
 npm run demo
 ```
 
-Open **http://localhost:3360** and sign in:
+Open **http://localhost:3360** — the command center opens directly as the duty officer,
+**Alya H.** (can approve and publish). There is no sign-in step in demo mode.
 
-| Operator | Role | Demo passcode |
-|---|---|---|
-| Alya H. | Duty officer (can approve/publish) | `aman-demo-2026` |
-| Sami R. | Analyst (read-only) | `aman-demo-2026` |
-
-The passcode is a demo-only value set by `AMAN_OPERATOR_PASSCODE` (see `.env.example`). Change it
-for any shared deployment.
+For any shared or hosted deployment, turn sign-in on with `AMAN_REQUIRE_LOGIN=1`. Operators then
+sign in with the demo passcode set by `AMAN_OPERATOR_PASSCODE` (default `aman-demo-2026`; change
+it), and a read-only analyst account (Sami R.) becomes available.
 
 For development with hot reload use `npm run dev` (also port 3360). `npm run demo` builds and
 serves the optimised production bundle — use it on presentation day.
@@ -166,4 +163,5 @@ More in [docs/screenshots](docs/screenshots).
 - Arabic and English wording was written for this prototype and needs expert review.
 - The 3D city is OSM-based geometry with estimated heights for untagged buildings.
 - Simulation time is compressed (seconds instead of minutes).
-- Demo authentication is a shared passcode with signed sessions, not a government identity provider.
+- Demo mode has no sign-in; optional authentication is a shared passcode with signed sessions, not
+  a government identity provider.

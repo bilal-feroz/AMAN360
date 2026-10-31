@@ -3,9 +3,11 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { installationSecret } from "./db";
 
 /**
- * Demo-appropriate operator authentication: a shared demo passcode (from env, never a real
- * credential) and an HMAC-signed, HttpOnly session cookie with role claims. A government deployment
- * would replace this with the authority's identity provider (see DEPLOYMENT.md).
+ * Demo-appropriate operator authentication. By default the demo opens straight into the command
+ * center as the duty officer (no sign-in step). Setting AMAN_REQUIRE_LOGIN=1 turns on a shared demo
+ * passcode (from env, never a real credential) with an HMAC-signed, HttpOnly session cookie carrying
+ * role claims. A government deployment would replace this with the authority's identity provider
+ * (see DEPLOYMENT.md).
  */
 
 export type Role = "duty_officer" | "analyst";
@@ -44,6 +46,16 @@ export function checkPasscode(input: string): boolean {
 export function createSession(op: Operator): string {
   const payload = Buffer.from(JSON.stringify({ op: op.id, role: op.role, exp: Date.now() + TTL_MS })).toString("base64url");
   return `${payload}.${sign(payload)}`;
+}
+
+/** Passcode sign-in is opt-in (AMAN_REQUIRE_LOGIN=1) — recommended for any shared or hosted deployment. */
+export function loginRequired(): boolean {
+  return /^(1|true|yes|on)$/i.test(process.env.AMAN_REQUIRE_LOGIN?.trim() ?? "");
+}
+
+/** The signed-in operator, or — in open demo mode — the duty officer. */
+export function resolveOperator(token: string | undefined | null): Operator | null {
+  return readSession(token) ?? (loginRequired() ? null : OPERATORS[0]);
 }
 
 export function readSession(token: string | undefined | null): Operator | null {

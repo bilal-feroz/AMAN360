@@ -22,7 +22,8 @@ npm run demo
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `AMAN_OPERATOR_PASSCODE` | `aman-demo-2026` | Demo operator passcode — change for shared use |
+| `AMAN_REQUIRE_LOGIN` | unset (open demo) | `1` requires operator sign-in — set it for any shared or hosted use |
+| `AMAN_OPERATOR_PASSCODE` | `aman-demo-2026` | Operator passcode when sign-in is on — change it |
 | `AMAN_SESSION_SECRET` | per-installation secret in `.data/secret` | Signs operator sessions |
 | `ANTHROPIC_API_KEY` | unset | Enables the bounded LLM layer (server-side only) |
 | `AMAN_LLM_MODEL` | `claude-opus-5-5` | Model for simplification / question routing |
@@ -67,7 +68,9 @@ npm run start
 
 - Put it behind HTTPS (the session cookie becomes `Secure` automatically on https).
 - Mount `.data/` on persistent storage.
-- Set a strong `AMAN_OPERATOR_PASSCODE` and `AMAN_SESSION_SECRET`.
+- Set `AMAN_REQUIRE_LOGIN=1` plus a strong `AMAN_OPERATOR_PASSCODE` and `AMAN_SESSION_SECRET`. In
+  the default open demo mode anyone who can reach the server acts as the duty officer — and can
+  use the copilot, which spends API credit when a key is set.
 - Keep the deployment non-public or access-restricted: it is a training prototype.
 - Respect tile providers' terms: OpenFreeMap allows small offline caches with a unique
   User-Agent; EOxCloudless imagery is CC BY-NC-SA (non-commercial). Commercial or government use

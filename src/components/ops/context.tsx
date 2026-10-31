@@ -12,6 +12,8 @@ interface OpsCtx {
   t: (k: DictKey) => string;
   L: <T>(v: { en: T; ar: T }) => T;
   operator: Operator;
+  /** False in open demo mode: there is no sign-in, so no sign-out either. */
+  signInRequired: boolean;
   canAct: boolean;
   busy: string | null;
   error: string | null;
@@ -30,12 +32,14 @@ export function OpsProvider({
   state,
   lang,
   operator,
+  signInRequired = false,
   refresh,
   children,
 }: {
   state: OpsState | null;
   lang: Lang;
   operator: Operator;
+  signInRequired?: boolean;
   refresh: () => Promise<void>;
   children: ReactNode;
 }) {
@@ -69,6 +73,7 @@ export function OpsProvider({
       t: (k) => translate(lang, k),
       L: (v) => v[lang],
       operator,
+      signInRequired,
       canAct: operator.role === "duty_officer",
       busy,
       error,
@@ -80,7 +85,7 @@ export function OpsProvider({
       reviewAction: (id, resolution) => run(`review:${id}`, () => api(`/api/ops/reviews/${id}`, { json: { resolution } })),
       refresh,
     }),
-    [state, lang, operator, busy, error, run, refresh],
+    [state, lang, operator, signInRequired, busy, error, run, refresh],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

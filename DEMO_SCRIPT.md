@@ -2,7 +2,8 @@
 
 **Setup (before judges arrive, ~5 min)**
 
-1. `npm run demo`, open `http://localhost:3360` in Chrome, full screen (F11), sign in as **Alya H.**
+1. `npm run demo`, open `http://localhost:3360` in Chrome, full screen (F11). It opens straight
+   into the command center as **Alya H.** (no sign-in).
 2. Let the city load once (this also warms the tile cache), then **Settings → Reset demo**.
 3. Optional second screen / phones: left rail → **Citizen devices** → *Open in new window* for
    Mariam (Arabic) and Daniel (English). Over Wi-Fi, use the laptop IP instead of `localhost`.

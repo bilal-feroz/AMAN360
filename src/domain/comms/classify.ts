@@ -75,6 +75,8 @@ export interface ResponseClassification {
 const URGENT = [
   "trapped", "can't move", "cannot move", "wheelchair", "elderly", "child", "baby", "pregnant", "injur", "bleeding", "breath", "medical", "oxygen", "dialysis", "water is rising", "water entering", "water inside", "flooding inside",
   "محاصر", "عالق", "لا استطيع الحركه", "كرسي متحرك", "كبير السن", "مسن", "والدي", "والدتي", "طفل", "رضيع", "حامل", "مصاب", "نزيف", "تنفس", "اكسجين", "غسيل كلوي", "المياه ترتفع", "دخلت المياه", "المياه داخل",
+  // Building fire
+  "smoke", "fire", "can't get out", "cannot get out", "can't use the stairs", "دخان", "حريق", "لا نستطيع الخروج", "لا استطيع الخروج", "لا تستطيع نزول الدرج",
   // The no-AI fallback must also catch urgent needs written in the SMS languages.
   "फंस", "फँस", "चल नहीं", "व्हीलचेयर", "बुजुर्ग", "बूढ़", "बच्च", "शिशु", "गर्भवती", "घायल", "खून", "सांस", "ऑक्सीजन", "डायलिसिस", "पानी घर में", "पानी अंदर", "पानी बढ़",
   "phans", "chal nahi", "buzurg", "bachcha", "pani ghar", "pani andar",

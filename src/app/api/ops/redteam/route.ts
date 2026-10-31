@@ -3,8 +3,8 @@ import { z } from "zod";
 import { renderApproved, lockedFactValues } from "@/domain/comms/facts";
 import { validateCandidate } from "@/domain/comms/validator";
 import { ATTACKS } from "@/domain/comms/redteam";
-import { APPROVED_ACTIONS, SAFETY_POLICY } from "@/scenario/policy";
-import { INCIDENT_ID } from "@/scenario/scenario";
+import { APPROVED_ACTIONS } from "@/scenario/policy";
+import { activeIncidentId, policyFor, scenarioKind } from "@/server/services/active";
 import { audit } from "@/server/bus";
 import { handler, HttpError, rateLimit, requireOperator } from "@/server/http";
 import { messageFacts } from "@/server/services/workflow";
@@ -30,12 +30,12 @@ export const POST = handler(async (req: NextRequest) => {
   const action = APPROVED_ACTIONS.find((a) => a.id === body.actionId);
   const attack = ATTACKS.find((a) => a.id === body.attack);
   if (!action || !attack) throw new HttpError(404, "Unknown action or attack");
-  const incident = store.incidents.get(INCIDENT_ID);
+  const incident = store.incidents.get(activeIncidentId());
   if (!incident) throw new HttpError(404, "No incident");
   const facts = messageFacts(incident);
   const approved = renderApproved(action, body.language, body.variant, facts);
   const content = attack.apply(approved, body.language, lockedFactValues(action, body.language, facts));
-  const v = validateCandidate({ actionId: action.id, language: body.language, variant: body.variant, content }, { action, language: body.language, variant: body.variant, facts }, SAFETY_POLICY);
+  const v = validateCandidate({ actionId: action.id, language: body.language, variant: body.variant, content }, { action, language: body.language, variant: body.variant, facts }, policyFor(incident));
   audit(op.id, v.passed ? "redteam.passed" : "redteam.blocked", `Stress test "${attack.label.en}" on ${action.id}/${body.language}/${body.variant}: ${v.passed ? "NOT blocked" : `blocked by ${v.checks.filter((c) => !c.passed).length} check(s)`}`, {
     entity: action.id,
     data: { attack: attack.id, failed: v.checks.filter((c) => !c.passed).map((c) => c.id) },
@@ -45,5 +45,6 @@ export const POST = handler(async (req: NextRequest) => {
 
 export const GET = handler(async (req: NextRequest) => {
   requireOperator(req);
-  return { attacks: ATTACKS.map((a) => ({ id: a.id, label: a.label })) };
+  const fire = scenarioKind() === "fire";
+  return { attacks: ATTACKS.filter((a) => !a.only || (a.only === "fire" && fire)).map((a) => ({ id: a.id, label: a.label })) };
 });

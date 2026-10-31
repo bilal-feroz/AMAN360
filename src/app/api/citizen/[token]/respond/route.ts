@@ -10,6 +10,8 @@ const Body = z.object({
   text: z.string().max(500).nullable().optional(),
   questionId: z.string().max(40).nullable().optional(),
   idempotencyKey: z.string().min(8).max(80).optional(),
+  situation: z.enum(["inside", "trapped"]).nullable().optional(),
+  floor: z.number().int().min(0).max(200).nullable().optional(),
 });
 
 export const POST = handler(async (req: NextRequest, { params }: Ctx) => {

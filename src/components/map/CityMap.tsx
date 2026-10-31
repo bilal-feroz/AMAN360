@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import maplibregl, { type GeoJSONSource, type Map as MlMap } from "maplibre-gl";
+import maplibregl, { type GeoJSONSource, type Map as MlMap, type PositionAnchor } from "maplibre-gl";
 import type { Feature, FeatureCollection, LineString, Polygon } from "geojson";
 import * as THREE from "three";
 import { buildStyle, PALETTE } from "./style";
-import { CityLayer, type ClusterDatum, type Quality } from "./city-layer";
+import { CityLayer, type ClusterDatum, type FireTowerSpec, type Quality } from "./city-layer";
 import { buildCity, buildPolygons, type CityBuildings } from "./buildings";
 import { INTRO_KEYS, OVERVIEW, playPath, type PathRunner } from "./camera";
 import { toLocal } from "./frame";
 import type { OpsState } from "@/lib/use-ops-state";
+import type { FireDetails } from "@/domain/types";
 import type { Lang } from "@/lib/i18n";
 import scenarioGeometry from "@/scenario/geometry.json";
 import type { CameraTarget } from "@/lib/ui-store";
@@ -33,6 +34,8 @@ interface Props {
   selectedRecipientId: string | null;
   onSelectRecipient: (id: string) => void;
   onSelectZone: () => void;
+  /** Fire drill: the burning tower's marker was clicked (falls back to onSelectZone). */
+  onSelectBuilding?: () => void;
   onSelectClosure: () => void;
   onHover: (h: { x: number; y: number; title: string; lines: string[] } | null) => void;
   onStatus?: (s: { cityReady: boolean; offline: boolean; buildings: number; estimated: number }) => void;
@@ -63,7 +66,80 @@ const STATUS_COLOR: Record<string, string> = {
   clarification_requested: "#42c8bb",
   acknowledged: "#0b8f88",
   assistance_requested: "#fa684f",
+  fire_above: "#e2553d",
+  fire_below: "#f39a80",
+  smoke_area: "#e8ac45",
 };
+
+/** Fire drill: tower floor colours (the building board's legend), smoke area, and the viewing side. */
+const FLOOR_COLOR = {
+  fire: "#ff7a45",
+  trapped: "#e2553d",
+  inside: "#e8ac45",
+  unaccounted: "#8fa3a8",
+  out: "#0b8f88",
+  empty: "#d9dfe0",
+  above: "#f2b8a8",
+  below: "#eedcd3",
+};
+const SMOKE = { fill: "#8a7b6d", line: "#76675a" };
+/** Fire views look north-east: the lit facade faces the camera and the smoke drifts off to the right. */
+const FIRE_BEARING = 55;
+
+function ringCenter(p: Polygon): [number, number] {
+  const ring = p.coordinates[0].slice(0, -1);
+  return [ring.reduce((s, c) => s + c[0], 0) / ring.length, ring.reduce((s, c) => s + c[1], 0) / ring.length];
+}
+
+/** The point `m` metres from a lng/lat along a compass bearing. */
+function ahead([lng, lat]: [number, number], bearingDeg: number, m: number): [number, number] {
+  const b = (bearingDeg * Math.PI) / 180;
+  return [lng + (Math.sin(b) * m) / (111_320 * Math.cos((lat * Math.PI) / 180)), lat + (Math.cos(b) * m) / 111_320];
+}
+
+/**
+ * One colour per floor from the building board: trapped, still inside, unaccounted, all out, or
+ * nobody living there. Before the alert goes out nobody has replied, so floors show only whether
+ * they are at or above the fire.
+ */
+function towerSpec(st: OpsState, fire: FireDetails): FireTowerSpec {
+  const n = fire.floors;
+  const tally = Array.from({ length: n }, () => ({ people: 0, trapped: 0, inside: 0, open: 0 }));
+  for (const row of st.fireBoard?.rows ?? []) {
+    const t = tally[Math.min(n, Math.max(1, row.floor)) - 1];
+    t.people += row.people.length;
+    t.trapped += row.trapped;
+    t.inside += row.inside;
+    t.open += row.unaccounted + row.notReached;
+  }
+  const sent = stageReached(st, "issued");
+  const colors = tally.map((t, i) => {
+    const floor = i + 1;
+    if (floor === fire.fireFloor) return FLOOR_COLOR.fire;
+    if (!sent) return floor > fire.fireFloor ? FLOOR_COLOR.above : FLOOR_COLOR.below;
+    if (!t.people) return FLOOR_COLOR.empty;
+    if (t.trapped) return FLOOR_COLOR.trapped;
+    if (t.inside) return FLOOR_COLOR.inside;
+    if (t.open) return FLOOR_COLOR.unaccounted;
+    return FLOOR_COLOR.out;
+  });
+  return {
+    key: `${fire.buildingId}:${n}:${fire.heightM}`,
+    ring: fire.footprint.coordinates[0] as [number, number][],
+    floors: n,
+    heightM: fire.heightM,
+    fireFloor: fire.fireFloor,
+    colors,
+    windFromDeg: fire.wind.fromDeg,
+    burning: st.incident.state !== "resolved",
+  };
+}
+
+/** A marker pinned `alt` metres up the tower; `dx` shifts its anchor sideways (px); `stack` keeps labels apart. */
+type Lifted = { lngLat: [number, number]; alt: number; dx: number; stack: boolean; last: string };
+
+const FLAME_SVG = (c: string) =>
+  `<svg width="13" height="13" viewBox="0 0 24 24" fill="${c}" stroke="${c}" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`;
 
 const LANDMARKS: { lngLat: [number, number]; en: string; ar: string; kind: "park" | "water" | "place" }[] = [
   { lngLat: [55.3858, 25.3269], en: "Al Majaz Waterfront", ar: "واجهة المجاز المائية", kind: "park" },
@@ -124,6 +200,8 @@ export default function CityMap(props: Props) {
   const introRef = useRef<PathRunner | null>(null);
   const markers = useRef<Map<string, maplibregl.Marker>>(new Map());
   const sigMarkers = useRef<Map<string, maplibregl.Marker>>(new Map());
+  /** Markers pinned to a floor of the burning tower: re-offset every frame as the camera moves. */
+  const lifted = useRef<Map<string, Lifted>>(new Map());
   const deliveredRef = useRef<Map<string, number>>(new Map());
   const propsRef = useRef(props);
   propsRef.current = props;
@@ -174,6 +252,7 @@ export default function CityMap(props: Props) {
     map.on("style.load", async () => {
       const layer = new CityLayer(propsRef.current.quality);
       layerRef.current = layer;
+      layer.onFrame = liftMarkers;
       addScenarioLayers(map);
       map.addLayer(layer, "road-label");
       addSignalLayers(map);
@@ -290,6 +369,9 @@ export default function CityMap(props: Props) {
       sent: ["Sent", "أُرسلت"],
       no_response: ["No response", "دون رد"],
       inside_zone: ["Inside zone", "داخل المنطقة"],
+      fire_above: ["Fire floor & above", "طابق الحريق وما فوقه"],
+      fire_below: ["Below the fire", "تحت طابق الحريق"],
+      smoke_area: ["Smoke area", "منطقة الدخان"],
       approaching_closure: ["Approaching closure", "باتجاه الإغلاق"],
       outside: ["Outside zone", "خارج المنطقة"],
       needs_review: ["Needs review", "يحتاج مراجعة"],
@@ -446,18 +528,54 @@ export default function CityMap(props: Props) {
       }
       return;
     }
+    const easing = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+    const fire = propsRef.current.state?.incident.fire ?? null;
+    if (fire && (t.kind === "zone" || t.kind === "building")) {
+      const tower = ringCenter(fire.footprint);
+      let target: maplibregl.JumpToOptions;
+      if (t.kind === "building") {
+        // Close on the tower from the south-west; centred a little beyond it so all floors fit above the base.
+        target = { center: ahead(tower, FIRE_BEARING, 70), zoom: 17, pitch: 65, bearing: FIRE_BEARING, padding };
+      } else {
+        // The tower and the smoke area downwind, framed inside the open panels (extra room on top for the tower).
+        const ring = [...fire.footprint.coordinates[0], ...((propsRef.current.state?.hazard?.geometry as Polygon | undefined)?.coordinates[0] ?? [])];
+        const lngs = ring.map((c) => c[0]);
+        const lats = ring.map((c) => c[1]);
+        // cameraForBounds subtracts the map's current padding as well as the one given, and this flight
+        // keeps the current padding, so ask only for what the panels and margins add on top of it.
+        const { top = 0, bottom = 0, left = 0, right = 0 } = map.getPadding();
+        const cam = map.cameraForBounds(
+          [
+            [Math.min(...lngs), Math.min(...lats)],
+            [Math.max(...lngs), Math.max(...lats)],
+          ],
+          {
+            padding: { top: padding.top + 70 - top, bottom: padding.bottom + 30 - bottom, left: padding.left + 30 - left, right: padding.right + 30 - right },
+            bearing: FIRE_BEARING,
+            maxZoom: 16.4,
+          },
+        );
+        target = cam
+          ? { center: cam.center, zoom: (cam.zoom ?? 15.4) - 0.1, pitch: 57, bearing: FIRE_BEARING }
+          : { center: ahead(tower, 135, 380), zoom: 15.3, pitch: 57, bearing: FIRE_BEARING, padding };
+      }
+      if (props.reducedMotion) map.jumpTo(target);
+      else map.flyTo({ ...target, duration: 2000, curve: 1.25, essential: true, easing });
+      return;
+    }
     const opts =
       t.kind === "overview"
         ? { center: OVERVIEW.center, zoom: OVERVIEW.zoom, pitch: OVERVIEW.pitch, bearing: OVERVIEW.bearing }
-        : t.kind === "zone"
-          ? { center: [55.3893, 25.3236] as [number, number], zoom: 15.75, pitch: 56, bearing: -34 }
-          : t.kind === "closure"
-            ? { center: [55.3901, 25.3226] as [number, number], zoom: 16.75, pitch: 64, bearing: 42 }
-            : t.kind === "city"
-              ? { center: [55.3925, 25.3285] as [number, number], zoom: 13.7, pitch: 52, bearing: -30 }
-              : { center: t.lngLat, zoom: t.zoom ?? 17, pitch: t.pitch ?? 62, bearing: t.bearing ?? map.getBearing() };
+        : t.kind === "closure"
+          ? { center: [55.3901, 25.3226] as [number, number], zoom: 16.75, pitch: 64, bearing: 42 }
+          : t.kind === "city"
+            ? { center: [55.3925, 25.3285] as [number, number], zoom: 13.7, pitch: 52, bearing: -30 }
+            : t.kind === "point"
+              ? { center: t.lngLat, zoom: t.zoom ?? 17, pitch: t.pitch ?? 62, bearing: t.bearing ?? map.getBearing() }
+              : // "zone" (and "building" outside a fire drill): the flood zone
+                { center: [55.3893, 25.3236] as [number, number], zoom: 15.75, pitch: 56, bearing: -34 };
     if (props.reducedMotion) map.jumpTo({ ...opts, padding });
-    else map.flyTo({ ...opts, padding, duration: 2000, curve: 1.25, essential: true, easing: (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) });
+    else map.flyTo({ ...opts, padding, duration: 2000, curve: 1.25, essential: true, easing });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.camera.nonce, ready]);
 
@@ -559,6 +677,8 @@ export default function CityMap(props: Props) {
     const assessed = stageReached(st, "area");
     const verifiedFeed = st.incident.state !== "resolved";
     const zoneMode = assessed ? "active" : verifiedFeed ? "preview" : "hidden";
+    // Fire drill: the hazard area is smoke (grey-brown, always dashed), not a flood zone.
+    const fire = st.incident.fire ?? null;
 
     const zoneSrc = map.getSource("zone") as GeoJSONSource | undefined;
     const closureSrc = map.getSource("closures") as GeoJSONSource | undefined;
@@ -568,16 +688,19 @@ export default function CityMap(props: Props) {
         type: "FeatureCollection",
         features: st.closures.map((c) => ({ type: "Feature", properties: { id: c.id, mode: zoneMode }, geometry: c.geometry as LineString })),
       });
-    map.setPaintProperty("zone-fill", "fill-opacity", zoneMode === "active" ? 0.13 : 0);
+    map.setPaintProperty("zone-fill", "fill-color", fire ? SMOKE.fill : PALETTE.zoneFill);
+    map.setPaintProperty("zone-fill", "fill-opacity", zoneMode === "active" ? (fire ? 0.16 : 0.13) : 0);
     map.setPaintProperty("zone-line", "line-opacity", zoneMode === "active" ? 0.95 : zoneMode === "preview" ? 0.85 : 0);
-    map.setPaintProperty("zone-line", "line-color", zoneMode === "active" ? PALETTE.zoneLine : "#d99a2b");
-    map.setPaintProperty("zone-line", "line-dasharray", zoneMode === "active" ? [1, 0] : [2, 1.6]);
+    map.setPaintProperty("zone-line", "line-color", zoneMode === "active" ? (fire ? SMOKE.line : PALETTE.zoneLine) : "#d99a2b");
+    map.setPaintProperty("zone-line", "line-dasharray", zoneMode === "active" && !fire ? [1, 0] : [2, 1.6]);
     map.setPaintProperty("closure-casing", "line-opacity", zoneMode === "active" ? 1 : 0);
     map.setPaintProperty("closure-line", "line-opacity", zoneMode === "active" ? 1 : zoneMode === "preview" ? 0.35 : 0);
     map.setPaintProperty("closure-line", "line-color", zoneMode === "active" ? PALETTE.closure : "#8fa3a8");
 
+    layer.setHazardStyle(fire ? "smoke" : "flood");
     if (st.hazard) layer.setHazardZone(st.hazard.geometry as Polygon);
     layer.setHazardActive(zoneMode === "active", zoneMode === "preview");
+    layer.setFireTower(fire ? towerSpec(st, fire) : null);
     layer.setColumns(clusterData(st), true);
 
     // Delivery ripples: cells whose delivered count increased since last update
@@ -616,17 +739,99 @@ export default function CityMap(props: Props) {
     }
   }
 
+  // Markers pinned to a floor of the burning tower follow it as the camera moves (called every frame).
+  function liftMarkers() {
+    const layer = layerRef.current;
+    if (!layer) return;
+    const placed: { key: string; m: maplibregl.Marker; l: Lifted; x: number; y: number }[] = [];
+    for (const [key, l] of lifted.current) {
+      const m = markers.current.get(key);
+      const off = m ? layer.liftOffset(l.lngLat, l.alt) : null;
+      if (m && off) placed.push({ key, m, l, x: off[0] + l.dx, y: off[1] });
+    }
+    // People in the tower share one side of it: keep their labels apart when zoomed out (floors are a few px).
+    const stacked = placed.filter((p) => p.l.stack).sort((a, b) => b.y - a.y);
+    for (let i = 1; i < stacked.length; i++) stacked[i].y = Math.min(stacked[i].y, stacked[i - 1].y - 30);
+    for (const { m, l, x, y } of placed) {
+      const k = `${Math.round(x * 2) / 2},${Math.round(y * 2) / 2}`;
+      if (k === l.last) continue;
+      l.last = k;
+      m.setOffset([Math.round(x * 2) / 2, Math.round(y * 2) / 2]);
+    }
+    keepAssemblyClear(placed.find((p) => p.key === "fire"));
+  }
+
+  /** Flips the assembly point's label below its pin whenever it would touch the fire label. */
+  function keepAssemblyClear(fire: { m: maplibregl.Marker; x: number; y: number } | undefined) {
+    const map = mapRef.current;
+    const inner = markers.current.get("assembly")?.getElement().firstElementChild as HTMLElement | null | undefined;
+    const pill = inner?.firstElementChild as HTMLElement | null | undefined;
+    if (!map || !fire || !inner || !pill) return;
+    // Sizes are measured once per render of the marker, not every frame.
+    if (!inner.dataset.w) Object.assign(inner.dataset, { w: String(pill.offsetWidth), h: String(pill.offsetHeight) });
+    const fireEl = fire.m.getElement();
+    if (!fireEl.dataset.w) Object.assign(fireEl.dataset, { w: String(fireEl.offsetWidth), h: String(fireEl.offsetHeight) });
+    const [w, h, fw, fh] = [inner.dataset.w, inner.dataset.h, fireEl.dataset.w, fireEl.dataset.h].map(Number);
+    // The fire label is anchored at its right edge; the assembly label sits above its pin (stem 12 px, pin 13 px).
+    const t = map.project(fire.m.getLngLat());
+    const f = { right: t.x + fire.x, left: t.x + fire.x - fw, top: t.y + fire.y - fh / 2, bottom: t.y + fire.y + fh / 2 };
+    const p = map.project(markers.current.get("assembly")!.getLngLat());
+    const a = { left: p.x - w / 2, right: p.x + w / 2, top: p.y - 25 - h, bottom: p.y - 25 };
+    const hit = a.left < f.right + 6 && a.right > f.left - 6 && a.top < f.bottom + 6 && a.bottom > f.top - 6;
+    if (hit === (inner.dataset.flip === "1")) return;
+    inner.dataset.flip = hit ? "1" : "";
+    inner.style.flexDirection = hit ? "column-reverse" : "column";
+    inner.style.transform = hit ? `translateY(${h + 12}px)` : "";
+  }
+
+  /** Pins a marker `alt` metres up from its ground point; `dx` moves its anchor sideways (px). */
+  function lift(key: string, lngLat: [number, number], alt: number, dx: number, stack = false) {
+    const prev = lifted.current.get(key);
+    const same = prev && prev.alt === alt && prev.dx === dx && prev.lngLat[0] === lngLat[0] && prev.lngLat[1] === lngLat[1];
+    lifted.current.set(key, { lngLat, alt, dx, stack, last: same ? prev.last : "" });
+  }
+
+  function placeMarker(key: string, anchor: PositionAnchor, lngLat: [number, number], make: () => HTMLElement) {
+    let m = markers.current.get(key);
+    if (!m) {
+      m = new maplibregl.Marker({ element: make(), anchor }).setLngLat(lngLat).addTo(mapRef.current!);
+      markers.current.set(key, m);
+    } else m.setLngLat(lngLat);
+    return m;
+  }
+
+  function dropMarker(key: string) {
+    markers.current.get(key)?.remove();
+    markers.current.delete(key);
+    lifted.current.delete(key);
+  }
+
+  const markerButton = (onClick: () => void) => () => {
+    const el = document.createElement("button");
+    el.type = "button";
+    el.classList.add("aman-marker");
+    el.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      onClick();
+    });
+    return el;
+  };
+
   function syncMarkers(st: OpsState, active: boolean) {
     const map = mapRef.current;
     if (!map) return;
     syncLandmarks();
+    const lang = propsRef.current.lang;
+    const fire = st.incident.fire ?? null;
+    const tower = fire ? ringCenter(fire.footprint) : null;
+    const fh = fire ? fire.heightM / fire.floors : 0;
+
     // Incident marker (zone centroid)
     const incKey = "incident";
     let inc = markers.current.get(incKey);
     if (!inc) {
       const el = document.createElement("button");
       el.type = "button";
-      el.setAttribute("aria-label", "Incident EVT-RAIN-001");
       el.addEventListener("click", (ev) => {
         ev.stopPropagation();
         propsRef.current.onSelectZone();
@@ -635,10 +840,13 @@ export default function CityMap(props: Props) {
       inc = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat([55.3903, 25.3247]).addTo(map);
       markers.current.set(incKey, inc);
     }
-    const lang = propsRef.current.lang;
     const incEl = inc.getElement();
+    incEl.setAttribute("aria-label", `Incident ${st.incident.id}`);
+    // A building fire has its own marker on the tower (below).
+    incEl.style.display = fire ? "none" : "";
     const color = active ? "#fa684f" : "#e8ac45";
-    incEl.innerHTML = `
+    if (!fire)
+      incEl.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font-sans)">
         <div style="background:#fff;border:1px solid ${color}55;box-shadow:0 10px 24px -14px rgba(16,44,51,.5);border-radius:10px;padding:5px 9px;display:flex;align-items:center;gap:7px;white-space:nowrap">
           <span style="width:8px;height:8px;border-radius:99px;background:${color}"></span>
@@ -649,6 +857,53 @@ export default function CityMap(props: Props) {
           <span style="position:absolute;inset:3px;border-radius:99px;background:${color};border:2px solid #fff"></span>
         </div>
       </div>`;
+
+    // Building fire: the label sits left of the tower, its dot on the fire floor.
+    if (fire && tower) {
+      const tone = active ? "#e2553d" : "#e8ac45";
+      const m = placeMarker("fire", "right", tower, markerButton(() => (propsRef.current.onSelectBuilding ?? propsRef.current.onSelectZone)()));
+      lift("fire", tower, (fire.fireFloor - 0.5) * fh, 7); // the dot's centre is 7 px in from the right edge
+      const el = m.getElement();
+      el.setAttribute("aria-label", `Incident ${st.incident.id}`);
+      el.title = fire.buildingName[lang];
+      el.style.zIndex = "4";
+      delete el.dataset.w; // re-measured by keepAssemblyClear (the label changes with the language)
+      el.innerHTML = `<div dir="ltr" style="display:flex;align-items:center;font-family:var(--font-sans)">
+        <div style="background:#fff;border:1px solid ${tone}55;box-shadow:0 10px 24px -14px rgba(16,44,51,.5);border-radius:10px;padding:5px 9px;display:flex;align-items:center;gap:6px;white-space:nowrap">
+          ${FLAME_SVG(tone)}
+          <span dir="auto" style="font:600 11.5px/1 var(--font-sans);color:#102c33">${lang === "ar" ? `حريق · الطابق ${fire.fireFloor}` : `Fire · floor ${fire.fireFloor}`}</span>
+        </div>
+        <span style="width:10px;height:2px;flex:none;background:${tone}"></span>
+        <div style="position:relative;width:14px;height:14px;flex:none">
+          <span class="aman-pulse" style="position:absolute;inset:0;border-radius:99px;background:${tone}"></span>
+          <span style="position:absolute;inset:3px;border-radius:99px;background:${tone};border:2px solid #fff"></span>
+        </div>
+      </div>`;
+
+      const ap = placeMarker("assembly", "bottom", fire.assemblyPoint.location, () => {
+        const div = document.createElement("div");
+        div.className = "aman-marker select-none";
+        div.setAttribute("role", "img");
+        return div;
+      });
+      const apLabel = lang === "ar" ? "نقطة التجمع" : "Assembly point";
+      const apEl = ap.getElement();
+      apEl.setAttribute("aria-label", `${apLabel}: ${fire.assemblyPoint.name[lang]}`);
+      apEl.title = fire.assemblyPoint.name[lang];
+      apEl.innerHTML = `<div dir="ltr" style="display:flex;flex-direction:column;align-items:center;font-family:var(--font-sans)">
+        <div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:3px 10px 3px 3px;border:1px solid #0b8f8855;box-shadow:0 8px 20px -12px rgba(16,44,51,.55);white-space:nowrap">
+          <span style="width:20px;height:20px;border-radius:99px;background:#0b8f88;display:grid;place-items:center">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22V3"/><path d="M5 4h13l-3 4.5 3 4.5H5"/></svg>
+          </span>
+          <span dir="auto" style="font:600 11px/1 var(--font-sans);color:#0b4f4c">${apLabel}</span>
+        </div>
+        <span style="width:2px;height:12px;background:#0b8f88"></span>
+        <span style="width:9px;height:9px;border-radius:99px;background:#0b8f88;border:2px solid #fff;box-shadow:0 0 0 1px #0b8f8866"></span>
+      </div>`;
+    } else {
+      dropMarker("fire");
+      dropMarker("assembly");
+    }
 
     // Closure marker
     let cl = markers.current.get("closure");
@@ -672,6 +927,7 @@ export default function CityMap(props: Props) {
       <span style="font:600 11px/1 var(--font-sans);color:#102c33;white-space:nowrap">${lang === "ar" ? "شارع الوحدة · مغلق" : "Al Wahda St · closed"}</span></div>`;
 
     // Demo personas
+    const boardPeople = new Map((st.fireBoard?.rows ?? []).flatMap((r) => r.people.map((x) => [x.id, x] as const)));
     for (const p of st.personas) {
       if (!p.location) continue;
       const key = `persona:${p.id}`;
@@ -687,14 +943,17 @@ export default function CityMap(props: Props) {
         m = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat(p.location.coordinates as [number, number]).addTo(map);
         markers.current.set(key, m);
       }
+      // The two drills place some people differently (Mariam lives in the tower in the fire drill).
+      m.setLngLat(p.location.coordinates as [number, number]);
       const el = m.getElement();
       const look = PERSONA_STYLE[p.persona] ?? PERSONA_STYLE.omar;
       const status = p.messageStatus;
       const tone =
         status === "assistance_requested" ? "#fa684f" : status === "acknowledged" ? "#087f7a" : p.decision?.outcome === "NO_ACTION" ? "#8fa3a8" : p.decision ? look.tone : "#8fa3a8";
       const selected = propsRef.current.selectedRecipientId === p.id;
+      const inTower = !!tower && p.building?.id === fire?.buildingId;
       // Personas appear once the engine has assessed impact — the opening city stays calm.
-      el.style.display = p.persona === "priya" || !active ? "none" : "";
+      el.style.display = inTower || p.persona === "priya" || !active ? "none" : "";
       el.setAttribute("aria-label", `${p.displayName} (${p.id})`);
       el.style.zIndex = selected ? "5" : "2";
       el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:3px;transform:translateY(-4px)">
@@ -704,7 +963,42 @@ export default function CityMap(props: Props) {
         </div>
         <span style="width:2px;height:16px;background:linear-gradient(${tone},transparent)"></span>
       </div>`;
+
+      // In the burning tower: right of the tower axis, pinned to the floor they are on (or last reported).
+      const towerKey = `persona-tower:${p.id}`;
+      if (!inTower || !tower) {
+        dropMarker(towerKey);
+        continue;
+      }
+      const row = boardPeople.get(p.id);
+      const floor = row?.floor ?? p.building?.floor ?? 0;
+      const floorTxt = floor === 0 ? (lang === "ar" ? "الطابق الأرضي" : "ground fl") : lang === "ar" ? `الطابق ${floor}` : `fl ${floor}`;
+      const ring =
+        row?.status === "trapped"
+          ? FLOOR_COLOR.trapped
+          : row?.status === "inside"
+            ? FLOOR_COLOR.inside
+            : row?.status === "out"
+              ? FLOOR_COLOR.out
+              : row?.status === "unaccounted"
+                ? FLOOR_COLOR.unaccounted
+                : tone;
+      const tm = placeMarker(towerKey, "left", tower, markerButton(() => propsRef.current.onSelectRecipient(p.id)));
+      lift(towerKey, tower, (Math.max(floor, 1) - 0.5) * fh, -5, true); // the dot's centre is 5 px in from the left edge
+      const tel = tm.getElement();
+      tel.style.display = active ? "" : "none";
+      tel.style.zIndex = selected ? "5" : "3";
+      tel.setAttribute("aria-label", `${p.displayName}, ${floorTxt} (${p.id})`);
+      tel.innerHTML = `<div dir="ltr" style="display:flex;align-items:center;font-family:var(--font-sans)">
+        <span style="width:10px;height:10px;flex:none;border-radius:99px;background:${ring};border:2px solid #fff;box-shadow:0 0 0 1px ${ring}88"></span>
+        <span style="width:10px;height:2px;flex:none;background:${ring}"></span>
+        <div style="display:flex;align-items:center;gap:6px;background:${selected ? "#102c33" : "#fff"};color:${selected ? "#fff" : "#102c33"};border-radius:999px;padding:3px 10px 3px 3px;box-shadow:0 10px 22px -12px rgba(16,44,51,.6);border:1px solid ${ring}66;white-space:nowrap">
+          <span style="width:22px;height:22px;border-radius:99px;background:${ring};color:#fff;display:grid;place-items:center;font:600 11px/1 var(--font-sans)">${look.initial}</span>
+          <span style="font:600 11.5px/1 var(--font-sans)">${p.displayName}<span style="font-weight:500;opacity:.65"> · <bdi>${floorTxt}</bdi></span></span>
+        </div>
+      </div>`;
     }
+    liftMarkers();
   }
 
   return (
@@ -783,10 +1077,22 @@ function MapFallback({ state, lang, reason }: { state: OpsState | null; lang: La
   const H = 700;
   const proj = ([lon, lat]: number[]) => [((lon - 55.372) / (55.404 - 55.372)) * W, H - ((lat - 25.312) / (25.338 - 25.312)) * H];
   const path = (coords: number[][]) => coords.map((c, i) => `${i ? "L" : "M"}${proj(c).join(",")}`).join(" ");
+  const fire = state?.incident.fire ?? null;
+  const assembly = fire ? proj(fire.assemblyPoint.location) : null;
   return (
     <div className="absolute inset-0 grid place-items-center bg-[#eef1ec]">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-full w-full" role="img" aria-label="2D fallback map of the scenario">
-        {state?.hazard && <path d={path((state.hazard.geometry as Polygon).coordinates[0]) + "Z"} fill="#fa684f22" stroke="#e2553d" strokeWidth={3} />}
+        {state?.hazard && (
+          <path
+            d={path((state.hazard.geometry as Polygon).coordinates[0]) + "Z"}
+            fill={fire ? `${SMOKE.fill}29` : "#fa684f22"}
+            stroke={fire ? SMOKE.line : "#e2553d"}
+            strokeWidth={3}
+            strokeDasharray={fire ? "10 7" : undefined}
+          />
+        )}
+        {fire && <path d={path(fire.footprint.coordinates[0]) + "Z"} fill={FLOOR_COLOR.fire} stroke="#e2553d" strokeWidth={2} />}
+        {assembly && <circle cx={assembly[0]} cy={assembly[1]} r={7} fill="#0b8f88" stroke="#fff" strokeWidth={2} />}
         {state?.closures.map((c) => <path key={c.id} d={path((c.geometry as LineString).coordinates)} fill="none" stroke="#d8402a" strokeWidth={6} strokeDasharray="10 6" />)}
         {state?.clusters.map((c, i) => {
           const [x, y] = proj(c.center);

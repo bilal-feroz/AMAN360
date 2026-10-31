@@ -83,10 +83,15 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
           disabled={!canAct}
           defaultValue=""
           onChange={(e) => {
-            if (!e.target.value) return;
-            void demo("scenario", { id: e.target.value }).then(() => {
-              flyTo({ kind: e.target.value === "rain-responses-complete" ? "zone" : "overview" });
-              useUi.getState().setView(e.target.value === "rain-responses-complete" ? "responses" : "queue");
+            const id = e.target.value;
+            if (!id) return;
+            void demo("scenario", { id }).then(() => {
+              const ui = useUi.getState();
+              const complete = id.endsWith("-responses-complete");
+              const fire = id.startsWith("fire-");
+              ui.setSignals({ dataset: "scenario", postId: null, hotspotId: null });
+              ui.flyTo(complete || fire ? { kind: "zone" } : { kind: "overview" });
+              ui.setView(complete ? (fire ? "building" : "responses") : "queue");
               onClose();
             });
           }}
@@ -95,9 +100,15 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
           <option value="" disabled>
             {lang === "ar" ? "تحميل سيناريو تدريبي…" : "Load a training scenario…"}
           </option>
-          <option value="rain-baseline">{lang === "ar" ? "أمطار غزيرة وإغلاق طريق — البداية" : "Heavy rainfall & closure — start"}</option>
-          <option value="rain-conflict-drill">{lang === "ar" ? "تمرين الإغلاق الآمن: موجزات متعارضة" : "Fail-closed drill: conflicting feeds"}</option>
-          <option value="rain-responses-complete">{lang === "ar" ? "نقطة تحقق: اكتملت الردود" : "Checkpoint: responses complete"}</option>
+          <optgroup label={lang === "ar" ? "أمطار غزيرة وفيضان" : "Heavy rainfall & flooding"}>
+            <option value="rain-baseline">{lang === "ar" ? "أمطار غزيرة وإغلاق طريق — البداية" : "Heavy rainfall & closure — start"}</option>
+            <option value="rain-conflict-drill">{lang === "ar" ? "تمرين الإغلاق الآمن: موجزات متعارضة" : "Fail-closed drill: conflicting feeds"}</option>
+            <option value="rain-responses-complete">{lang === "ar" ? "نقطة تحقق: اكتملت الردود" : "Checkpoint: responses complete"}</option>
+          </optgroup>
+          <optgroup label={lang === "ar" ? "حريق في برج سكني" : "High-rise fire"}>
+            <option value="fire-baseline">{lang === "ar" ? "حريق في البرج أ — البداية" : "Tower A fire — start"}</option>
+            <option value="fire-responses-complete">{lang === "ar" ? "نقطة تحقق: من لا يزال في الداخل" : "Checkpoint: who is still inside"}</option>
+          </optgroup>
         </select>
       </div>
       <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 px-1.5 pb-3">

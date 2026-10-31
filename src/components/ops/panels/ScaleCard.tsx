@@ -15,7 +15,7 @@ export function ScaleLine() {
   const { state, lang } = useOps();
   const { flyTo, setScale } = useUi();
   const sc = state?.scale;
-  if (!sc) return null;
+  if (!sc?.cells.length) return null;
   const L = (en: string, ar: string) => (lang === "ar" ? ar : en);
   return (
     <button

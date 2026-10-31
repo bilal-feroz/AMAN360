@@ -17,7 +17,7 @@ import {
   type SignalPost,
 } from "@/domain/signals";
 import { DATASET_GEO, DISPLAY_NAMES, GAZETTEER, RECORDED_ANALYSIS, REPLAY_META, replayPosts, scenarioPosts } from "@/scenario/signals";
-import { INCIDENT_ID } from "@/scenario/scenario";
+import { activeIncidentId, scenarioKind } from "../services/active";
 import { APPROVED_ANSWERS } from "@/scenario/policy";
 import { matchClarification } from "@/domain/comms/classify";
 import { audit } from "../bus";
@@ -43,10 +43,10 @@ const friendly = (p: ResolvedPlace): ResolvedPlace => {
 export type VerificationStatus = "unverified" | "requested" | "consistent" | "confirmed" | "not_confirmed" | "dismissed";
 
 function zoneGeometry(): Polygon | MultiPolygon | null {
-  const incident = store.incidents.get(INCIDENT_ID);
+  const incident = store.incidents.get(activeIncidentId());
   const assessed = store.auditLog.recent(5000).some((e) => e.type === "impact.computed");
   if (!incident || !assessed) return null;
-  return (store.hazards.forIncident(INCIDENT_ID)?.geometry as Polygon | MultiPolygon | undefined) ?? null;
+  return (store.hazards.forIncident(activeIncidentId())?.geometry as Polygon | MultiPolygon | undefined) ?? null;
 }
 
 function items(dataset: SignalDataset, atMs: number): SignalItem[] {
@@ -55,7 +55,10 @@ function items(dataset: SignalDataset, atMs: number): SignalItem[] {
   const posts: SignalPost[] =
     dataset === "scenario"
       ? // Synthetic posts "arrive" on the scenario clock (accelerated with the simulation speed).
-        scenarioPosts(resetAt).filter((p) => (p.offsetSec ?? 0) <= ((atMs - resetAt.getTime()) / 1000) * speed)
+        // They were written for the flood drill, so the fire drill has none.
+        scenarioKind() === "fire"
+        ? []
+        : scenarioPosts(resetAt).filter((p) => (p.offsetSec ?? 0) <= ((atMs - resetAt.getTime()) / 1000) * speed)
       : replayPosts();
   const live = store.signals.live(dataset);
   const geo = DATASET_GEO[dataset];

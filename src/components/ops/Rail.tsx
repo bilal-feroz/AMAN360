@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, BellRing, BookOpen, MessageSquareText, Radar, ScrollText, Smartphone, Users } from "lucide-react";
+import { Activity, BellRing, BookOpen, Building2, MessageSquareText, Radar, ScrollText, Smartphone, Users } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/components/ui";
 import { useUi, type PanelView } from "@/lib/ui-store";
@@ -23,12 +23,16 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
   const sig = state?.signals;
   const signalAlerts = sig ? sig.hotspots.filter((h) => h.status === "unverified" && h.corroborated && h.insideZone !== true).length + sig.rumours.filter((r) => r.status === "flagged").length : 0;
   const next = nextView(state);
+  // Building fire: the people still inside the tower get their own step in the workflow.
+  const board = state?.fireBoard ?? null;
+  const flow: typeof FLOW = board ? [...FLOW, { v: "building", icon: Building2, label: "navTower" }] : FLOW;
 
   const go = (v: PanelView) => {
     const ui = useUi.getState();
     ui.setView(v);
     if ((v === "impact" || v === "guidance" || v === "responses") && state?.assessment) ui.flyTo({ kind: "zone" });
-    if (v === "queue") ui.flyTo({ kind: "overview" });
+    if (v === "queue") ui.flyTo(board ? { kind: "zone" } : { kind: "overview" });
+    if (v === "building") ui.flyTo({ kind: "building" });
     if (v === "signals") ui.flyTo(ui.signals.dataset === "replay" ? { kind: "replay" } : { kind: "zone" });
   };
 
@@ -36,14 +40,14 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
 
   return (
     <nav aria-label="Primary" className="relative z-20 flex w-[76px] flex-col items-center gap-0.5 border-e border-line bg-surface py-3">
-      {FLOW.map(({ v, icon, label }) => (
+      {flow.map(({ v, icon, label }) => (
         <RailItem
           key={v}
           icon={icon}
           label={t(label)}
           active={isActive(v)}
           next={next === v && !isActive(v)}
-          badge={v === "responses" ? openCases : 0}
+          badge={v === "responses" ? openCases : v === "building" && board ? board.totals.trapped + board.totals.inside : 0}
           onClick={() => go(v)}
         />
       ))}

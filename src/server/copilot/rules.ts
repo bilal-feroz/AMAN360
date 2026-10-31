@@ -1,6 +1,6 @@
 import "server-only";
-import { SAFETY_POLICY } from "@/scenario/policy";
-import { INCIDENT_ID } from "@/scenario/scenario";
+import { policyByVersion } from "@/scenario/policy";
+import { activeIncidentId } from "../services/active";
 import type { OpsState } from "../services/state";
 import * as store from "../store";
 import type { Need } from "./resolve";
@@ -42,9 +42,9 @@ export function needFor(vulnerability: string[], text: string): Need {
 }
 
 function traceExplanation(recipientId: string, lang: Lang): string {
-  const d = store.decisions.get(INCIDENT_ID, recipientId);
+  const d = store.decisions.get(activeIncidentId(), recipientId);
   if (!d) return L(lang, "This person has not been assessed yet.", "لم يُقيَّم هذا الشخص بعد.");
-  const rule = SAFETY_POLICY.rules.find((r) => r.id === d.ruleId);
+  const rule = policyByVersion(d.policyVersion).rules.find((r) => r.id === d.ruleId);
   const desc = rule ? rule.description[lang] : d.ruleId;
   return L(lang, `Rule ${d.ruleId}: ${desc}`, `القاعدة ${d.ruleId}: ${desc}`);
 }

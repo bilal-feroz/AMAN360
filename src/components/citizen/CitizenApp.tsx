@@ -9,10 +9,12 @@ import { fmtTime } from "@/lib/format";
 import { speak } from "@/lib/speech";
 import { CITIZEN_COPY } from "./copy";
 import { MiniMap } from "./MiniMap";
-import { AlertHero, ReplyBar, StatusCard } from "./AlertParts";
+import { AlertHero, floorText, ReplyBar, StatusCard } from "./AlertParts";
 
 type Lang = "en" | "ar";
 type Prefs = { lang: Lang | null; scale: number; contrast: boolean; plain: boolean; reduced: boolean };
+/** A Presentation-mode tap from the command center; situation/floor are for building-fire residents. */
+type DemoTap = { kind: "safe" | "help"; text?: string; situation?: "inside" | "trapped"; floor?: number };
 
 const SCALES = [1, 1.15, 1.3, 1.5];
 
@@ -25,15 +27,17 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
   const [error, setError] = useState<string | null>(null);
   const [offline, setOffline] = useState(false);
   const [prefs, setPrefs] = useState<Prefs>({ lang: null, scale: 1, contrast: false, plain: false, reduced: false });
-  const [sheet, setSheet] = useState<null | "help" | "clarify" | "a11y">(null);
+  const [sheet, setSheet] = useState<null | "help" | "clarify" | "a11y" | "inside">(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [answer, setAnswer] = useState<{ text: string | null; escalated: boolean } | null>(null);
   const [speaking, setSpeaking] = useState(false);
   const [helpText, setHelpText] = useState("");
-  const pendingTap = useRef<null | { kind: "safe" | "help"; text?: string }>(null);
+  // Building fire: the floor and situation a resident reports from the "inside" sheet.
+  const [where, setWhere] = useState<{ floor: number; situation: "inside" | "trapped" | null }>({ floor: 0, situation: null });
+  const pendingTap = useRef<null | DemoTap>(null);
   // A safe/help reply that could not reach the server waits here (and in storage) and is resent
   // with the same idempotency key, so a retry can never be recorded twice.
-  const [queued, setQueued] = useState<null | { kind: "safe" | "help"; text: string | null; messageId: string; key: string }>(null);
+  const [queued, setQueued] = useState<null | { kind: "safe" | "help"; text: string | null; messageId: string; key: string; situation?: "inside" | "trapped" | null; floor?: number | null }>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const queueKey = `aman:queued:${token.slice(0, 8)}`;
 
@@ -114,8 +118,9 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
     }
   }, [lang, prefs, token]);
 
-  const c = CITIZEN_COPY[lang];
   const alert = inbox?.alerts[0] ?? null;
+  // A fire alert names Civil Defence's 997, so every "life in danger" line must match it.
+  const c = alert?.fire ? { ...CITIZEN_COPY[lang], lifeThreat: CITIZEN_COPY[lang].lifeThreatFire } : CITIZEN_COPY[lang];
   const variant = prefs.plain ? "plain" : alert?.variant === "audio" ? "audio" : "standard";
   const content = useMemo(() => {
     if (!alert) return null;
@@ -129,14 +134,16 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
 
   const lastResponse = alert?.responses.at(-1) ?? null;
   const respond = useCallback(
-    async (kind: "safe" | "help" | "clarify", extra: { text?: string; questionId?: string } = {}) => {
+    async (kind: "safe" | "help" | "clarify", extra: { text?: string; questionId?: string; situation?: "inside" | "trapped"; floor?: number | null } = {}) => {
       if (!alert) return;
       setBusy(kind);
       setNotice(null);
       const key = newKey();
+      const situation = extra.situation ?? null;
+      const floor = extra.floor ?? null;
       const keep = () => {
         if (kind === "clarify") return setNotice(CITIZEN_COPY[lang].sendFailed);
-        const q = { kind, text: extra.text ?? null, messageId: alert.messageId, key };
+        const q = { kind, text: extra.text ?? null, messageId: alert.messageId, key, situation, floor };
         setQueued(q);
         try {
           localStorage.setItem(queueKey, JSON.stringify(q));
@@ -151,7 +158,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
           res = await fetch(`/api/citizen/${token}/respond`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ kind, messageId: alert.messageId, idempotencyKey: key, text: extra.text ?? null, questionId: extra.questionId ?? null }),
+            body: JSON.stringify({ kind, messageId: alert.messageId, idempotencyKey: key, text: extra.text ?? null, questionId: extra.questionId ?? null, situation, floor }),
           });
         } catch {
           return keep(); // no connection
@@ -170,7 +177,9 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
                 ? {
                     ...a,
                     state: data.messageState,
-                    responses: data.duplicate ? a.responses : [...a.responses, { kind, at: data.receivedAt, text: extra.text ?? null, answerId: data.answer?.id ?? null, escalated: !!data.escalated }],
+                    responses: data.duplicate
+                      ? a.responses
+                      : [...a.responses, { kind, at: data.receivedAt, text: extra.text ?? null, answerId: data.answer?.id ?? null, escalated: !!data.escalated, situation: a.fire && kind === "safe" ? "out" : situation, floor }],
                     case: data.caseId && !a.case ? { id: data.caseId, status: "open", priority: "P1", notes: [] } : a.case,
                   }
                 : a,
@@ -208,7 +217,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
         const res = await fetch(`/api/citizen/${token}/respond`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ kind: queued.kind, messageId: queued.messageId, idempotencyKey: queued.key, text: queued.text }),
+          body: JSON.stringify({ kind: queued.kind, messageId: queued.messageId, idempotencyKey: queued.key, text: queued.text, situation: queued.situation ?? null, floor: queued.floor ?? null }),
         });
         if (res.status >= 500 || stop) return;
         // Sent, or no longer possible (alert ended): either way it leaves the queue.
@@ -233,31 +242,59 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
     };
   }, [queued, token, queueKey, load, lang]);
 
+  // Building fire: open the floor / situation sheet, starting from the last report (or the home floor).
+  const fire = alert?.fire?.inBuilding ? alert.fire : null;
+  const openInside = useCallback(
+    (preset?: { floor?: number; situation?: "inside" | "trapped" }) => {
+      if (!fire || !alert) return;
+      const last = alert.responses.filter((r) => r.kind === "help").at(-1);
+      const situation = preset?.situation ?? (last?.situation === "inside" || last?.situation === "trapped" ? last.situation : null);
+      const floor = preset?.floor ?? last?.floor ?? fire.yourFloor ?? fire.fireFloor;
+      setWhere({ floor: Math.max(0, Math.min(fire.floors, floor)), situation });
+      setSheet("inside");
+    },
+    [fire, alert],
+  );
+
   // Presentation-mode taps from the command center (same-origin parent only) drive the real UI.
   // A tap that arrives before the alert has loaded is queued and performed once it is on screen.
   const performTap = useCallback(
-    async (tap: { kind: "safe" | "help"; text?: string }) => {
-      if (tap.kind === "safe") {
-        await respond("safe");
-      } else {
-        setSheet("help");
-        const text = tap.text ?? "";
+    async (tap: DemoTap) => {
+      const typeIn = async (text: string) => {
         for (let i = 1; i <= text.length; i += 3) {
           setHelpText(text.slice(0, i));
           await new Promise((r) => setTimeout(r, 28));
         }
         setHelpText(text);
         await new Promise((r) => setTimeout(r, 700));
+      };
+      if (tap.kind === "safe") {
+        await respond("safe");
+      } else if (tap.situation && fire) {
+        const floor = Math.max(0, Math.min(fire.floors, tap.floor ?? fire.yourFloor ?? fire.fireFloor));
+        openInside({ floor, situation: tap.situation });
+        const text = tap.text ?? "";
+        await typeIn(text);
+        await respond("help", { situation: tap.situation, floor, text: text || undefined });
+      } else {
+        setSheet("help");
+        const text = tap.text ?? "";
+        await typeIn(text);
         await respond("help", { text });
       }
       window.parent?.postMessage({ type: "aman:demo-tap-done", kind: tap.kind }, window.location.origin);
     },
-    [respond],
+    [respond, fire, openInside],
   );
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
       if (e.origin !== window.location.origin || e.data?.type !== "aman:demo-tap") return;
-      const tap = { kind: e.data.kind as "safe" | "help", text: e.data.text as string | undefined };
+      const tap: DemoTap = {
+        kind: e.data.kind as "safe" | "help",
+        text: e.data.text as string | undefined,
+        situation: e.data.situation === "inside" || e.data.situation === "trapped" ? e.data.situation : undefined,
+        floor: Number.isInteger(e.data.floor) ? (e.data.floor as number) : undefined,
+      };
       if (alert) void performTap(tap);
       else pendingTap.current = tap;
     };
@@ -389,7 +426,13 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
                   <CloudOff size={18} /> {c.notSent}
                 </div>
                 <p className="mt-1 text-[14px] leading-relaxed text-ink-2">
-                  {queued.kind === "help" ? c.help : c.safe}
+                  {fire
+                    ? queued.kind === "help"
+                      ? `${queued.situation === "trapped" ? c.trappedState : c.insideState}${queued.floor != null ? ` — ${floorText(c, queued.floor)}` : ""}`
+                      : c.fireOut
+                    : queued.kind === "help"
+                      ? c.help
+                      : c.safe}
                   {queued.text ? ` — “${queued.text}”` : ""}
                 </p>
                 <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{c.queuedSub}</p>
@@ -433,12 +476,105 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
       </main>
 
       {alert && content && (
-        <ReplyBar c={c} alert={alert} lastResponse={lastResponse} busy={busy ?? (queued ? "queued" : null)} onSafe={() => void respond("safe")} onHelp={() => setSheet("help")} onClarify={() => (setAnswer(null), setSheet("clarify"))} />
+        <ReplyBar
+          c={c}
+          alert={alert}
+          lastResponse={lastResponse}
+          busy={busy ?? (queued ? "queued" : null)}
+          onSafe={() => void respond("safe")}
+          onHelp={() => setSheet("help")}
+          onInside={() => openInside()}
+          onClarify={() => (setAnswer(null), setSheet("clarify"))}
+        />
       )}
 
       <AnimatePresence>
         {sheet && (
-          <Sheet onClose={() => setSheet(null)} title={sheet === "help" ? c.helpTitle : sheet === "clarify" ? c.clarifyTitle : c.accessibility}>
+          <Sheet onClose={() => setSheet(null)} title={sheet === "help" ? c.helpTitle : sheet === "clarify" ? c.clarifyTitle : sheet === "inside" ? c.whereTitle : c.accessibility}>
+            {sheet === "inside" && fire && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (where.situation) void respond("help", { situation: where.situation, floor: where.floor, text: helpText.trim() || undefined });
+                }}
+              >
+                <p className="text-[14px] text-muted">{c.whereSub}</p>
+                <div className="mt-4 text-center text-[13px] font-semibold text-muted">{c.yourFloor}</div>
+                <div className="mt-1.5 flex items-center justify-center gap-4">
+                  <button
+                    type="button"
+                    aria-label={c.floorDown}
+                    disabled={where.floor <= 0}
+                    onClick={() => setWhere((w) => ({ ...w, floor: Math.max(0, w.floor - 1) }))}
+                    className="grid h-14 w-14 place-items-center rounded-2xl bg-surface-2 text-[28px] font-semibold text-ink ring-1 ring-line hover:bg-surface-3 disabled:opacity-40"
+                  >
+                    −
+                  </button>
+                  <output aria-live="polite" aria-label={c.yourFloor} className="tnum min-w-[96px] text-center text-[44px] font-bold leading-none text-ink">
+                    {where.floor === 0 ? c.groundShort : where.floor}
+                  </output>
+                  <button
+                    type="button"
+                    aria-label={c.floorUp}
+                    disabled={where.floor >= fire.floors}
+                    onClick={() => setWhere((w) => ({ ...w, floor: Math.min(fire.floors, w.floor + 1) }))}
+                    className="grid h-14 w-14 place-items-center rounded-2xl bg-surface-2 text-[28px] font-semibold text-ink ring-1 ring-line hover:bg-surface-3 disabled:opacity-40"
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="mt-5 text-[13px] font-semibold text-muted">{c.situationLabel}</div>
+                <div className="mt-2 grid gap-2.5" role="radiogroup" aria-label={c.situationLabel}>
+                  {(
+                    [
+                      ["inside", c.canMove],
+                      ["trapped", c.trappedChoice],
+                    ] as const
+                  ).map(([value, label]) => {
+                    const on = where.situation === value;
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => setWhere((w) => ({ ...w, situation: value }))}
+                        className={cn(
+                          "flex min-h-14 items-center gap-3 rounded-2xl px-4 py-3 text-start text-[16px] font-semibold ring-1 transition-colors",
+                          on
+                            ? value === "trapped"
+                              ? "bg-coral-ink text-white ring-coral-ink"
+                              : "bg-ink text-white ring-ink"
+                            : value === "trapped"
+                              ? "bg-coral-soft text-coral-ink ring-coral/30"
+                              : "bg-surface-2 text-ink ring-line",
+                        )}
+                      >
+                        <span className={cn("grid h-5 w-5 shrink-0 place-items-center rounded-full ring-2", on ? "ring-white" : "ring-current opacity-60")}>
+                          {on && <span className="h-2.5 w-2.5 rounded-full bg-white" />}
+                        </span>
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <label className="mt-3 block">
+                  <span className="sr-only">{c.helpPlaceholder}</span>
+                  <textarea
+                    value={helpText}
+                    onChange={(e) => setHelpText(e.target.value)}
+                    placeholder={c.helpPlaceholder}
+                    rows={2}
+                    maxLength={500}
+                    className="w-full resize-none rounded-xl bg-surface-2 p-3 text-[15px] text-ink ring-1 ring-line outline-none focus:ring-2 focus:ring-cyan"
+                  />
+                </label>
+                <p className="mt-2 text-[13px] font-medium text-coral-ink">{c.lifeThreat}</p>
+                <button type="submit" disabled={busy === "help" || !where.situation} className="mt-3 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-coral-ink text-[16px] font-semibold text-white disabled:opacity-50">
+                  <Send size={18} className="rtl:-scale-x-100" /> {busy === "help" ? c.sending : c.sendWhere}
+                </button>
+              </form>
+            )}
             {sheet === "help" && (
               <form
                 onSubmit={(e) => {

@@ -88,6 +88,18 @@ Built for the **Universities Challenge 2026, Sharjah**.
     drill's replies are projected onto the zone square by square (after the full drill preset: *≈ 12,500
     safe · ≈ 1,200 need help · ≈ 4,200 no reply yet*) and the operator gets the **squares to check first**. The 120 drill
     people stay as real records anyone can open; the city numbers are labelled as estimates.
+16. **Second emergency: a high-rise tower fire.** The same platform runs a fire drill in a 46-floor
+    residential tower in Al Majaz (a real OpenStreetMap footprint; synthetic residents). A simulated
+    Civil Defence feed names the building, the fire floor (12) and the authority's instruction (full
+    evacuation). A separate policy (`POLICY-2026-02`) decides **by floor**: the fire floor and above
+    get *leave by the stairs, never the lift — if smoke blocks the stairs, seal the door and tell us
+    your floor*; floors below get *leave calmly*; neighbours under the drifting smoke get *keep windows
+    closed*; drivers are kept off the road the fire engines need. AMAN never chooses between evacuate
+    and stay put — an instruction mode the authority did not issue blocks publication. Residents
+    answer *I'm out* or *I'm still inside* with their floor and whether they are trapped; a trapped
+    resident is always P1. The **Tower** view shows **who is still inside, floor by floor**, and prints
+    a Civil Defence handover sheet. A model edit that says "take the lift" or "you may go back in" is
+    blocked by the validator.
 
 The key boundary: **AI communicates safety decisions. AI does not invent safety decisions.**
 
@@ -145,7 +157,12 @@ video. **Re-run live with Claude** re-reads a post on the spot.
 
 ### Presentation mode
 
-Settings (gear) also offers **scenario presets** — the start state, a *fail-closed drill* with conflicting feeds, and a *responses complete* checkpoint for Q&A — plus quality, motion and simulation speed.
+Settings (gear) also offers **scenario presets** — the flood start state, a *fail-closed drill* with conflicting feeds, a *responses complete* checkpoint for Q&A, and the **tower fire** (start, or the *who is still inside* checkpoint) — plus quality, motion and simulation speed.
+
+With the tower fire loaded, **Presentation** runs a ~2.5-minute fire walkthrough instead: the Civil
+Defence report, the floor split, the right words per floor, a "take the lift" edit being blocked, one
+approval, Priya (floor 6) out and Mariam (floor 19) trapped with her father, the *who is still
+inside* board, Mariam's P1 case and the handover sheet.
 
 Click **Presentation** in the top bar for the guided ~4-minute walkthrough (now including social
 intelligence, the red-team stress test, a rumour clarification and the real October 2026 storm). It drives the real

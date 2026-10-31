@@ -1,6 +1,7 @@
 import type {
   ActionVariant,
   DecisionTrace,
+  FireDetails,
   HazardGeometry,
   Incident,
   Recipient,
@@ -48,6 +49,10 @@ export function checkIncidentGate(
   }
   if (incident.policyVersion !== policy.version) {
     blocks.push({ ruleId: "R-01-CONFLICT", reason: `Incident references ${incident.policyVersion}, active policy is ${policy.version}` });
+  }
+  // A building fire: AMAN only relays an authority instruction it has approved wording for.
+  if (incident.fire && !(policy.approvedInstructionModes ?? []).includes(incident.fire.instruction)) {
+    blocks.push({ ruleId: "R-03-MODE", reason: `No approved guidance for the authority instruction "${incident.fire.instruction}"` });
   }
   if (!hazard) {
     blocks.push({ ruleId: "R-01-CONFLICT", reason: "Missing verified hazard geometry" });
@@ -140,6 +145,8 @@ export function decide(recipient: Recipient, ctx: EngineContext, gate?: GateResu
     };
   }
 
+  if (incident.fire) return decideFire(recipient, incident.fire, checks, base, facts);
+
   if (checks.insideZone) {
     const why = checks.onBoundary
       ? "Location lies on the verified zone boundary (counted as inside)"
@@ -189,6 +196,60 @@ export function decide(recipient: Recipient, ctx: EngineContext, gate?: GateResu
   };
 }
 
+/**
+ * Building fire (POLICY-2026-02). Order matters: the building first (floor decides the message),
+ * then drivers heading for the closed access road, then people in the smoke area. A resident of
+ * the building whose floor is unknown gets the fire-floor message — the precautionary one.
+ */
+function decideFire(
+  recipient: Recipient,
+  fire: FireDetails,
+  checks: DecisionTrace["checks"],
+  base: Pick<DecisionTrace, "recipientId" | "incidentId" | "policyVersion" | "language" | "variant" | "evaluatedAt">,
+  facts: DecisionTrace["factsUsed"],
+): DecisionTrace {
+  const send = (ruleId: string, actionId: string, category: DecisionTrace["category"], reasons: string[]): DecisionTrace => ({
+    ...base,
+    ruleId,
+    outcome: "SEND",
+    actionId,
+    checks,
+    factsUsed: [...facts, { label: "Building", value: fire.buildingId, source: base.incidentId }, { label: "Fire floor", value: String(fire.fireFloor), source: base.incidentId }],
+    reasons,
+    category,
+  });
+  const home = recipient.building?.id === fire.buildingId ? recipient.building : null;
+  if (home) {
+    if (home.floor === null) return send("R-40-FIRE-ABOVE", "ACT-FIRE-ABOVE", "fire_above", ["Lives in the building; floor unknown — precautionary fire-floor guidance"]);
+    if (home.floor >= fire.fireFloor) {
+      return send("R-40-FIRE-ABOVE", "ACT-FIRE-ABOVE", "fire_above", [
+        home.floor === fire.fireFloor ? `Lives on the fire floor (${home.floor})` : `Lives on floor ${home.floor}, above the fire on floor ${fire.fireFloor}`,
+      ]);
+    }
+    return send("R-41-FIRE-BELOW", "ACT-FIRE-BELOW", "fire_below", [`Lives on floor ${home.floor}, below the fire on floor ${fire.fireFloor}`]);
+  }
+  if (recipient.mobility === "driver") {
+    if (checks.routeIntersectsClosure) {
+      return send("R-43-ACCESS", "ACT-FIRE-ROAD", "approaching_closure", [
+        `Shared route crosses ${checks.nearestClosureId}, closed for Civil Defence access (${checks.distanceToClosureM} m ahead)`,
+        "No approved diversion exists — guidance must not suggest an alternative route",
+      ]);
+    }
+  } else if (checks.insideZone) {
+    return send("R-42-SMOKE", "ACT-FIRE-SMOKE", "smoke_area", [checks.onBoundary || checks.withinUncertainty ? "On the edge of the verified smoke area (precautionary inclusion)" : "Inside the verified smoke area downwind of the building"]);
+  }
+  return {
+    ...base,
+    ruleId: "R-90-OUTSIDE",
+    outcome: "NO_ACTION",
+    actionId: null,
+    checks,
+    factsUsed: facts,
+    reasons: [`Not in the building, not in the smoke area${recipient.mobility === "driver" ? " and not heading for the closed road" : ""}`],
+    category: "outside",
+  };
+}
+
 function geoCtx(ctx: EngineContext) {
   return {
     zone: ctx.hazard.geometry,
@@ -209,6 +270,8 @@ export interface AssessmentSummary {
   byAction: Record<string, number>;
   byLanguage: Record<string, number>;
   byVariant: Record<string, number>;
+  /** Every decision category, including the fire ones (fire_above, fire_below, smoke_area). */
+  byCategory: Record<string, number>;
 }
 
 export function assess(recipients: Recipient[], ctx: EngineContext) {
@@ -225,8 +288,10 @@ export function assess(recipients: Recipient[], ctx: EngineContext) {
     byAction: {},
     byLanguage: {},
     byVariant: {},
+    byCategory: {},
   };
   for (const t of traces) {
+    summary.byCategory[t.category] = (summary.byCategory[t.category] ?? 0) + 1;
     if (t.outcome === "SEND") {
       summary.send++;
       summary.byAction[t.actionId!] = (summary.byAction[t.actionId!] ?? 0) + 1;

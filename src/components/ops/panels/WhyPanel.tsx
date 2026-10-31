@@ -30,7 +30,8 @@ export function WhyPanel() {
   const checks = d?.checks;
   const g = chain.guidance;
   const ar = lang === "ar";
-  const reason = checks
+  // A building fire is decided by floor, so the engine's own reason says it best.
+  const reason = chain.incident.fire && d ? d.reasons[0] : checks
     ? !checks.locationUsable
       ? ar
         ? "الموقع مفقود أو قديم — لا يُستنتج أي تأثير."
@@ -90,7 +91,7 @@ export function WhyPanel() {
         </Section>
       )}
 
-      {checks && (
+      {checks && !chain.incident.fire && (
         <Section title={t("geoCheck")}>
           <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[12.5px]">
             <CheckRow ok={checks.locationUsable} label={ar ? "الموقع قابل للاستخدام" : "Location usable"} />

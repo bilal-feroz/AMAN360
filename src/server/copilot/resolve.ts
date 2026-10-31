@@ -3,7 +3,7 @@ import type { ActionItem, CaseRow, CasesProps, CheckItem, ChecksProps, GraphRow,
 import { signalsView } from "../signals/service";
 import { formatUntil, lockedFactValues } from "@/domain/comms/facts";
 import { validateCandidate, checkBilingualConsistency } from "@/domain/comms/validator";
-import { actionById, SAFETY_POLICY } from "@/scenario/policy";
+import { actionById, policyByVersion } from "@/scenario/policy";
 import { getOpsState, type OpsState } from "../services/state";
 import { recipientChain } from "../services/explain";
 import { messageFacts } from "../services/workflow";
@@ -160,7 +160,7 @@ export function overviewProps(s: OpsState, lang: Lang, headline: string, emphasi
     {
       id: "rules",
       label: L(lang, "Applied the approved safety rules", "تطبيق قواعد السلامة المعتمدة"),
-      tags: [{ text: SAFETY_POLICY.version }, { text: "R-20-ZONE" }, { text: "R-30-CLOSURE" }],
+      tags: [{ text: s.incident.policyVersion }, ...policyByVersion(s.incident.policyVersion).rules.filter((r) => r.outcome === "SEND").map((r) => ({ text: r.id }))],
       meta: reached("rules") ? `policy · ${ago(at("rules"), lang)}` : "—",
       tone: tone(reached("rules")),
     },
@@ -241,7 +241,7 @@ export function liveChecks(s: OpsState, lang: Lang): CheckItem[] {
     let passed = 0;
     for (const g of s.guidance) {
       const action = actionById(g.actionId)!;
-      const v = validateCandidate({ actionId: g.actionId, language: g.language, variant: g.variant, content: g.content }, { action, language: g.language, variant: g.variant, facts }, SAFETY_POLICY);
+      const v = validateCandidate({ actionId: g.actionId, language: g.language, variant: g.variant, content: g.content }, { action, language: g.language, variant: g.variant, facts }, policyByVersion(s.incident.policyVersion));
       if (v.passed) passed++;
     }
     items.push({

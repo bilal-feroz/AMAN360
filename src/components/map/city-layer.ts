@@ -8,7 +8,8 @@ import type { BuiltCity } from "./buildings";
 /**
  * One coherent Three.js layer rendered inside MapLibre's WebGL context (official custom-layer API):
  * OSM buildings with a facade shader and real-time sun shadows, a water surface, the verified
- * hazard volume, population columns (aggregated, privacy-preserving) and delivery ripples.
+ * hazard volume, population columns (aggregated, privacy-preserving), delivery ripples and, in the
+ * fire drill, the burning tower floor by floor with its smoke plume.
  * Geometry lives in a local east/north/up frame (metres) around Al Majaz.
  */
 
@@ -21,6 +22,21 @@ export interface ClusterDatum {
   count: number;
   color: THREE.ColorRepresentation;
   emphasis: number; // 0..1 (assistance clusters glow)
+}
+
+/** A building on fire, drawn floor by floor over its OSM footprint (fire drill only). */
+export interface FireTowerSpec {
+  /** Rebuilds the geometry when this changes (building, floors, height). */
+  key: string;
+  /** Footprint ring in lng/lat (closed). */
+  ring: [number, number][];
+  floors: number;
+  heightM: number;
+  fireFloor: number;
+  /** One colour per floor, index = floor - 1. */
+  colors: string[];
+  windFromDeg: number;
+  burning: boolean;
 }
 
 /** Direction towards the sun (east, north, up): late-afternoon sun from the south-west. */
@@ -178,6 +194,7 @@ uniform vec3 uColor;
 uniform float uOpacity;
 uniform float uTime;
 uniform float uScan;
+uniform float uSmoke;
 varying float vV;
 varying vec3 vLocal;
 void main() {
@@ -185,10 +202,86 @@ void main() {
   float edge = smoothstep(0.03, 0.0, vV) * 0.6;
   float scanY = fract(uTime * 0.12);
   float scan = smoothstep(0.035, 0.0, abs(vV - scanY)) * 0.35 * uScan;
-  float a = (fall * 0.30 + edge + scan) * uOpacity;
+  float flood = fall * 0.30 + edge + scan;
+  // Smoke: a soft haze that thins with height and drifts slowly, with a faint ground edge.
+  float drift = 0.76 + 0.24 * sin(vLocal.x * 0.018 + vLocal.y * 0.013 + vLocal.z * 0.05 - uTime * 0.35);
+  float smoke = pow(1.0 - vV, 1.2) * 0.34 * drift + edge * 0.3;
+  float a = mix(flood, smoke, uSmoke) * uOpacity;
   gl_FragColor = vec4(uColor, a);
 }
 `;
+
+const GLOW_VERT = /* glsl */ `
+attribute float aV;
+varying float vV;
+void main() {
+  vV = aV;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+const GLOW_FRAG = /* glsl */ `
+uniform vec3 uColor;
+uniform float uOpacity;
+uniform float uTime;
+uniform float uPulse;
+varying float vV;
+void main() {
+  // Heat from the fire floor: strongest at the slab, fading up the floors above. Flickers unless motion is reduced.
+  float flicker = 1.0 - uPulse * (0.2 + 0.2 * sin(uTime * 3.3) * sin(uTime * 1.9 + 0.7));
+  float a = smoothstep(0.0, 0.1, vV) * pow(1.0 - vV, 1.6);
+  gl_FragColor = vec4(uColor, a * uOpacity * flicker);
+}
+`;
+
+const PUFF_VERT = /* glsl */ `
+attribute float aSeed;
+uniform float uTime;
+uniform float uAnim;
+uniform vec2 uWind;
+uniform float uBase;
+uniform vec3 uCamPos;
+varying float vA;
+varying float vFacing;
+void main() {
+  // Each puff loops from the fire floor out along the wind, rising and spreading as it thins.
+  float ph = fract(aSeed + uTime * 0.03 * uAnim);
+  vec2 side = vec2(-uWind.y, uWind.x) * sin(aSeed * 91.7) * (4.0 + ph * 80.0);
+  vec3 c = vec3(uWind * (6.0 + ph * 560.0) + side, uBase + ph * 120.0 + sin(aSeed * 37.0) * 5.0);
+  vec3 p = c + position * mix(6.0, 50.0, ph);
+  vec4 world = modelMatrix * vec4(p, 1.0);
+  vFacing = abs(dot(normal, normalize(uCamPos - world.xyz)));
+  vA = smoothstep(0.0, 0.1, ph) * (1.0 - smoothstep(0.45, 1.0, ph));
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}
+`;
+const PUFF_FRAG = /* glsl */ `
+uniform vec3 uColor;
+uniform float uOpacity;
+varying float vA;
+varying float vFacing;
+void main() {
+  // Soft silhouettes: fade where the sphere turns away from the camera.
+  gl_FragColor = vec4(uColor, vA * uOpacity * smoothstep(0.05, 0.75, vFacing));
+}
+`;
+
+/** Floor slabs keep their status colour on the shaded side: a little self-light from the instance colour. */
+function slabMaterial() {
+  const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.66, metalness: 0 });
+  mat.onBeforeCompile = (shader) => {
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <emissivemap_fragment>",
+      /* glsl */ `
+      #include <emissivemap_fragment>
+      totalEmissiveRadiance += diffuseColor.rgb * 0.28;
+      `,
+    );
+  };
+  mat.customProgramCacheKey = () => "aman-fire-slab";
+  return mat;
+}
+
+const ROOF_COLOR = "#e3e9ea";
 
 const COLUMN_VERT = /* glsl */ `
 uniform vec3 uCamPos;
@@ -240,7 +333,33 @@ export class CityLayer implements CustomLayerInterface {
   private water: THREE.Mesh | null = null;
   private waterUniforms = { uTime: { value: 0 }, uCamPos: { value: new THREE.Vector3() }, uSun: { value: SUN_DIR.clone() }, uAnimate: { value: 1 } };
   private hazard: THREE.Mesh | null = null;
-  private hazardUniforms = { uColor: { value: new THREE.Color("#f2634a") }, uOpacity: { value: 0 }, uRise: { value: 0 }, uTime: { value: 0 }, uScan: { value: 1 } };
+  private hazardUniforms = { uColor: { value: new THREE.Color("#f2634a") }, uOpacity: { value: 0 }, uRise: { value: 0 }, uTime: { value: 0 }, uScan: { value: 1 }, uSmoke: { value: 0 } };
+  /** Flood zone (red volume, tinted buildings) or fire smoke area (taller grey-brown haze, no tint). */
+  private hazardStyle: "flood" | "smoke" = "flood";
+  // Custom shaders write raw values, so these colours are given as display RGB (like the hazard's).
+  private glowUniforms = { uColor: { value: new THREE.Color().setRGB(1, 0.48, 0.27) }, uOpacity: { value: 0.6 }, uTime: { value: 0 }, uPulse: { value: 1 } };
+  private puffUniforms = {
+    uColor: { value: new THREE.Color().setRGB(0.47, 0.43, 0.39) },
+    uOpacity: { value: 0.3 },
+    uTime: { value: 0 },
+    uAnim: { value: 1 },
+    uWind: { value: new THREE.Vector2(0.71, -0.71) },
+    uBase: { value: 40 },
+    uCamPos: this.waterUniforms.uCamPos,
+  };
+  /** Fire drill: the burning tower, one slab per floor coloured from the building board. */
+  private fire: {
+    key: string;
+    group: THREE.Group;
+    slabs: THREE.InstancedMesh;
+    glow: THREE.Mesh;
+    puffs: THREE.Mesh;
+    fh: number;
+    colors: THREE.Color[];
+    targets: THREE.Color[];
+    burning: boolean;
+    settling: boolean;
+  } | null = null;
   private columns: THREE.InstancedMesh | null = null;
   private columnState = new Map<string, { idx: number; h: number; target: number; r: number; color: THREE.Color; targetColor: THREE.Color }>();
   private ripples: { mesh: THREE.Mesh; start: number }[] = [];
@@ -298,6 +417,10 @@ export class CityLayer implements CustomLayerInterface {
     }
     if (this.buildingUniforms) this.buildingUniforms.uWindows.value = this.quality === "lite" ? 0 : 1;
     this.waterUniforms.uAnimate.value = this.quality === "cinematic" && !this.reduced ? 1 : 0;
+    // Burning tower: flicker and drifting smoke only with motion on; no smoke plume in lite.
+    this.glowUniforms.uPulse.value = this.quality === "lite" || this.reduced ? 0 : 1;
+    this.puffUniforms.uAnim.value = this.reduced ? 0 : 1;
+    if (this.fire) this.fire.puffs.visible = this.fire.burning && this.quality !== "lite";
   }
 
   setQuality(q: Quality, reducedMotion: boolean) {
@@ -355,7 +478,7 @@ export class CityLayer implements CustomLayerInterface {
     }
     if (!zone) return;
     const ring = zone.coordinates[0].map((c) => toLocal(c));
-    const H = 55;
+    const H = this.hazardStyle === "smoke" ? 85 : 55;
     const pos: number[] = [];
     const v: number[] = [];
     const idx: number[] = [];
@@ -385,13 +508,151 @@ export class CityLayer implements CustomLayerInterface {
     this.scene.add(this.hazard);
   }
 
+  /** Flood: red volume, buildings in the zone tinted. Smoke (fire drill): taller grey-brown haze, no tint. Set before setHazardZone. */
+  setHazardStyle(style: "flood" | "smoke") {
+    if (style === this.hazardStyle) return;
+    this.hazardStyle = style;
+    if (style === "smoke") this.hazardUniforms.uColor.value.setRGB(0.5, 0.45, 0.4);
+    else this.hazardUniforms.uColor.value.set("#f2634a");
+    this.hazardUniforms.uSmoke.value = style === "smoke" ? 1 : 0;
+  }
+
   /** 0 = hidden, 1 = verified & active. Animates progressively. */
   setHazardActive(active: boolean, preview = false) {
+    const flood = this.hazardStyle === "flood";
     const target = active ? 1 : preview ? 0.35 : 0;
     this.tween(this.hazardUniforms.uOpacity, target, active ? 1400 : 600);
     this.tween(this.hazardUniforms.uRise, active ? 1 : preview ? 0.25 : 0, active ? 2200 : 600);
-    this.hazardUniforms.uScan.value = active ? 1 : 0;
-    if (this.buildingUniforms) this.tween(this.buildingUniforms.uZoneTint, active ? 1 : 0, 1800);
+    this.hazardUniforms.uScan.value = active && flood ? 1 : 0;
+    // The building tint marks the flood zone; it would mislabel buildings in a fire drill.
+    if (this.buildingUniforms) this.tween(this.buildingUniforms.uZoneTint, active && flood ? 1 : 0, 1800);
+  }
+
+  /**
+   * Fire drill: the burning tower drawn floor by floor over its OSM footprint (null removes it).
+   * Geometry is rebuilt only when the building changes; floor colours ease to their new values.
+   */
+  setFireTower(spec: FireTowerSpec | null) {
+    if (!spec) return this.clearFire();
+    if (this.fire?.key !== spec.key) this.buildFire(spec);
+    const f = this.fire!;
+    f.targets.forEach((t, i) => t.set(spec.colors[i] ?? ROOF_COLOR));
+    f.glow.position.z = (spec.fireFloor - 1.2) * f.fh;
+    this.puffUniforms.uBase.value = (spec.fireFloor - 0.5) * f.fh;
+    const to = ((spec.windFromDeg + 180) * Math.PI) / 180;
+    this.puffUniforms.uWind.value.set(Math.sin(to), Math.cos(to));
+    f.burning = spec.burning;
+    f.glow.visible = spec.burning;
+    f.puffs.visible = spec.burning && this.quality !== "lite";
+    f.settling = true;
+    this.map?.triggerRepaint();
+  }
+
+  private buildFire(spec: FireTowerSpec) {
+    this.clearFire();
+    const pts = spec.ring.map((c) => toLocal(c));
+    const [first, last] = [pts[0], pts[pts.length - 1]];
+    if (pts.length > 3 && first[0] === last[0] && first[1] === last[1]) pts.pop();
+    const cx = pts.reduce((s, p) => s + p[0], 0) / pts.length;
+    const cy = pts.reduce((s, p) => s + p[1], 0) / pts.length;
+    // Footprint grown outward by `pad` metres, relative to its centre.
+    const grow = (pad: number) =>
+      pts.map(([x, y]) => {
+        const dx = x - cx;
+        const dy = y - cy;
+        const k = 1 + pad / (Math.hypot(dx, dy) || 1);
+        return new THREE.Vector2(dx * k, dy * k);
+      });
+    const n = spec.floors;
+    const fh = spec.heightM / n;
+
+    // One slab per floor (a thin gap reads as floor lines), a little proud of the OSM tower so it
+    // covers it, plus a roof cap just above the real roof.
+    const slabGeom = new THREE.ExtrudeGeometry(new THREE.Shape(grow(1.4)), { depth: fh * 0.8, bevelEnabled: false });
+    const slabs = new THREE.InstancedMesh(slabGeom, slabMaterial(), n + 1);
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < n; i++) slabs.setMatrixAt(i, m.makeTranslation(0, 0, i * fh + fh * 0.1));
+    slabs.setMatrixAt(n, m.makeScale(1, 1, (fh * 0.1 + 1.2) / (fh * 0.8)).setPosition(0, 0, n * fh - fh * 0.1));
+    const colors = Array.from({ length: n }, (_, i) => new THREE.Color(spec.colors[i] ?? ROOF_COLOR));
+    colors.forEach((c, i) => slabs.setColorAt(i, c));
+    slabs.setColorAt(n, new THREE.Color(ROOF_COLOR));
+    slabs.instanceMatrix.needsUpdate = true;
+    slabs.castShadow = true;
+    slabs.receiveShadow = true;
+    slabs.frustumCulled = false;
+
+    // Glow shell around the fire floor, fading up over the floors above.
+    const ring = grow(2.4);
+    const pos: number[] = [];
+    const v: number[] = [];
+    const idx: number[] = [];
+    ring.forEach((a, i) => {
+      const b = ring[(i + 1) % ring.length];
+      const base = pos.length / 3;
+      pos.push(a.x, a.y, 0, b.x, b.y, 0, b.x, b.y, 1, a.x, a.y, 1);
+      v.push(0, 0, 1, 1);
+      idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+    });
+    const glowGeom = new THREE.BufferGeometry();
+    glowGeom.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    glowGeom.setAttribute("aV", new THREE.Float32BufferAttribute(v, 1));
+    glowGeom.setIndex(idx);
+    const glow = new THREE.Mesh(
+      glowGeom,
+      new THREE.ShaderMaterial({ vertexShader: GLOW_VERT, fragmentShader: GLOW_FRAG, uniforms: this.glowUniforms, transparent: true, depthWrite: false, side: THREE.DoubleSide }),
+    );
+    glow.scale.z = fh * 3;
+    glow.renderOrder = 8;
+    glow.frustumCulled = false;
+
+    // Smoke plume from the fire floor, carried downwind (all motion on the GPU).
+    const PUFFS = 20;
+    const ico = new THREE.IcosahedronGeometry(1, 2);
+    const puffGeom = new THREE.InstancedBufferGeometry();
+    puffGeom.setAttribute("position", ico.getAttribute("position"));
+    puffGeom.setAttribute("normal", ico.getAttribute("normal"));
+    puffGeom.setAttribute("aSeed", new THREE.InstancedBufferAttribute(Float32Array.from({ length: PUFFS }, (_, i) => (i + 0.4 * ((i * 7) % 3)) / PUFFS), 1));
+    puffGeom.instanceCount = PUFFS;
+    const puffs = new THREE.Mesh(
+      puffGeom,
+      new THREE.ShaderMaterial({ vertexShader: PUFF_VERT, fragmentShader: PUFF_FRAG, uniforms: this.puffUniforms, transparent: true, depthWrite: false }),
+    );
+    puffs.renderOrder = 9;
+    puffs.frustumCulled = false;
+
+    const group = new THREE.Group();
+    group.position.set(cx, cy, 0);
+    group.add(slabs, glow, puffs);
+    this.scene.add(group);
+    this.fire = { key: spec.key, group, slabs, glow, puffs, fh, colors, targets: colors.map((c) => c.clone()), burning: spec.burning, settling: false };
+  }
+
+  private clearFire() {
+    const f = this.fire;
+    if (!f) return;
+    this.scene.remove(f.group);
+    f.slabs.dispose();
+    for (const mesh of [f.slabs, f.glow, f.puffs]) {
+      mesh.geometry.dispose();
+      (mesh.material as THREE.Material).dispose();
+    }
+    this.fire = null;
+    this.map?.triggerRepaint();
+  }
+
+  /**
+   * Screen offset (CSS px) from a ground point to the same point `alt` metres up, using the last
+   * rendered frame — pins HTML markers to a floor of the tower. Null when the city is not drawn.
+   */
+  liftOffset(lngLat: [number, number], alt: number): [number, number] | null {
+    if (!this.map || this.hidden) return null;
+    const [e, n] = toLocal(lngLat);
+    const mvp = this.camera.projectionMatrix;
+    const a = new THREE.Vector4(e, n, 0, 1).applyMatrix4(mvp);
+    const b = new THREE.Vector4(e, n, alt, 1).applyMatrix4(mvp);
+    if (a.w <= 0 || b.w <= 0) return null;
+    const canvas = this.map.getCanvas();
+    return [(b.x / b.w - a.x / a.w) * 0.5 * canvas.clientWidth, -(b.y / b.w - a.y / a.w) * 0.5 * canvas.clientHeight];
   }
 
   reveal(durationMs: number) {
@@ -528,6 +789,20 @@ export class CityLayer implements CustomLayerInterface {
       if (this.columns.instanceColor) this.columns.instanceColor.needsUpdate = true;
       if (moving) active = true;
     }
+    const f = this.fire;
+    if (f?.settling) {
+      let moving = false;
+      f.colors.forEach((c, i) => {
+        const t = f.targets[i];
+        c.lerp(t, this.reduced ? 1 : 0.14);
+        if (Math.abs(c.r - t.r) + Math.abs(c.g - t.g) + Math.abs(c.b - t.b) > 0.004) moving = true;
+        else c.copy(t);
+        f.slabs.setColorAt(i, c);
+      });
+      if (f.slabs.instanceColor) f.slabs.instanceColor.needsUpdate = true;
+      f.settling = moving;
+      if (moving) active = true;
+    }
     this.ripples = this.ripples.filter((r) => {
       const k = (now - r.start) / 1600;
       if (k >= 1) {
@@ -554,6 +829,8 @@ export class CityLayer implements CustomLayerInterface {
     const t = (now - this.startTime) / 1000;
     this.waterUniforms.uTime.value = t;
     this.hazardUniforms.uTime.value = t;
+    this.glowUniforms.uTime.value = t;
+    this.puffUniforms.uTime.value = t;
     if (this.buildingUniforms) this.buildingUniforms.uTime.value = t;
     this.updateCameraUniforms();
     const animating = this.step(now);
@@ -566,7 +843,8 @@ export class CityLayer implements CustomLayerInterface {
     this.renderer.resetState();
     this.renderer.render(this.scene, this.camera);
 
-    const continuous = animating || this.hazardUniforms.uOpacity.value > 0.5 || (this.waterUniforms.uAnimate.value > 0 && this.map.getZoom() > 12.5);
+    const burning = !!this.fire?.burning && this.quality !== "lite";
+    const continuous = animating || burning || this.hazardUniforms.uOpacity.value > 0.5 || (this.waterUniforms.uAnimate.value > 0 && this.map.getZoom() > 12.5);
     if (continuous && !this.reduced) this.map.triggerRepaint();
     else if (animating) this.map.triggerRepaint();
     this.onFrame?.();

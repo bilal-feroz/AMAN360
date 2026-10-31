@@ -31,6 +31,8 @@ export function citizenInbox(token: string) {
       text: x.text,
       answerId: x.classification?.category.startsWith("answered:") ? x.classification.category.split(":")[1] : null,
       escalated: x.kind === "clarify" && !!x.classification?.needsHuman,
+      situation: x.situation ?? null,
+      floor: x.floor ?? null,
     }));
     const caseRecord = store.cases.openForRecipient(m.incidentId, r.id) ?? store.cases.forIncident(m.incidentId).filter((c) => c.recipientId === r.id).at(-1) ?? null;
     return {
@@ -55,8 +57,19 @@ export function citizenInbox(token: string) {
       case: caseRecord ? { id: caseRecord.id, status: caseRecord.status, priority: caseRecord.priority, notes: caseRecord.notes.filter((n) => n.by.startsWith("OP-")).map((n) => ({ at: n.at, text: n.text })) } : null,
       questions: PREDEFINED_QUESTIONS.filter((q) => {
         const a = APPROVED_ANSWERS.find((x) => x.id === q.id);
-        return !a || a.appliesTo.includes(m.actionId);
+        return a ? a.appliesTo.includes(m.actionId) : !q.appliesTo || q.appliesTo.includes(m.actionId);
       }),
+      // Building fire: what the phone needs for the floor-aware replies.
+      fire: incident.fire
+        ? {
+            buildingName: incident.fire.buildingName,
+            floors: incident.fire.floors,
+            fireFloor: incident.fire.fireFloor,
+            assembly: incident.fire.assemblyPoint.name,
+            yourFloor: r.building?.id === incident.fire.buildingId ? r.building.floor : null,
+            inBuilding: r.building?.id === incident.fire.buildingId,
+          }
+        : null,
       answers: Object.fromEntries(
         APPROVED_ANSWERS.filter((a) => a.appliesTo.includes(m.actionId)).map((a) => [a.id, { en: fillText(a.answer.en, "en", facts), ar: fillText(a.answer.ar, "ar", facts) }]),
       ),

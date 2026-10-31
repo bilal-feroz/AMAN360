@@ -5,11 +5,12 @@ import { assess, checkIncidentGate } from "@/domain/safety-engine";
 import { assertValidZone } from "@/domain/geo";
 import { renderApproved, lockedFactValues, type MessageFacts } from "@/domain/comms/facts";
 import { validateCandidate, checkBilingualConsistency, variantLimits } from "@/domain/comms/validator";
-import { actionById, SAFETY_POLICY } from "@/scenario/policy";
+import { actionById } from "@/scenario/policy";
 import { db, getMeta, J, tx } from "../db";
 import { audit } from "../bus";
 import { getProvider } from "../comms/providers";
 import * as store from "../store";
+import { policyFor } from "./active";
 
 export class WorkflowError extends Error {
   constructor(
@@ -24,7 +25,7 @@ export class WorkflowError extends Error {
 const SourcePayloadSchema = z.object({
   feed: z.string().min(1),
   ref: z.string().min(1),
-  category: z.literal("flood_risk_heavy_rain"),
+  category: z.enum(["flood_risk_heavy_rain", "structure_fire_highrise"]),
   severity: z.enum(["advisory", "watch", "warning", "emergency"]),
   issuedAt: z.string(),
   validFrom: z.string(),
@@ -32,6 +33,15 @@ const SourcePayloadSchema = z.object({
   geometry: z.object({ type: z.literal("Polygon"), coordinates: z.array(z.array(z.array(z.number()))) }),
   signature: z.string(),
   closures: z.array(z.object({ id: z.string(), feed: z.string(), confirmed: z.boolean() })),
+  /** Building fire: the authority states the building, the fire floor and its instruction. */
+  fire: z
+    .object({
+      buildingId: z.string().min(1),
+      floors: z.number().int().positive(),
+      fireFloor: z.number().int().positive(),
+      instruction: z.enum(["full_evacuation", "phased_evacuation", "stay_put"]),
+    })
+    .optional(),
 });
 
 function requireIncident(id: string): Incident {
@@ -43,10 +53,16 @@ function requireIncident(id: string): Incident {
 export function messageFacts(incident: Incident): MessageFacts {
   const hazard = store.hazards.forIncident(incident.id);
   const closure = store.closures.forIncident(incident.id)[0];
+  const fire = incident.fire;
   return {
-    zone: hazard?.name ?? incident.areaName,
+    // A building fire names the building, not the smoke area, as the place in every message.
+    zone: fire ? fire.buildingName : hazard?.name ?? incident.areaName,
     closure: closure?.name ?? { en: "", ar: "" },
     validUntil: incident.validUntil,
+    ...(fire && {
+      floor: { en: `floor ${fire.fireFloor}`, ar: `الطابق ${fire.fireFloor}` },
+      assembly: fire.assemblyPoint.name,
+    }),
   };
 }
 
@@ -74,7 +90,14 @@ export function verifySource(incidentId: string, actor: string): Incident {
     if (parsed.data.signature !== "sim-ed25519:valid") {
       ok = false;
       notes.push("Simulated signature check FAILED");
-    } else notes.push("Simulated signature check passed (mock key SIM-MET-2026)");
+    } else notes.push(`Simulated signature check passed (mock key ${parsed.data.feed}-2026)`);
+    if (incident.fire) {
+      const f = parsed.data.fire;
+      if (!f || f.buildingId !== incident.fire.buildingId || f.fireFloor !== incident.fire.fireFloor || f.instruction !== incident.fire.instruction) {
+        ok = false;
+        notes.push("Building, fire floor or instruction missing or inconsistent with the incident");
+      } else notes.push(`Building ${f.buildingId}, fire floor ${f.fireFloor}, instruction: ${f.instruction.replace("_", " ")}`);
+    }
     try {
       assertValidZone(parsed.data.geometry as never);
       notes.push("Hazard geometry valid (closed, non-self-intersecting)");
@@ -123,7 +146,8 @@ export function assessImpact(incidentId: string, actor: string) {
   if (!hazard) throw new WorkflowError("Missing hazard geometry");
   const recipients = store.recipients.all();
   const now = new Date();
-  const result = assess(recipients, { incident, policy: SAFETY_POLICY, hazard, closures, now });
+  const policy = policyFor(incident);
+  const result = assess(recipients, { incident, policy, hazard, closures, now });
   tx(() => {
     store.decisions.replaceAll(incidentId, result.traces);
     store.assessments.save(`ASM-${now.getTime()}`, incidentId, now.toISOString(), result.gate, result.summary);
@@ -145,11 +169,17 @@ export function assessImpact(incidentId: string, actor: string) {
     }
     if (result.gate.ok) save(incident, { state: incident.state === "verified" ? "assessed" : incident.state });
     else save(incident, { state: "blocked" });
-    audit("geo-engine", "impact.computed", `Geographic matching: ${result.summary.insideZone} inside zone, ${result.summary.approachingClosure} approaching closure, ${result.summary.outside} outside, ${result.summary.review} need review`, {
-      entity: incidentId,
-      data: { summary: result.summary },
-    });
-    audit(actor, "policy.evaluated", `${SAFETY_POLICY.version} applied: ${result.summary.send} recipients matched an approved action`, {
+    const s = result.summary;
+    const c = s.byCategory;
+    audit(
+      "geo-engine",
+      "impact.computed",
+      incident.fire
+        ? `Building & geographic matching: ${c.fire_above ?? 0} on or above the fire floor, ${c.fire_below ?? 0} below it, ${c.smoke_area ?? 0} in the smoke area, ${s.approachingClosure} approaching the closed road, ${s.outside} outside, ${s.review} need review`
+        : `Geographic matching: ${s.insideZone} inside zone, ${s.approachingClosure} approaching closure, ${s.outside} outside, ${s.review} need review`,
+      { entity: incidentId, data: { summary: s } },
+    );
+    audit(actor, "policy.evaluated", `${policy.version} applied: ${result.summary.send} recipients matched an approved action`, {
       entity: incidentId,
       data: { gate: result.gate, byAction: result.summary.byAction },
     });
@@ -180,7 +210,7 @@ const variantsNeeded = (incidentId: string) => {
 export async function prepareGuidance(incidentId: string, actor: string, opts: { templatesOnly?: boolean } = {}): Promise<GuidanceDraft[]> {
   const incident = requireIncident(incidentId);
   if (!["assessed", "approved"].includes(incident.state)) throw new WorkflowError(`Guidance can only be prepared after assessment (state: ${incident.state})`);
-  const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
+  const gate = checkIncidentGate(incident, policyFor(incident), store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Publication gate failed", 409, gate.blocks);
   const facts = messageFacts(incident);
   // A reset re-creates the incident; drafts built for the previous one must never be written.
@@ -228,7 +258,7 @@ export async function prepareGuidance(incidentId: string, actor: string, opts: {
         audit("comms-provider", "guidance.provider_error", `Provider unavailable (${error.name}) — approved template used`, { entity: incidentId });
       } else {
         if (candidate) {
-          const v = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content: candidate }, { action, language: need.language, variant: need.variant, facts }, SAFETY_POLICY);
+          const v = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content: candidate }, { action, language: need.language, variant: need.variant, facts }, policyFor(incident));
           if (v.passed) {
             content = candidate;
             mode = "llm";
@@ -242,7 +272,7 @@ export async function prepareGuidance(incidentId: string, actor: string, opts: {
         } else fallbackUsed = true;
       }
     }
-    ({ checks, passed } = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content }, { action, language: need.language, variant: need.variant, facts }, SAFETY_POLICY));
+    ({ checks, passed } = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content }, { action, language: need.language, variant: need.variant, facts }, policyFor(incident)));
     const draft: GuidanceDraft = {
       id: `GD-${action.id}-${need.language}-${need.variant}`,
       incidentId,
@@ -329,7 +359,7 @@ export async function prepareGuidance(incidentId: string, actor: string, opts: {
 /** Step 4 — operator approval. Fail-closed: any gate failure or invalid variant blocks approval. */
 export function approveGuidance(incidentId: string, operatorId: string, note?: string) {
   const incident = requireIncident(incidentId);
-  const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
+  const gate = checkIncidentGate(incident, policyFor(incident), store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Approval blocked by safety gate", 409, gate.blocks);
   const drafts = store.guidance.forIncident(incidentId);
   if (!drafts.length) throw new WorkflowError("No guidance prepared");
@@ -353,7 +383,7 @@ const simSpeed = () => Math.max(0.1, Number(getMeta("sim_speed") ?? 1));
 export function publish(incidentId: string, operatorId: string) {
   const incident = requireIncident(incidentId);
   if (incident.state !== "approved") throw new WorkflowError(`Publication requires operator approval (state: ${incident.state})`);
-  const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
+  const gate = checkIncidentGate(incident, policyFor(incident), store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Publication blocked by safety gate", 409, gate.blocks);
   const approved = store.messages.forIncident(incidentId).filter((m) => m.state === "approved");
   if (!approved.length) throw new WorkflowError("No approved messages to send — prepare the message again");

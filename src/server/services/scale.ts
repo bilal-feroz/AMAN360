@@ -19,14 +19,16 @@ const labels = new Map((data.zonePieces as { id: string; label: number[] }[]).ma
 const minIx = Math.min(...zoneCells.map((c) => c[0]));
 const maxIy = Math.max(...zoneCells.map((c) => c[1]));
 
-export function cityScale(recipients: Recipient[], statusOf: (r: Recipient) => string | null) {
-  const samples = recipients
+export function cityScale(recipients: Recipient[], statusOf: (r: Recipient) => string | null, opts: { floodZone?: boolean } = {}) {
+  // The squares and projections belong to the flood warning zone; other drills keep only the city estimate.
+  const flood = opts.floodZone !== false;
+  const samples = (flood ? recipients : [])
     .filter((r) => r.locationStatus === "ok" && r.location && turf.booleanPointInPolygon(r.location, HAZARD_POLYGON))
     .map((r) => ({ cell: cellOf(r.location!.coordinates as [number, number], origin), bucket: bucketOf(statusOf(r) ?? "") }))
     .filter((s): s is { cell: [number, number]; bucket: keyof Projection } => s.bucket !== null);
   const sent = samples.some((s) => s.bucket !== "notReached");
 
-  const cells = zoneCells.map(([ix, iy, residents, zone]) => {
+  const cells = (flood ? zoneCells : []).map(([ix, iy, residents, zone]) => {
     let near: typeof samples = [];
     for (let ring = 0; ring <= 5 && near.length < MIN_SAMPLE; ring++) near = samples.filter((s) => Math.max(Math.abs(s.cell[0] - ix), Math.abs(s.cell[1] - iy)) <= ring);
     const tally: Partial<Record<keyof Projection, number>> = {};

@@ -15,8 +15,10 @@ import { DATASET_GEO, GAZETTEER, RECORDED_ANALYSIS, replayPosts, scenarioPosts }
 import { ATTACKS } from "@/domain/comms/redteam";
 import { lockedFactValues, renderApproved } from "@/domain/comms/facts";
 import { validateCandidate } from "@/domain/comms/validator";
-import { APPROVED_ACTIONS, SAFETY_POLICY } from "@/scenario/policy";
+import { APPROVED_ACTIONS, policyByVersion } from "@/scenario/policy";
 import { CLOSURE_NAME, ZONE_NAME } from "@/scenario/scenario";
+import { fireDetails, TOWER_NAME } from "@/scenario/fire";
+import { FIRE_POLICY_VERSION } from "@/scenario/fire-policy";
 import type { ActionVariant, Lang } from "@/domain/types";
 
 const idx = indexGazetteer(GAZETTEER);
@@ -179,15 +181,22 @@ describe("recorded datasets", () => {
 });
 
 describe("red-team stress test", () => {
-  const facts = { zone: ZONE_NAME, closure: CLOSURE_NAME, validUntil: "2026-10-21T20:05:00+04:00" };
+  const validUntil = "2026-10-21T20:05:00+04:00";
+  const fire = fireDetails();
+  // Each action is attacked with the facts its own drill provides (the fire drill adds floor and assembly point).
+  const factsFor = (policyVersion: string) =>
+    policyVersion === FIRE_POLICY_VERSION
+      ? { zone: TOWER_NAME, closure: CLOSURE_NAME, validUntil, floor: { en: `floor ${fire.fireFloor}`, ar: `الطابق ${fire.fireFloor}` }, assembly: fire.assemblyPoint.name }
+      : { zone: ZONE_NAME, closure: CLOSURE_NAME, validUntil };
   const variants: ActionVariant[] = ["standard", "plain", "audio"];
   for (const attack of ATTACKS)
     for (const action of APPROVED_ACTIONS)
       for (const language of ["en", "ar"] as Lang[])
         for (const variant of variants)
           it(`blocks "${attack.id}" on ${action.id}/${language}/${variant}`, () => {
+            const facts = factsFor(action.policyVersion);
             const content = attack.apply(renderApproved(action, language, variant, facts), language, lockedFactValues(action, language, facts));
-            const v = validateCandidate({ actionId: action.id, language, variant, content }, { action, language, variant, facts }, SAFETY_POLICY);
+            const v = validateCandidate({ actionId: action.id, language, variant, content }, { action, language, variant, facts }, policyByVersion(action.policyVersion));
             expect(v.passed).toBe(false);
           });
 });

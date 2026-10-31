@@ -1,4 +1,5 @@
 import type { ApprovedAction, SafetyPolicy, Bilingual } from "@/domain/types";
+import { FIRE_ACTIONS, FIRE_POLICY } from "./fire-policy";
 
 /**
  * POLICY-2026-01 — the authority-defined, versioned safety policy for the training scenario.
@@ -114,7 +115,23 @@ export const GLOBAL_FORBIDDEN_CLAIMS: { id: string; label: string; pattern: RegE
     pattern: /\b(cpr|tourniquet|first aid steps|bandage|splint|apply pressure|chest compressions)\b|إنعاش قلبي|عاصبة|رباط|ضماد|نزيف|جبيرة|ضغطات الصدر|إسعافات أولية|اسعافات اولية/i,
   },
   { id: "url", label: "Links", pattern: /https?:\/\/|www\./i },
+  {
+    id: "lift",
+    label: "Advice to use a lift during a fire",
+    pattern: /\b(use|take|ride)\s+(the|a)\s+(lift|elevator)\b|\bby (lift|elevator)\b|(استخدم|استخدام|اركب|استقل) المصعد|بالمصعد/i,
+  },
+  {
+    id: "reentry",
+    label: "Permission to go back into the building",
+    pattern: /\b(can|may|safe to)\s+(go|return)\s+(back\s+)?(inside|in|home)\b|يمكنك العودة|آمن العودة|عُد إلى المبنى/i,
+  },
 ];
+
+/** Every versioned policy the platform knows; an incident names the one it was issued under. */
+export const POLICIES: SafetyPolicy[] = [];
+export function policyByVersion(version: string): SafetyPolicy {
+  return POLICIES.find((p) => p.version === version) ?? SAFETY_POLICY;
+}
 
 const UNTIL = "{{until}}";
 const ZONE = "{{zone}}";
@@ -277,6 +294,9 @@ export const APPROVED_ACTIONS: ApprovedAction[] = [
   },
 ];
 
+APPROVED_ACTIONS.push(...FIRE_ACTIONS);
+POLICIES.push(SAFETY_POLICY, FIRE_POLICY);
+
 // The "drive" forbidden term for ACT-INDOOR-01 must not trip on approved wording; keep exact-word checks.
 export function actionById(id: string): ApprovedAction | undefined {
   return APPROVED_ACTIONS.find((a) => a.id === id);
@@ -300,7 +320,7 @@ export const APPROVED_ANSWERS: ApprovedAnswer[] = [
       ar: `تجنّب القيادة في منطقة التحذير حتى ${UNTIL}. ${CLOSURE} مغلق. اتبع فقط توجيهات المسؤولين في الموقع.`,
     },
     keywords: { en: ["drive", "driving", "car", "road", "go out by car"], ar: ["قيادة", "القيادة", "أقود", "سيارة", "السيارة", "الطريق"] },
-    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02"],
+    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02", "ACT-FIRE-SMOKE", "ACT-FIRE-ROAD"],
   },
   {
     id: "Q-UNTIL",
@@ -310,7 +330,7 @@ export const APPROVED_ANSWERS: ApprovedAnswer[] = [
       ar: `التحذير ساري حتى ${UNTIL}. ستصلك رسالة تحديث عبر أمان إذا تغيّر ذلك.`,
     },
     keywords: { en: ["how long", "until", "end", "when", "last", "over"], ar: ["متى", "ينتهي", "حتى", "مدة", "كم"] },
-    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02"],
+    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02", "ACT-FIRE-SMOKE", "ACT-FIRE-ROAD"],
   },
   {
     id: "Q-PARKING",
@@ -330,13 +350,45 @@ export const APPROVED_ANSWERS: ApprovedAnswer[] = [
       ar: "اضغط «أحتاج إلى مساعدة»، وسيراجع فريق العمليات طلبك. في حالة الطوارئ التي تهدد الحياة، اتصل بالرقم 999.",
     },
     keywords: { en: ["help", "assist", "emergency", "call"], ar: ["مساعدة", "المساعدة", "النجدة", "طوارئ", "اتصل"] },
-    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02"],
+    appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02", "ACT-FIRE-ABOVE", "ACT-FIRE-BELOW", "ACT-FIRE-SMOKE", "ACT-FIRE-ROAD"],
+  },
+  {
+    id: "Q-FIRE-LIFT",
+    question: { en: "Can I use the lift?", ar: "هل يمكنني استخدام المصعد؟" },
+    answer: { en: "No. Do not use lifts during a fire. Use the stairs.", ar: "لا. لا تستخدم المصاعد أثناء الحريق، واستخدم الدرج." },
+    keywords: { en: ["lift", "elevator"], ar: ["مصعد", "المصعد", "المصاعد"] },
+    appliesTo: ["ACT-FIRE-ABOVE", "ACT-FIRE-BELOW"],
+  },
+  {
+    id: "Q-FIRE-RETURN",
+    question: { en: "When can I go back inside?", ar: "متى يمكنني العودة إلى الداخل؟" },
+    answer: {
+      en: `Do not go back into ${ZONE} until Civil Defence says it is safe. You will receive an update in AMAN.`,
+      ar: `لا تعد إلى ${ZONE} حتى يعلن الدفاع المدني أن ذلك آمن. ستصلك رسالة تحديث عبر أمان.`,
+    },
+    keywords: { en: ["go back", "back inside", "return", "my flat", "my things", "belongings"], ar: ["أعود", "العودة", "الرجوع", "شقتي", "أغراضي"] },
+    appliesTo: ["ACT-FIRE-ABOVE", "ACT-FIRE-BELOW"],
+  },
+  {
+    id: "Q-FIRE-SMOKE-LEAVE",
+    question: { en: "Should I leave my building because of the smoke?", ar: "هل يجب أن أغادر مبناي بسبب الدخان؟" },
+    answer: {
+      en: "No, unless officials tell you to. Stay inside with windows closed. If smoke gets in or you have trouble breathing, tap “I need help”.",
+      ar: "لا، إلا إذا طلب منك المسؤولون ذلك. ابقَ في الداخل والنوافذ مغلقة. إذا دخل الدخان أو صعب التنفس، فاضغط «أحتاج إلى مساعدة».",
+    },
+    keywords: { en: ["leave my building", "should we leave", "should i leave", "go outside", "smoke"], ar: ["نغادر", "أغادر", "نخرج", "أخرج", "الدخان"] },
+    appliesTo: ["ACT-FIRE-SMOKE"],
   },
 ];
 
-/** Predefined questions offered in the citizen app (subset of approved answers + two that escalate). */
-export const PREDEFINED_QUESTIONS: { id: string; question: Bilingual }[] = [
+/** Predefined questions offered in the citizen app (approved answers + ones that always reach a person). */
+export const PREDEFINED_QUESTIONS: { id: string; question: Bilingual; appliesTo?: string[] }[] = [
   ...APPROVED_ANSWERS.map((a) => ({ id: a.id, question: a.question })),
-  { id: "Q-SHELTER", question: { en: "Where is the nearest shelter?", ar: "أين أقرب مركز إيواء؟" } },
-  { id: "Q-WATER-LEVEL", question: { en: "Will the water reach my building?", ar: "هل ستصل المياه إلى مبناي؟" } },
+  { id: "Q-SHELTER", question: { en: "Where is the nearest shelter?", ar: "أين أقرب مركز إيواء؟" }, appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02"] },
+  { id: "Q-WATER-LEVEL", question: { en: "Will the water reach my building?", ar: "هل ستصل المياه إلى مبناي؟" }, appliesTo: ["ACT-INDOOR-01", "ACT-ROAD-02"] },
+  {
+    id: "Q-FIRE-NEIGHBOUR",
+    question: { en: "My neighbour may still be inside — what should I do?", ar: "قد يكون جاري ما زال في الداخل — ماذا أفعل؟" },
+    appliesTo: ["ACT-FIRE-ABOVE", "ACT-FIRE-BELOW", "ACT-FIRE-SMOKE"],
+  },
 ];

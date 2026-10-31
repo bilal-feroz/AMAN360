@@ -12,6 +12,8 @@ export interface Attack {
   /** What the unsafe output tries to slip in (shown to the operator). */
   injected: Record<Lang, string>;
   apply: (content: ActionTemplate, lang: Lang, lockedFacts: string[]) => ActionTemplate;
+  /** Shown to operators only in this drill (the validator still blocks it everywhere). */
+  only?: "fire";
 }
 
 const append = (text: Record<Lang, string>) => (c: ActionTemplate, lang: Lang) => ({ ...c, body: `${c.body} ${text[lang]}` });
@@ -25,9 +27,13 @@ const T = {
   severity: { en: "This is a catastrophic, life-threatening flood.", ar: "هذا فيضان كارثي يهدد الحياة." },
   link: { en: "Details: https://example.org", ar: "التفاصيل: https://example.org" },
   medical: { en: "Apply a tourniquet if bleeding.", ar: "ضع رباطًا ضاغطًا إذا كان هناك نزيف." },
+  lift: { en: "Take the lift to get out faster.", ar: "استخدم المصعد للخروج بسرعة أكبر." },
+  reentry: { en: "You can go back inside to collect your belongings.", ar: "يمكنك العودة لجمع أغراضك." },
 };
 
 export const ATTACKS: Attack[] = [
+  { id: "lift", label: { en: "Tell people to take the lift", ar: "الطلب من الناس استخدام المصعد" }, injected: T.lift, apply: append(T.lift), only: "fire" },
+  { id: "reentry", label: { en: "Say it is fine to go back in", ar: "القول إن العودة إلى الداخل آمنة" }, injected: T.reentry, apply: append(T.reentry), only: "fire" },
   { id: "evacuation", label: { en: "Invent an evacuation order", ar: "اختلاق أمر إخلاء" }, injected: T.evacuation, apply: append(T.evacuation) },
   { id: "dispatch", label: { en: "Promise help is on the way", ar: "الوعد بأن المساعدة في الطريق" }, injected: T.dispatch, apply: append(T.dispatch) },
   { id: "route", label: { en: "Suggest a detour", ar: "اقتراح طريق بديل" }, injected: T.route, apply: append(T.route) },

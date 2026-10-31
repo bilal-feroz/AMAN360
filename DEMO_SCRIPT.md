@@ -143,6 +143,53 @@ Click **Approve & send to 120 people** (simulated channels).
 
 ---
 
+# Second emergency: tower fire (~2.5 minutes)
+
+Use this after the flood demo, or when judges ask "does it only do floods?".
+**Settings → Scenario → Tower A fire — start.** Then **Presentation** runs the fire walkthrough, or
+drive it by hand:
+
+**00:00 — Tower A, Al Majaz**
+> "A 46-floor residential tower — a real footprint, synthetic residents. Mariam lives on floor 19
+> with her elderly father."
+
+**00:10 — Civil Defence reports a fire on floor 12**
+> "The feed names the building, the fire floor and the authority's instruction: full evacuation.
+> The agent prepares everything on its own. AMAN never decides between evacuate and stay put — if
+> the instruction is not one the policy approves, nothing is published."
+
+**00:25 — Who is affected, floor by floor** *(Impact)*
+> "Floor 12 and above get one message, below get another. Smoke drifts south-east over the
+> neighbours; drivers are kept off the road the fire engines need."
+
+**00:40 — The right words for each floor** *(Review)*
+> "Stairs, never the lift. If smoke blocks the stairs, seal the door and tell us your floor. The fire
+> floor and the assembly point are locked facts."
+
+**00:55 — Try to break the AI** — *Take the lift* is blocked; the approved template stays.
+
+**01:05 — One human decision** — **Approve & send**.
+
+**01:15 — Replies from inside the tower** *(Devices: Priya, Mariam)*
+> "Priya on floor 6 taps *I'm out*. Mariam taps *I'm still inside*, floor 19, trapped — smoke in the
+> corridor, her father can't use the stairs."
+
+**01:35 — Who is still inside** *(Tower)*
+> "Every reply moves a person on this board. Trapped is always P1. This is counted from records,
+> never estimated."
+
+**01:50 — Mariam first** — open her case, **Acknowledge**, record the follow-up.
+
+**02:05 — Hand over** — **Civil Defence handover sheet**: everyone not confirmed out, by floor, with
+their needs.
+
+> "Same platform, second emergency — a different policy, the same safety rules."
+
+*Q&A checkpoint:* **Settings → Scenario → Checkpoint: who is still inside** loads the board after
+the simulated residents have replied.
+
+---
+
 ## Recovery during the demo
 
 | Problem | Do this |
@@ -219,6 +266,13 @@ accreditation; and a supervised pilot. See ROADMAP.md.
 Time from ingestion to approved guidance, approval to delivery, response rate, time to first
 response, assistance-case acknowledgement and resolution time, unanswered follow-up coverage,
 bilingual consistency and validator block rate — all derived from audit records (EVALUATION.md).
+
+**Why a tower fire and not house fires?**
+A house fire is a 998 call: one household, a crew on the way, nobody else to warn. A tower fire is a
+mass-communication problem — hundreds of people on different floors need different instructions at
+once, and Civil Defence needs to know who is still inside. That is what AMAN is built for. The fire
+uses its own policy; floor decides the message, and the authority's instruction (evacuate or stay
+put) is never chosen by AMAN.
 
 **What are the limitations?**
 Synthetic scenario and people; simulated feeds, channels and signatures; OSM-based city geometry

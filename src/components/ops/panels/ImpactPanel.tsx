@@ -1,15 +1,32 @@
 "use client";
 
-import { Car, House, Ban, MessageSquareText, ChevronRight } from "lucide-react";
+import { Building2, Car, Flame, House, Ban, MessageSquareText, ChevronRight, Wind } from "lucide-react";
+import type { ReactNode } from "react";
 import { Button, Chip, cn, Section, Stat } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
-import { ACTION_LABEL } from "../workflow";
+import { ACTION_LABEL, CATEGORY_TONE } from "../workflow";
 import { ActionBar, PanelHeader } from "./PanelHeader";
 import { ApproveSendBar } from "./AgentCard";
 import { ScaleLine } from "./ScaleCard";
 
 const CASE_ORDER = ["mariam", "daniel", "omar"] as const;
+// The fire drill adds Priya, who lives below the fire in the same tower as Mariam.
+const FIRE_CASE_ORDER = ["mariam", "priya", "daniel", "omar"] as const;
+
+function Tile({ tone, soft, onClick, icon, label, value }: { tone: "coral" | "amber"; soft?: boolean; onClick: () => void; icon: ReactNode; label: string; value: number }) {
+  return (
+    <button
+      className={cn(
+        "rounded-2xl p-4 text-start ring-1 transition",
+        tone === "coral" ? (soft ? "bg-coral-soft/35 ring-coral/15 hover:ring-coral/35" : "bg-coral-soft/60 ring-coral/20 hover:ring-coral/40") : soft ? "bg-amber-soft/35 ring-amber/20 hover:ring-amber/45" : "bg-amber-soft/60 ring-amber/25 hover:ring-amber/50",
+      )}
+      onClick={onClick}
+    >
+      <Stat label={<><span className="grid shrink-0 place-items-center">{icon}</span><span className="truncate">{label}</span></>} value={value} tone={tone} big />
+    </button>
+  );
+}
 
 export function ImpactPanel() {
   const { state, t, lang, incidentAction, busy, canAct } = useOps();
@@ -30,7 +47,8 @@ export function ImpactPanel() {
   const s = a.summary;
   const gate = state.gate;
   const prepared = state.guidance.length > 0;
-  const personas = CASE_ORDER.map((p) => state.personas.find((x) => x.persona === p)).filter(Boolean) as typeof state.personas;
+  const fire = state.incident.fire;
+  const personas = (fire ? FIRE_CASE_ORDER : CASE_ORDER).map((p) => state.personas.find((x) => x.persona === p)).filter(Boolean) as typeof state.personas;
 
   const preparing = state.automation.agent.status === "running" || busy === "pipeline";
 
@@ -54,17 +72,22 @@ export function ImpactPanel() {
       )}
 
       <div className="px-5 pb-4">
-        <div className="grid grid-cols-2 gap-3">
-          <button className="rounded-2xl bg-coral-soft/60 p-4 text-start ring-1 ring-coral/20 transition hover:ring-coral/40" onClick={() => flyTo({ kind: "zone" })}>
-            <Stat label={<><House size={13} />{t("insideZone")}</>} value={s.insideZone} tone="coral" big />
-          </button>
-          <button className="rounded-2xl bg-amber-soft/60 p-4 text-start ring-1 ring-amber/25 transition hover:ring-amber/50" onClick={() => flyTo({ kind: "closure" })}>
-            <Stat label={<><Car size={13} />{t("approachingClosure")}</>} value={s.approachingClosure} tone="amber" big />
-          </button>
-        </div>
+        {fire ? (
+          <div className="grid grid-cols-2 gap-3">
+            <Tile tone="coral" onClick={() => flyTo({ kind: "building" })} icon={<Flame size={13} />} label={lang === "ar" ? `الطابق ${fire.fireFloor} وما فوقه` : `Floor ${fire.fireFloor} and above`} value={s.byCategory?.fire_above ?? 0} />
+            <Tile tone="coral" soft onClick={() => flyTo({ kind: "building" })} icon={<Building2 size={13} />} label={lang === "ar" ? "تحت طابق الحريق" : "Below the fire"} value={s.byCategory?.fire_below ?? 0} />
+            <Tile tone="amber" onClick={() => flyTo({ kind: "zone" })} icon={<Wind size={13} />} label={lang === "ar" ? "منطقة الدخان" : "Smoke area"} value={s.byCategory?.smoke_area ?? 0} />
+            <Tile tone="amber" soft onClick={() => flyTo({ kind: "closure" })} icon={<Car size={13} />} label={lang === "ar" ? "سائقون نحو الإغلاق" : "Drivers to the closure"} value={s.approachingClosure} />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-3">
+            <Tile tone="coral" onClick={() => flyTo({ kind: "zone" })} icon={<House size={13} />} label={t("insideZone")} value={s.insideZone} />
+            <Tile tone="amber" onClick={() => flyTo({ kind: "closure" })} icon={<Car size={13} />} label={t("approachingClosure")} value={s.approachingClosure} />
+          </div>
+        )}
         <div className="mt-3 flex items-center gap-4 px-1 text-[12.5px] text-ink-2">
           <span>
-            <b className="tnum font-semibold text-ink">{s.outside}</b> {lang === "ar" ? "خارج المنطقة" : "outside the zone"}
+            <b className="tnum font-semibold text-ink">{s.outside}</b> {fire ? (lang === "ar" ? "غير متأثرين" : "not affected") : lang === "ar" ? "خارج المنطقة" : "outside the zone"}
           </span>
           <span title={lang === "ar" ? "موقع مفقود أو قديم — لا يُستنتج" : "Missing or stale location — never guessed"}>
             <b className="tnum font-semibold text-amber-ink">{s.review}</b> {lang === "ar" ? "بحاجة لمراجعة" : "need review"}
@@ -76,13 +99,13 @@ export function ImpactPanel() {
         <ScaleLine />
       </div>
 
-      <Section title={t("threeCases")}>
+      <Section title={fire ? (lang === "ar" ? "الحريق نفسه، أربعة ظروف" : "Same fire, four circumstances") : t("threeCases")}>
         <div className="space-y-2">
           {personas.map((p) => {
             const d = p.decision;
             const send = d?.outcome === "SEND";
             const action = send && d?.actionId ? ACTION_LABEL[d.actionId] : null;
-            const Icon = p.mobility === "driver" ? Car : House;
+            const Icon = p.mobility === "driver" ? Car : p.building ? Building2 : House;
             return (
               <button
                 key={p.id}
@@ -95,7 +118,7 @@ export function ImpactPanel() {
                 <span
                   className={cn(
                     "grid h-9 w-9 shrink-0 place-items-center rounded-full text-white",
-                    d?.category === "inside_zone" ? "bg-coral" : d?.category === "approaching_closure" ? "bg-amber" : "bg-slate",
+                    (d && CATEGORY_TONE[d.category]) ?? "bg-slate",
                   )}
                 >
                   <Icon size={16} />
@@ -108,7 +131,7 @@ export function ImpactPanel() {
                 </span>
                 <span className="flex shrink-0 items-center gap-1.5">
                   {action ? (
-                    <Chip tone={d?.category === "inside_zone" ? "coral" : "amber"}>{action[lang]}</Chip>
+                    <Chip tone={d?.category === "approaching_closure" || d?.category === "smoke_area" ? "amber" : "coral"}>{action[lang]}</Chip>
                   ) : (
                     <Chip tone="neutral">{lang === "ar" ? "لا رسالة" : "No message"}</Chip>
                   )}

@@ -142,6 +142,7 @@ const en = {
   navLog: "Log",
   navDevices: "Devices",
   navGuide: "Method",
+  navTower: "Tower",
   nextStep: "Next step",
 };
 
@@ -285,6 +286,7 @@ const ar: Record<DictKey, string> = {
   navLog: "السجل",
   navDevices: "الأجهزة",
   navGuide: "المنهجية",
+  navTower: "البرج",
   nextStep: "الخطوة التالية",
 };
 

@@ -80,7 +80,7 @@ export function Presentation() {
   };
   const freshCase = async (recipientId: string) => (await fresh()).cases.find((c) => c.recipientId === recipientId);
   /** Taps a button inside the live citizen device; resolves when the device confirms (or times out). */
-  const tapDevice = async (recipientId: string, payload: { kind: "safe" | "help"; text?: string }) => {
+  const tapDevice = async (recipientId: string, payload: { kind: "safe" | "help"; text?: string; situation?: "inside" | "trapped"; floor?: number }) => {
     let frame: HTMLIFrameElement | null = null;
     for (let i = 0; i < 40 && !frame; i++) {
       frame = document.querySelector<HTMLIFrameElement>(`iframe[data-recipient="${recipientId}"]`);
@@ -116,7 +116,203 @@ export function Presentation() {
 
   const L = (b: Bi) => b[ops.lang];
 
-  const steps: Step[] = [
+  // The walkthrough follows the drill that was loaded when it started (flood or tower fire).
+  const fireDrill = useRef(ops.state?.scenario.kind === "fire").current;
+
+  /** Tower fire (POLICY-2026-02): the same platform, a second kind of emergency. ~2.5 minutes. */
+  const fireSteps: Step[] = [
+    {
+      id: "fire-calm",
+      clock: "00:00",
+      title: { en: "Tower A, Al Majaz", ar: "البرج أ، المجاز" },
+      caption: {
+        en: "A 46-floor residential tower in the same digital twin — a real footprint, synthetic residents. Mariam lives on floor 19 with her elderly father.",
+        ar: "برج سكني من 46 طابقًا في التوأم الرقمي نفسه — مخطط حقيقي وسكان اصطناعيون. تسكن مريم في الطابق 19 مع والدها المسن.",
+      },
+      hold: 6000,
+      run: async () => {
+        if ((await fresh()).incident.state !== "draft") await opsRef.current.demo("reset");
+        ui.setFinale(false);
+        ui.closePhones();
+        ui.setCopilotOpen(false);
+        ui.setViewAt(null);
+        ui.setView("queue");
+        ui.flyTo({ kind: "building" });
+      },
+    },
+    {
+      id: "fire-alert",
+      clock: "00:10",
+      title: { en: "Civil Defence reports a fire on floor 12", ar: "الدفاع المدني يبلّغ عن حريق في الطابق 12" },
+      caption: {
+        en: "A verified feed names the building, the fire floor and the authority's instruction — full evacuation. AMAN's agent picks it up on its own and prepares everything.",
+        ar: "يحدّد موجز موثّق المبنى وطابق الحريق وتعليمات الجهة المختصة — إخلاء كامل. يلتقط وكيل أمان البلاغ بنفسه ويجهّز كل شيء.",
+      },
+      hold: 9000,
+      run: async () => {
+        ui.setView("queue");
+        ui.flyTo({ kind: "building" });
+      },
+    },
+    {
+      id: "fire-who",
+      clock: "00:25",
+      title: { en: "Who is affected — floor by floor", ar: "من المتأثرون — طابقًا بطابق" },
+      caption: {
+        en: "62 residents: those on the fire floor and above get one message, those below another. Smoke drifts south-east over the neighbours; drivers are kept off Al Wahda Street for the fire engines.",
+        ar: "62 ساكنًا: من في طابق الحريق وما فوقه يتلقون رسالة، ومن تحته رسالة أخرى. يتجه الدخان نحو الجنوب الشرقي فوق الجيران، ويُبعَد السائقون عن شارع الوحدة لسيارات الإطفاء.",
+      },
+      hold: 9000,
+      run: async () => {
+        await ensurePrepared();
+        ui.setView("impact");
+        ui.flyTo({ kind: "zone" });
+      },
+    },
+    {
+      id: "fire-message",
+      clock: "00:40",
+      title: { en: "The right words for each floor", ar: "الكلمات الصحيحة لكل طابق" },
+      caption: {
+        en: "Fire floor and above: leave by the stairs, never the lift — if smoke blocks the stairs, seal the door and tell us your floor. The fire floor and the assembly point are locked facts.",
+        ar: "طابق الحريق وما فوقه: غادر عبر الدرج ولا تستخدم المصعد — وإذا سدّ الدخان الدرج، أغلق الباب وأخبرنا برقم طابقك. طابق الحريق ونقطة التجمع حقائق مقفلة.",
+      },
+      hold: 2000,
+      run: async ({ wait }) => {
+        await ensurePrepared();
+        ui.setGuidance({ actionId: "ACT-FIRE-ABOVE", variant: "standard" });
+        ui.setView("guidance");
+        await wait(7000);
+        ui.setGuidance({ actionId: "ACT-FIRE-SMOKE", variant: "standard" });
+        await wait(4500);
+      },
+    },
+    {
+      id: "fire-redteam",
+      clock: "00:55",
+      title: { en: "Try to break the AI", ar: "حاول كسر الذكاء الاصطناعي" },
+      caption: {
+        en: "A model output that tells residents to take the lift is blocked by the validator before any human sees it — the approved template is used instead.",
+        ar: "يُحجب مخرج نموذج يطلب من السكان استخدام المصعد بواسطة المدقق قبل أن يراه أي إنسان — ويُستخدم القالب المعتمد بدلًا منه.",
+      },
+      hold: 6500,
+      run: async ({ wait }) => {
+        await ensurePrepared();
+        ui.setGuidance({ actionId: "ACT-FIRE-ABOVE", variant: "standard" });
+        ui.setView("guidance");
+        await wait(900);
+        scrollPanelTo("[data-redteam-panel]");
+        await wait(700);
+        window.dispatchEvent(new CustomEvent("aman:redteam", { detail: { attack: "lift" } }));
+        await wait(1200);
+        scrollPanelTo("[data-redteam-panel]", "end");
+      },
+    },
+    {
+      id: "fire-send",
+      clock: "01:05",
+      title: { en: "One human decision", ar: "قرار بشري واحد" },
+      caption: {
+        en: "The agent prepared every message for every floor. The duty officer approves and sends — one tap.",
+        ar: "جهّز الوكيل كل رسالة لكل طابق. يعتمد الضابط المناوب ويرسل — بنقرة واحدة.",
+      },
+      hold: 2500,
+      run: async ({ wait }) => {
+        ui.setView("queue");
+        ui.flyTo({ kind: "building" });
+        await wait(2500);
+        await ensurePublished();
+      },
+    },
+    {
+      id: "fire-replies",
+      clock: "01:15",
+      title: { en: "Residents reply from inside the tower", ar: "السكان يردّون من داخل البرج" },
+      caption: {
+        en: "Priya, on floor 6, is out. Mariam, on floor 19, is trapped with her father — smoke in the corridor. Each tap is a real response with a floor.",
+        ar: "بريا في الطابق 6 خرجت. مريم في الطابق 19 عالقة مع والدها — والدخان في الممر. كل نقرة ردّ حقيقي مع رقم الطابق.",
+      },
+      hold: 3000,
+      run: async ({ wait }) => {
+        await ensurePublished();
+        ui.openPhones(["RES-014", "RES-022"]);
+        await wait(5000);
+        await tapDevice("RES-022", { kind: "safe" });
+        await wait(2500);
+        await tapDevice("RES-014", { kind: "help", situation: "trapped", floor: 19, text: "والدي لا يستطيع نزول الدرج، والدخان في الممر. نحن في الطابق 19." });
+        await wait(4000);
+      },
+    },
+    {
+      id: "fire-board",
+      clock: "01:35",
+      title: { en: "Who is still inside — floor by floor", ar: "من لا يزال في الداخل — طابقًا بطابق" },
+      caption: {
+        en: "Every reply moves a person on the board. Civil Defence sees who is trapped, on which floor and with which needs — counted from records, never guessed.",
+        ar: "كل ردّ ينقل شخصًا على اللوحة. يرى الدفاع المدني من هو عالق وفي أي طابق وما احتياجاته — محسوبة من السجلات وليست تخمينًا.",
+      },
+      hold: 10000,
+      run: async () => {
+        ui.closePhones();
+        await opsRef.current.demo("fast-forward");
+        ui.setView("building");
+        ui.flyTo({ kind: "building" });
+      },
+    },
+    {
+      id: "fire-case",
+      clock: "01:50",
+      title: { en: "Mariam first", ar: "مريم أولًا" },
+      caption: {
+        en: "Trapped is always P1, whatever the words. The operator acknowledges and records the follow-up — AMAN never claims a crew was sent.",
+        ar: "العالق دائمًا أولوية P1 مهما كانت الكلمات. يؤكد المشغّل الاستلام ويسجّل المتابعة — ولا يدّعي أمان أبدًا إرسال فريق.",
+      },
+      hold: 7000,
+      run: async ({ wait }) => {
+        let c = await freshCase("RES-014");
+        if (!c) {
+          await wait(1500);
+          c = await freshCase("RES-014");
+        }
+        if (!c) return;
+        ui.selectCase(c.id);
+        await wait(4000);
+        if (c.status === "open") await opsRef.current.caseAction(c.id, "acknowledge");
+        await wait(2500);
+        const now = await freshCase("RES-014");
+        if (now && now.status === "acknowledged")
+          await opsRef.current.caseAction(c.id, "follow_up", ops.lang === "ar" ? "أُبلغ قائد الحادثة: مريم ووالدها عالقان في الطابق 19 (محاكاة)." : "Incident commander informed: Mariam and her father trapped on floor 19 (simulated).");
+      },
+    },
+    {
+      id: "fire-handover",
+      clock: "02:05",
+      title: { en: "Hand over to Civil Defence", ar: "التسليم للدفاع المدني" },
+      caption: {
+        en: "One printable sheet for the incident commander: everyone not yet confirmed out, by floor, with their needs.",
+        ar: "ورقة واحدة قابلة للطباعة لقائد الحادثة: كل من لم يُؤكَّد خروجه، حسب الطابق، مع احتياجاته.",
+      },
+      hold: 7000,
+      run: async () => {
+        ui.setView("building");
+        ui.flyTo({ kind: "building" });
+      },
+    },
+    {
+      id: "final",
+      clock: "02:15",
+      title: { en: "Same platform, second emergency", ar: "المنصة نفسها، حالة طوارئ ثانية" },
+      caption: { en: "AMAN 360 — from a warning to the right next step, for floods and fires alike.", ar: "أمان 360 — من التحذير إلى الخطوة الصحيحة التالية، للفيضانات والحرائق على حد سواء." },
+      hold: 600000,
+      run: async () => {
+        ui.flyTo({ kind: "building" });
+        ui.setView("building");
+        ui.setFinale(true);
+      },
+    },
+  ];
+
+  const floodSteps: Step[] = [
     {
       id: "calm",
       clock: "00:00",
@@ -412,6 +608,8 @@ export function Presentation() {
       },
     },
   ];
+
+  const steps = fireDrill ? fireSteps : floodSteps;
 
   const runStep = useCallback(
     async (i: number) => {

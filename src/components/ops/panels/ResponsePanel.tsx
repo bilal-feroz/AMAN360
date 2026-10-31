@@ -121,6 +121,11 @@ export function ResponsePanel() {
                     <div className="flex items-center gap-2">
                       <span className={cn("rounded-md px-1.5 py-[1px] text-[10.5px] font-bold", c.priority === "P1" ? "bg-coral-ink text-white" : "bg-amber-soft text-amber-ink")}>{c.priority}</span>
                       <bdi className="truncate text-[13px] font-semibold text-ink">{c.recipient?.displayName}</bdi>
+                      {c.situation && c.situation !== "out" && c.floor != null && (
+                        <span className={cn("tnum shrink-0 rounded-md px-1.5 py-[1px] text-[10.5px] font-semibold", c.situation === "trapped" ? "bg-coral-soft text-coral-ink" : "bg-amber-soft text-amber-ink")}>
+                          {lang === "ar" ? `ط ${c.floor}` : `Fl ${c.floor}`}
+                        </span>
+                      )}
                       {c.recipient?.channel === "sms_sim" && <span className="rounded bg-surface-2 px-1 text-[10px] font-semibold text-ink-2 ring-1 ring-line">SMS</span>}
                       {c.status !== "open" && (
                         <span className="ms-auto shrink-0">

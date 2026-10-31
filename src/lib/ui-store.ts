@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import type { Lang } from "./i18n";
 
-export type PanelView = "queue" | "impact" | "guidance" | "responses" | "case" | "recipient" | "audit" | "signals";
+export type PanelView = "queue" | "impact" | "guidance" | "responses" | "case" | "recipient" | "audit" | "signals" | "building";
 export type SignalDatasetId = "scenario" | "replay";
 export type Quality = "cinematic" | "balanced" | "lite";
 
@@ -13,7 +13,8 @@ export type CameraTarget =
   | { kind: "point"; lngLat: [number, number]; zoom?: number; pitch?: number; bearing?: number }
   | { kind: "city" }
   | { kind: "bounds"; bounds: [[number, number], [number, number]]; pitch?: number; bearing?: number; maxZoom?: number }
-  | { kind: "replay" };
+  | { kind: "replay" }
+  | { kind: "building" };
 
 interface UiState {
   lang: Lang;

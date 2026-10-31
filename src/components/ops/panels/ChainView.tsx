@@ -48,7 +48,9 @@ export function ChainView({ chain }: { chain: Chain }) {
       icon: MapPin,
       title: t("geoMatch"),
       done: !!d,
-      body: d
+      body: d && chain.incident.fire
+        ? d.reasons[0]
+        : d
         ? d.checks.locationUsable
           ? d.checks.insideZone
             ? ar

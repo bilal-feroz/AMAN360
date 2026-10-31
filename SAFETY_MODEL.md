@@ -44,6 +44,27 @@ No language model is called in any of these steps.
 `approvedDiversions` list with an approver; none exists in the scenario, and a diversion without an
 approval record blocks publication.
 
+### High-rise fire (POLICY-2026-02)
+
+The tower-fire drill uses its own versioned policy (`src/scenario/fire-policy.ts`). The gate rules
+`R-00` … `R-02` are the same; the matching is by building and floor instead of by zone:
+
+| Rule | Outcome | Meaning |
+|---|---|---|
+| R-03-MODE | BLOCK | The feed's instruction (e.g. *full evacuation*) is not one the policy approves → nothing is published. AMAN never chooses between evacuate and stay put; Civil Defence does |
+| R-10-NOLOC | REVIEW | Missing, stale or invalid location → no inference, operator review item |
+| R-40-FIRE-ABOVE | SEND `ACT-FIRE-ABOVE` | Resident on the fire floor or above — or in the tower with an unknown floor (precaution): stairs only, never the lift; if smoke blocks the stairs, seal the door and report your floor |
+| R-41-FIRE-BELOW | SEND `ACT-FIRE-BELOW` | Resident below the fire floor: leave calmly by the stairs to the assembly point |
+| R-42-SMOKE | SEND `ACT-FIRE-SMOKE` | Outside the tower, in the verified smoke area downwind: stay in, keep windows closed |
+| R-43-ACCESS | SEND `ACT-FIRE-ROAD` | Driver heading for the road closed to keep Civil Defence access clear |
+| R-90-OUTSIDE | NO_ACTION | Everyone else |
+
+The fire floor, the building and the assembly point are locked facts. "Lift" and "you may go back
+inside" are forbidden claims in every fire template; the red-team suite tries both. A reply of
+*trapped* is always P1; *still inside* is P1 when the person is vulnerable or at or above the fire
+floor. The *who is still inside* board and the handover sheet are computed from each resident's
+latest stored reply — never estimated.
+
 ## 3. What the AI may and may not do
 
 | May | May not |

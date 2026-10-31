@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import type { CitizenResponse, MessageState, Recipient, ResponseKind } from "@/domain/types";
+import type { CitizenResponse, FireDetails, FireSituation, MessageState, Recipient, ResponseKind } from "@/domain/types";
 import { matchClarification, classifyHelpText, isEscalationTopic } from "@/domain/comms/classify";
 import { fillText } from "@/domain/comms/facts";
 import { APPROVED_ANSWERS } from "@/scenario/policy";
@@ -35,6 +35,19 @@ export interface SubmitInput {
   questionId?: string | null;
   idempotencyKey?: string | null;
   source?: CitizenResponse["source"];
+  /** Building fire: out, still inside or trapped — and the floor the person is on. */
+  situation?: FireSituation | null;
+  floor?: number | null;
+}
+
+/**
+ * Building fire: trapped is always P1; still inside is P1 on or above the fire floor or with a
+ * recorded need. Deterministic, and only ever raises the text classification, never lowers it.
+ */
+export function firePriority(fire: FireDetails, situation: FireSituation | null | undefined, floor: number | null | undefined, vulnerable: boolean): "P1" | "P2" | null {
+  if (situation === "trapped") return "P1";
+  if (situation === "inside") return vulnerable || (floor ?? fire.fireFloor) >= fire.fireFloor ? "P1" : "P2";
+  return null;
 }
 
 export interface SubmitResult {
@@ -111,6 +124,12 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
   }
   if (input.kind === "safe") classification = { category: "safe", method: "deterministic", confidence: 1, needsHuman: false };
 
+  // Building fire: the reported situation and floor travel with the response (validated, never guessed).
+  const fire = incident.fire;
+  const situation: FireSituation | null = fire ? (input.kind === "safe" ? "out" : input.kind === "help" ? (input.situation === "trapped" ? "trapped" : input.situation === "inside" ? "inside" : null) : null) : null;
+  const reportedFloor = fire && Number.isInteger(input.floor) && input.floor! >= 0 && input.floor! <= fire.floors ? input.floor! : null;
+  const floor = situation === "inside" || situation === "trapped" ? reportedFloor ?? recipient.building?.floor ?? null : null;
+
   const response: CitizenResponse = {
     id: `RSP-${randomUUID().slice(0, 8)}`,
     messageId: message.id,
@@ -122,7 +141,14 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
     classification,
     source: input.source ?? "citizen_live",
     receivedAt: now,
+    ...(fire && { situation, floor }),
   };
+  const fireLabel =
+    situation === "trapped" || situation === "inside"
+      ? recipient.language === "ar"
+        ? `${situation === "trapped" ? "عالق" : "ما زال في الداخل"}${floor !== null ? ` — الطابق ${floor}` : ""}`
+        : `${situation === "trapped" ? "Trapped" : "Still inside"}${floor !== null ? ` — floor ${floor}` : ""}`
+      : null;
 
   let caseId: string | null = null;
   tx(() => {
@@ -132,14 +158,19 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
     if (input.kind === "help") {
       const open = store.cases.openForRecipient(message.incidentId, recipient.id);
       const c = classifyHelpText(text, recipient.vulnerability);
+      const fireP = fire ? firePriority(fire, situation, floor, recipient.vulnerability.length > 0) : null;
+      const priority = c.priority === "P1" || fireP === "P1" ? "P1" : "P2";
       if (open) {
         caseId = open.id;
         // Details sent after a bare "I need help" replace the placeholder summary, and triage reads them.
         const firstText = !store.responses.forMessage(message.id).some((x) => x.kind === "help" && x.text && x.id !== response.id);
         store.cases.save({
           ...open,
+          // A later report can raise the priority (trapped) but never lowers it.
+          priority: open.priority === "P1" ? "P1" : priority,
           summary: text && firstText ? text : open.summary,
-          notes: [...open.notes, { at: now, by: actor, text: `Additional help request: ${text ?? "(no text)"}` }],
+          notes: [...open.notes, { at: now, by: actor, text: `Additional help request: ${[fireLabel, text].filter(Boolean).join(" · ") || "(no text)"}` }],
+          ...(fire && situation && { situation, floor }),
         });
         if (text) store.schedule.add(Date.now(), "case_triage", { caseId, again: true });
       } else {
@@ -149,20 +180,21 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
           incidentId: message.incidentId,
           recipientId: recipient.id,
           responseId: response.id,
-          priority: c.priority ?? "P2",
+          priority,
           status: "open",
-          summary: text ?? (recipient.language === "ar" ? "طلب مساعدة بدون نص" : "Help requested (no details given)"),
+          summary: text ?? fireLabel ?? (recipient.language === "ar" ? "طلب مساعدة بدون نص" : "Help requested (no details given)"),
           openedAt: now,
           acknowledgedAt: null,
           resolvedAt: null,
           notes: [],
+          ...(fire && { situation, floor }),
         });
         // AI triage runs straight after, off the citizen's request path (it can only raise priority).
         store.schedule.add(Date.now(), "case_triage", { caseId });
       }
-      audit(actor, "response.assistance", `${recipient.id} requested assistance — ${caseId} (${c.priority}) opened for human review`, {
+      audit(actor, "response.assistance", `${recipient.id} requested assistance${fire && situation ? ` (${situation}${floor !== null ? `, floor ${floor}` : ""})` : ""} — ${caseId} (${priority}) opened for human review`, {
         entity: caseId,
-        data: { recipientId: recipient.id, priority: c.priority, signals: c.signals },
+        data: { recipientId: recipient.id, priority, signals: c.signals, situation, floor },
       });
     } else if (input.kind === "clarify") {
       if (escalated) {
@@ -186,9 +218,15 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
     } else {
       if (message.state === "assistance_requested") {
         const open = store.cases.openForRecipient(message.incidentId, recipient.id);
-        if (open) store.cases.save({ ...open, notes: [...open.notes, { at: now, by: actor, text: "Citizen later reported: I am safe" }] });
+        if (open) {
+          store.cases.save({
+            ...open,
+            notes: [...open.notes, { at: now, by: actor, text: fire ? "Citizen later reported: I'm out of the building" : "Citizen later reported: I am safe" }],
+            ...(fire && { situation: "out" as const }),
+          });
+        }
       }
-      audit(actor, "response.safe", `${recipient.id} confirmed safety`, { entity: message.id });
+      audit(actor, "response.safe", fire ? `${recipient.id} reported being out of the building` : `${recipient.id} confirmed safety`, { entity: message.id });
     }
   });
   return { response, duplicate: false, messageState: next, caseId, answer, escalated };

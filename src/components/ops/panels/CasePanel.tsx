@@ -40,6 +40,12 @@ export function CasePanel() {
           <span className="flex items-center gap-1.5">
             <span className={c.priority === "P1" ? "rounded bg-coral-ink px-1 text-[10.5px] font-bold text-white" : "rounded bg-amber-soft px-1 text-[10.5px] font-bold text-amber-ink"}>{c.priority}</span>
             {lang === "ar" ? "طلب مساعدة" : "Help request"}{c.recipient?.channel === "sms_sim" ? (lang === "ar" ? " عبر SMS" : " by SMS") : ""} · <span className="tnum">{fmtTime(c.openedAt, lang, true)}</span>
+            {c.situation && c.situation !== "out" && (
+              <span className={c.situation === "trapped" ? "rounded bg-coral-soft px-1.5 font-semibold text-coral-ink" : "rounded bg-amber-soft px-1.5 font-semibold text-amber-ink"}>
+                {c.situation === "trapped" ? (lang === "ar" ? "عالق" : "Trapped") : lang === "ar" ? "في الداخل" : "Inside"}
+                {c.floor !== null && c.floor !== undefined && (lang === "ar" ? ` · الطابق ${c.floor}` : ` · floor ${c.floor}`)}
+              </span>
+            )}
           </span>
         }
         title={<bdi>{c.recipient?.displayName}</bdi>}

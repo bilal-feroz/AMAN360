@@ -1,6 +1,6 @@
 import "server-only";
 import { checkIncidentGate } from "@/domain/safety-engine";
-import { SAFETY_POLICY } from "@/scenario/policy";
+import { policyFor } from "./active";
 import { getMeta, J, setMeta } from "../db";
 import { audit, touch } from "../bus";
 import * as store from "../store";
@@ -143,7 +143,7 @@ async function pipeline(incidentId: string, requestedBy?: string): Promise<Agent
 export function autoSendChecks(incidentId: string): AutoSendCheck[] {
   const incident = store.incidents.get(incidentId);
   if (!incident) return [];
-  const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
+  const gate = checkIncidentGate(incident, policyFor(incident), store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   const drafts = store.guidance.forIncident(incidentId);
   return [
     { id: "policy", ok: autoSendOn(), en: "Switched on in advance by an authorised officer", ar: "فعّلها ضابط مخوّل مسبقًا" },

@@ -98,6 +98,8 @@ async function simResponse({ messageId }: { messageId: string }, dueAt: number) 
     kind: r.sim.kind,
     text: r.sim.kind === "safe" ? null : r.sim.text ?? null,
     idempotencyKey: `sim-${messageId}`,
+    situation: r.sim.situation === "inside" || r.sim.situation === "trapped" ? r.sim.situation : null,
+    floor: r.sim.floor ?? null,
     source: "simulated_population",
   });
 }

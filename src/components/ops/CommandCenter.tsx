@@ -26,6 +26,7 @@ import { WhyPanel } from "./panels/WhyPanel";
 import { AuditPanel } from "./panels/AuditPanel";
 import { CopilotPanel } from "@/components/copilot/CopilotPanel";
 import { SignalsPanel } from "@/components/signals/SignalsPanel";
+import { BuildingPanel } from "./panels/BuildingPanel";
 import { ReplayTimeline } from "@/components/signals/ReplayTimeline";
 import { useSignalsStore, useSignalsSync } from "@/lib/use-signals";
 
@@ -161,6 +162,8 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         return <AuditPanel />;
       case "signals":
         return <SignalsPanel />;
+      case "building":
+        return <BuildingPanel />;
     }
   })();
 
@@ -184,6 +187,10 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         }}
         onSelectZone={onSelectZone}
         onSelectClosure={onSelectClosure}
+        onSelectBuilding={() => {
+          ui.setView("building");
+          ui.flyTo({ kind: "building" });
+        }}
         onHover={ui.setHover}
         signals={signalsView}
         selectedPostId={ui.signals.postId}

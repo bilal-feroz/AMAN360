@@ -54,12 +54,31 @@ export interface HazardGeometry {
   sourceAgency: string;
 }
 
+export type HazardCategory = "flood_risk_heavy_rain" | "structure_fire_highrise";
+
+/** The authority's instruction for a building on fire. AMAN maps it to approved wording; it never chooses it. */
+export type FireInstruction = "full_evacuation" | "phased_evacuation" | "stay_put";
+
+export interface FireDetails {
+  buildingId: string;
+  buildingName: Bilingual;
+  footprint: Polygon;
+  heightM: number;
+  floors: number;
+  fireFloor: number;
+  instruction: FireInstruction;
+  assemblyPoint: { name: Bilingual; location: [number, number] };
+  wind: { fromDeg: number; label: Bilingual };
+}
+
 export interface Incident {
   id: string;
   scenarioId: string;
   title: Bilingual;
   summary: Bilingual;
-  hazardCategory: "flood_risk_heavy_rain";
+  hazardCategory: HazardCategory;
+  /** Present for a building fire: the building, the fire floor and the authority's instruction. */
+  fire?: FireDetails;
   sourceAgency: { id: string; name: Bilingual; simulated: true };
   sourceRef: string;
   verification: Verification;
@@ -122,6 +141,8 @@ export interface SafetyPolicy {
   approvedContacts: { label: Bilingual; number: string }[];
   closureApproachMeters: number;
   boundaryUncertaintyMeters: number;
+  /** Fire policies: the authority instructions this policy has approved wording for. Anything else blocks. */
+  approvedInstructionModes?: FireInstruction[];
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -154,8 +175,13 @@ export interface Recipient {
   channel: "in_app" | "sms_sim";
   token: string;
   persona?: "mariam" | "daniel" | "omar";
-  sim: { kind: "safe" | "help" | "clarify" | "none"; delaySec: number; text?: string } | null;
+  /** Where the person lives when it matters (a building fire): the building and their registered floor. */
+  building?: { id: string; name: Bilingual; floor: number | null } | null;
+  sim: { kind: "safe" | "help" | "clarify" | "none"; delaySec: number; text?: string; situation?: FireSituation; floor?: number } | null;
 }
+
+/** What a resident of a burning building reports: out, still inside, or trapped. */
+export type FireSituation = "out" | "inside" | "trapped";
 
 // ---------------------------------------------------------------------------------------------
 // Decisions
@@ -184,7 +210,7 @@ export interface DecisionTrace {
   checks: GeoChecks;
   factsUsed: { label: string; value: string; source: string }[];
   reasons: string[];
-  category: "inside_zone" | "approaching_closure" | "outside" | "needs_review" | "blocked";
+  category: "inside_zone" | "approaching_closure" | "outside" | "needs_review" | "blocked" | "fire_above" | "fire_below" | "smoke_area";
   evaluatedAt: string;
 }
 
@@ -271,6 +297,9 @@ export interface CitizenResponse {
   classification: { category: string; method: "deterministic" | "llm"; confidence: number; needsHuman: boolean } | null;
   source: "citizen_live" | "simulated_population";
   receivedAt: string;
+  /** Building fire only: what the person reported and the floor they are on. */
+  situation?: FireSituation | null;
+  floor?: number | null;
 }
 
 export type CaseStatus = "open" | "acknowledged" | "follow_up_recorded" | "resolved";
@@ -312,6 +341,9 @@ export interface AssistanceCase {
   resolvedAt: string | null;
   notes: { at: string; by: string; text: string }[];
   triage?: CaseTriage | null;
+  /** Building fire only: still inside or trapped, and on which floor (latest report). */
+  situation?: FireSituation | null;
+  floor?: number | null;
 }
 
 export interface ReviewItem {

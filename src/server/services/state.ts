@@ -1,9 +1,10 @@
 import "server-only";
-import type { AssistanceCase, CitizenResponse, MessageState } from "@/domain/types";
+import type { AssistanceCase, CitizenResponse, Incident, MessageState, Recipient } from "@/domain/types";
 import { aggregateToGrid } from "@/domain/geo";
 import { checkIncidentGate } from "@/domain/safety-engine";
-import { SAFETY_POLICY } from "@/scenario/policy";
-import { INCIDENT_ID, SCENARIO_LABEL } from "@/scenario/scenario";
+
+import { SCENARIO_LABEL } from "@/scenario/scenario";
+import { activeIncidentId, policyFor, scenarioKind } from "./active";
 import { getMeta } from "../db";
 import { networkSummary } from "./network";
 import { cityScale } from "./scale";
@@ -150,7 +151,8 @@ export function computeClusters(incidentId: string, statuses: Map<string, Derive
   const decisions = new Map(store.decisions.forIncident(incidentId).map((d) => [d.recipientId, d]));
   const msgByRecipient = new Map(store.messages.forIncident(incidentId).map((m) => [m.recipientId, m]));
   return aggregateToGrid(
-    recips.filter((r) => r.locationStatus === "ok"),
+    // Residents of a burning building are shown floor by floor on the building itself, not as a column.
+    recips.filter((r) => r.locationStatus === "ok" && !r.building),
     120,
   ).map((cell) => {
     const tally: Record<string, number> = {};
@@ -164,12 +166,93 @@ export function computeClusters(incidentId: string, statuses: Map<string, Derive
   });
 }
 
+export type FireBoardStatus = "out" | "inside" | "trapped" | "unaccounted" | "not_reached";
+
+/**
+ * Building fire: who is still inside, floor by floor, from stored records only — each resident's
+ * latest reply (and the floor they reported), or their message status when they have not replied.
+ */
+export function computeFireBoard(incident: Incident, recipients: Recipient[], msgByRecipient: Map<string, StoredMessage>, statuses: Map<string, DerivedStatus>, cases: AssistanceCase[], atMs: number) {
+  const fire = incident.fire;
+  if (!fire) return null;
+  const latest = new Map<string, CitizenResponse>();
+  for (const r of store.responses.forIncident(incident.id)) if (Date.parse(r.receivedAt) <= atMs) latest.set(r.recipientId, r);
+  const residents = recipients.filter((r) => r.building?.id === fire.buildingId);
+  const people = residents.map((r) => {
+    const reply = latest.get(r.id);
+    const m = msgByRecipient.get(r.id);
+    const s = m ? statuses.get(m.id) : undefined;
+    const status: FireBoardStatus = reply
+      ? reply.kind === "safe"
+        ? "out"
+        : reply.kind === "help"
+          ? reply.situation === "trapped"
+            ? "trapped"
+            : "inside"
+          : "unaccounted"
+      : !s || s === "not_sent" || s === "sent" || s === "queued"
+        ? "not_reached"
+        : "unaccounted";
+    const c = cases.filter((x) => x.recipientId === r.id).at(-1);
+    return {
+      id: r.id,
+      name: r.displayName,
+      floor: reply?.floor ?? r.building?.floor ?? null,
+      status,
+      vulnerability: r.vulnerability,
+      caseId: c?.id ?? null,
+      priority: c?.priority ?? null,
+      persona: r.persona ?? null,
+    };
+  });
+  const floors = new Map<number, typeof people>();
+  for (const p of people) {
+    const f = p.floor ?? 0;
+    floors.set(f, [...(floors.get(f) ?? []), p]);
+  }
+  if (!floors.has(fire.fireFloor)) floors.set(fire.fireFloor, []);
+  const count = (list: typeof people, s: FireBoardStatus) => list.filter((p) => p.status === s).length;
+  const rows = [...floors.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([floor, list]) => ({
+      floor,
+      fire: floor === fire.fireFloor,
+      out: count(list, "out"),
+      inside: count(list, "inside"),
+      trapped: count(list, "trapped"),
+      unaccounted: count(list, "unaccounted"),
+      notReached: count(list, "not_reached"),
+      people: list,
+    }));
+  return {
+    buildingId: fire.buildingId,
+    buildingName: fire.buildingName,
+    floors: fire.floors,
+    fireFloor: fire.fireFloor,
+    instruction: fire.instruction,
+    assembly: fire.assemblyPoint.name,
+    totals: {
+      residents: people.length,
+      out: count(people, "out"),
+      inside: count(people, "inside"),
+      trapped: count(people, "trapped"),
+      unaccounted: count(people, "unaccounted"),
+      notReached: count(people, "not_reached"),
+    },
+    rows,
+  };
+}
+
+export type FireBoard = NonNullable<ReturnType<typeof computeFireBoard>>;
+
 export function getOpsState(atIso?: string | null) {
   const atMs = atIso ? Date.parse(atIso) : Date.now();
+  const INCIDENT_ID = activeIncidentId();
   const incident = store.incidents.get(INCIDENT_ID)!;
+  const policy = policyFor(incident);
   const hazard = store.hazards.forIncident(INCIDENT_ID);
   const closures = store.closures.forIncident(INCIDENT_ID);
-  const gate = checkIncidentGate(incident, SAFETY_POLICY, hazard, closures, new Date());
+  const gate = checkIncidentGate(incident, policy, hazard, closures, new Date());
   const stages = computeStages();
   const metrics = computeMetrics(INCIDENT_ID, atMs);
   const assessment = store.assessments.latest(INCIDENT_ID);
@@ -180,10 +263,14 @@ export function getOpsState(atIso?: string | null) {
 
   const recipients = new Map(store.recipients.all().map((r) => [r.id, r]));
   const msgByRecipient = new Map(store.messages.forIncident(INCIDENT_ID).map((m) => [m.recipientId, m]));
-  const scale = cityScale([...recipients.values()], (r) => {
-    const m = msgByRecipient.get(r.id);
-    return assessed && m ? (statuses.get(m.id) ?? m.state) : null;
-  });
+  const scale = cityScale(
+    [...recipients.values()],
+    (r) => {
+      const m = msgByRecipient.get(r.id);
+      return assessed && m ? (statuses.get(m.id) ?? m.state) : null;
+    },
+    { floodZone: !incident.fire },
+  );
   const cases = store.cases.forIncident(INCIDENT_ID).map((c) => {
     const r = recipients.get(c.recipientId);
     return { ...c, recipient: r ? { id: r.id, displayName: r.displayName, language: r.language, areaLabel: r.areaLabel, vulnerability: r.vulnerability, channel: r.channel } : null };
@@ -200,6 +287,7 @@ export function getOpsState(atIso?: string | null) {
         mobility: r.mobility,
         persona: r.persona ?? "priya",
         areaLabel: r.areaLabel,
+        building: r.building ?? null,
         location: r.location,
         accessibility: r.accessibility,
         decision: d ? { ruleId: d.ruleId, outcome: d.outcome, actionId: d.actionId, category: d.category, variant: d.variant } : null,
@@ -230,9 +318,10 @@ export function getOpsState(atIso?: string | null) {
     signals,
     ai,
     network: networkSummary(),
-    scenario: { label: SCENARIO_LABEL, resetAt: getMeta("reset_at"), simSpeed: Number(getMeta("sim_speed") ?? 1) },
+    scenario: { kind: scenarioKind(), label: SCENARIO_LABEL, resetAt: getMeta("reset_at"), simSpeed: Number(getMeta("sim_speed") ?? 1) },
     provider: providerStatus(),
-    policy: { version: SAFETY_POLICY.version, name: SAFETY_POLICY.name, status: SAFETY_POLICY.status, expiresAt: SAFETY_POLICY.expiresAt, rules: SAFETY_POLICY.rules },
+    policy: { version: policy.version, name: policy.name, status: policy.status, expiresAt: policy.expiresAt, rules: policy.rules },
+    fireBoard: computeFireBoard(incident, [...recipients.values()], msgByRecipient, statuses, store.cases.forIncident(INCIDENT_ID), atMs),
     incident,
     hazard,
     closures,

@@ -4,6 +4,9 @@ export interface MessageFacts {
   zone: Bilingual;
   closure: Bilingual;
   validUntil: string; // ISO
+  /** Building fire: the floor on fire ("floor 12") and where to gather once out. */
+  floor?: Bilingual;
+  assembly?: Bilingual;
 }
 
 const TZ = "Asia/Dubai";
@@ -38,11 +41,13 @@ export function factValues(facts: MessageFacts, lang: Lang): Record<string, stri
     "{{zone}}": facts.zone[lang],
     "{{closure}}": facts.closure[lang],
     "{{until}}": formatUntil(facts.validUntil, lang),
+    "{{floor}}": facts.floor?.[lang] ?? "",
+    "{{assembly}}": facts.assembly?.[lang] ?? "",
   };
 }
 
 function fill(text: string, values: Record<string, string>): string {
-  return text.replace(/\{\{(zone|closure|until)\}\}/g, (m) => values[m] ?? m);
+  return text.replace(/\{\{(zone|closure|until|floor|assembly)\}\}/g, (m) => values[m] ?? m);
 }
 
 export function renderApproved(action: ApprovedAction, lang: Lang, variant: ActionVariant, facts: MessageFacts): ActionTemplate {

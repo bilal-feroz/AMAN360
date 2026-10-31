@@ -1,6 +1,6 @@
 "use client";
 
-import { Ban, CloudRain, ShieldCheck, TriangleAlert } from "lucide-react";
+import { Ban, CloudRain, Flame, ShieldCheck, TriangleAlert } from "lucide-react";
 import { Button, Chip, Disclosure, Field } from "@/components/ui";
 import { fmtDateTime, fmtTime } from "@/lib/format";
 import { useUi } from "@/lib/ui-store";
@@ -46,9 +46,31 @@ export function QueuePanel() {
           <AgentCard />
         </div>
         <dl className="mt-4 divide-y divide-line rounded-2xl bg-surface-2/70 px-4 py-1 ring-1 ring-line">
-          <Fact label={lang === "ar" ? "المنطقة" : "Zone"} onClick={() => flyTo({ kind: "zone" })}>
-            {L(inc.areaName)}
-          </Fact>
+          {inc.fire ? (
+            <>
+              <Fact label={lang === "ar" ? "المبنى" : "Building"} onClick={() => flyTo({ kind: "building" })}>
+                {L(inc.fire.buildingName)} · {inc.fire.floors} {lang === "ar" ? "طابقًا" : "floors"}
+              </Fact>
+              <Fact label={lang === "ar" ? "الحريق" : "Fire"}>
+                <span className="text-coral-ink">{lang === "ar" ? `الطابق ${inc.fire.fireFloor}` : `Floor ${inc.fire.fireFloor}`}</span>
+              </Fact>
+              <Fact label={lang === "ar" ? "التعليمات" : "Instruction"}>
+                {inc.fire.instruction === "full_evacuation"
+                  ? lang === "ar"
+                    ? "إخلاء كامل — الدفاع المدني"
+                    : "Full evacuation — Civil Defence"
+                  : inc.fire.instruction.replace("_", " ")}
+              </Fact>
+              <Fact label={lang === "ar" ? "التجمع" : "Assembly"}>{L(inc.fire.assemblyPoint.name)}</Fact>
+              <Fact label={lang === "ar" ? "الدخان" : "Smoke"} onClick={() => flyTo({ kind: "zone" })}>
+                {lang === "ar" ? "يتجه نحو الجنوب الشرقي" : "Drifting south-east"} · {L(inc.fire.wind.label)}
+              </Fact>
+            </>
+          ) : (
+            <Fact label={lang === "ar" ? "المنطقة" : "Zone"} onClick={() => flyTo({ kind: "zone" })}>
+              {L(inc.areaName)}
+            </Fact>
+          )}
           <Fact label={lang === "ar" ? "الإغلاق" : "Closure"} onClick={() => flyTo({ kind: "closure" })}>
             {L(state.closures[0]?.name ?? inc.areaName)} · {state.closures.length} {lang === "ar" ? "مقاطع" : "segments"}
           </Fact>
@@ -64,7 +86,7 @@ export function QueuePanel() {
 
         <Disclosure
           className="mt-4"
-          icon={v.status === "verified" ? <ShieldCheck size={15} className="text-teal" /> : <CloudRain size={15} className="text-muted" />}
+          icon={v.status === "verified" ? <ShieldCheck size={15} className="text-teal" /> : inc.fire ? <Flame size={15} className="text-muted" /> : <CloudRain size={15} className="text-muted" />}
           summary={
             <>
               {L(inc.sourceAgency.name)}
@@ -99,7 +121,7 @@ export function QueuePanel() {
 
       <ActionBar>
         {!blocked && (running || !prepared) && !["active", "resolved"].includes(inc.state) && (
-          <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={running} disabled={!canAct} icon={<CloudRain size={17} />}>
+          <Button tone="danger" size="lg" className="w-full" onClick={activate} busy={running} disabled={!canAct} icon={inc.fire ? <Flame size={17} /> : <CloudRain size={17} />}>
             {running ? (lang === "ar" ? "أمان يجهّز…" : "AMAN is preparing…") : assessed ? t("prepareGuidance") : t("activate")}
           </Button>
         )}

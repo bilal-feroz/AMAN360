@@ -12,6 +12,8 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
   const { t, lang, state, operator } = useOps();
   const setLang = useUi((s) => s.setLang);
   const presenting = useUi((s) => s.presenting);
+  const copilotOpen = useUi((s) => s.copilot.open);
+  const setCopilotOpen = useUi((s) => s.setCopilotOpen);
   const [settings, setSettings] = useState(false);
   const now = useNow(1000);
   const time =
@@ -85,6 +87,19 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
             { value: "ar", label: "ع", title: "العربية" },
           ]}
         />
+        <button
+          onClick={() => setCopilotOpen(!copilotOpen)}
+          aria-pressed={copilotOpen}
+          title={lang === "ar" ? "اسأل أمان (/)" : "Ask AMAN (/)"}
+          className={cn(
+            "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-[13px] font-medium ring-1 transition-colors",
+            copilotOpen ? "bg-teal-soft text-teal-ink ring-teal/40" : "bg-surface text-ink ring-line hover:bg-teal-soft hover:text-teal-ink",
+          )}
+        >
+          <Sparkles size={15} className="text-teal" />
+          {lang === "ar" ? "اسأل أمان" : "Ask AMAN"}
+          <kbd className="hidden rounded bg-surface-2 px-1 font-id text-[10px] text-muted ring-1 ring-line xl:inline">/</kbd>
+        </button>
         <Button tone={presenting ? "dark" : "primary"} size="sm" onClick={onPresent} icon={<Presentation size={15} />}>
           {presenting ? t("exit") : t("presentation")}
         </Button>

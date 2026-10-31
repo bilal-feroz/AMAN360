@@ -71,7 +71,7 @@ function variantInstruction(variant: ActionVariant, language: Lang): string {
 }
 
 export function createAnthropicProvider(apiKey: string, model: string): CommunicationProvider {
-  const client = new Anthropic({ apiKey, timeout: 20_000, maxRetries: 1 });
+  const client = new Anthropic({ apiKey, baseURL: anthropicBaseURL(), timeout: 20_000, maxRetries: 1 });
   return {
     id: "anthropic",
     label: "Anthropic Claude (bounded rewrite + validated)",
@@ -120,6 +120,14 @@ export function createAnthropicProvider(apiKey: string, model: string): Communic
       return { answerId: id && allowedIds.includes(id) ? id : null, confidence: response.parsed_output.confidence };
     },
   };
+}
+
+/**
+ * The app always talks to the public Anthropic API unless AMAN_ANTHROPIC_BASE_URL says otherwise;
+ * a generic ANTHROPIC_BASE_URL left in the shell by other tools is deliberately ignored.
+ */
+export function anthropicBaseURL() {
+  return process.env.AMAN_ANTHROPIC_BASE_URL?.trim() || "https://api.anthropic.com";
 }
 
 let cached: CommunicationProvider | null = null;

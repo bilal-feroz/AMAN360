@@ -169,6 +169,16 @@ body {
   animation: aman-shimmer 1.6s linear infinite;
 }
 
+/* Copilot: shimmering "Thinking" label while a model is streaming */
+.aman-shimmer-text {
+  background: linear-gradient(90deg, var(--color-ink-2) 0%, var(--color-ink-2) 35%, var(--color-cyan) 50%, var(--color-ink-2) 65%, var(--color-ink-2) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: aman-shimmer 1.8s linear infinite;
+}
+
 /* Map annotation decluttering at city scale */
 .aman-marker {
   transition: opacity 0.35s ease;

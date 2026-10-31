@@ -24,6 +24,7 @@ import { ResponsePanel } from "./panels/ResponsePanel";
 import { CasePanel } from "./panels/CasePanel";
 import { WhyPanel } from "./panels/WhyPanel";
 import { AuditPanel } from "./panels/AuditPanel";
+import { CopilotPanel } from "@/components/copilot/CopilotPanel";
 
 const CityMap = dynamic(() => import("@/components/map/CityMap"), {
   ssr: false,
@@ -66,6 +67,9 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
   const chrome = stage === "done";
   const rtl = ops.lang === "ar";
   const panelWidth = ui.view === "guidance" ? Math.min(660, Math.max(520, vw * 0.34)) : vw < 1500 ? 400 : 440;
+  const copilotOpen = ui.copilot.open && chrome;
+  const copilotWidth = Math.round(Math.min(480, Math.max(380, vw * 0.27)));
+  const leftInset = RAIL + (copilotOpen ? copilotWidth + 12 : 0);
 
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);
@@ -98,9 +102,21 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
 
   const padding = useMemo(() => {
     if (!chrome) return { left: 0, right: 0, top: 0, bottom: 0 };
-    const side = { near: RAIL + 24, far: panelWidth + 24 };
+    const side = { near: leftInset + 24, far: panelWidth + 24 };
     return { top: TOP + 24, bottom: 150, left: rtl ? side.far : side.near, right: rtl ? side.near : side.far };
-  }, [chrome, panelWidth, rtl]);
+  }, [chrome, panelWidth, rtl, leftInset]);
+
+  // "/" opens the copilot from anywhere that is not a text field.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (e.key !== "/" || e.metaKey || e.ctrlKey || el?.closest("input, textarea, select, [contenteditable]")) return;
+      e.preventDefault();
+      useUi.getState().setCopilotOpen(true);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const onSelectZone = useCallback(() => {
     const st = useUi.getState();
@@ -204,8 +220,25 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         </div>
       </motion.aside>
 
+      {/* Generative copilot */}
+      <AnimatePresence>
+        {copilotOpen && (
+          <motion.div
+            key="copilot"
+            className="absolute z-20"
+            style={{ top: TOP + 12, bottom: 12, insetInlineStart: RAIL + 12, width: copilotWidth }}
+            initial={{ opacity: 0, x: rtl ? 24 : -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: rtl ? 24 : -24, transition: { duration: 0.16 } }}
+            transition={{ type: "spring", stiffness: 210, damping: 26 }}
+          >
+            <CopilotPanel />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Map stage overlays */}
-      <div className="pointer-events-none absolute z-10" style={{ top: TOP, bottom: 0, insetInlineStart: RAIL, insetInlineEnd: panelWidth }}>
+      <div className="pointer-events-none absolute z-10" style={{ top: TOP, bottom: 0, insetInlineStart: leftInset, insetInlineEnd: panelWidth }}>
         <motion.div
           className="absolute inset-x-4 bottom-6"
           initial={false}
@@ -238,7 +271,7 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         </div>
       </div>
       {ui.presenting && chrome && (
-        <div className="absolute inset-0 z-30 pointer-events-none" style={{ top: TOP, insetInlineStart: RAIL, insetInlineEnd: panelWidth }}>
+        <div className="absolute inset-0 z-30 pointer-events-none" style={{ top: TOP, insetInlineStart: leftInset, insetInlineEnd: panelWidth }}>
           <Presentation />
         </div>
       )}

@@ -109,7 +109,7 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
   // "/" opens the copilot from anywhere that is not a text field.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const el = e.target as HTMLElement | null;
+      const el = e.target instanceof Element ? e.target : null;
       if (e.key !== "/" || e.metaKey || e.ctrlKey || el?.closest("input, textarea, select, [contenteditable]")) return;
       e.preventDefault();
       useUi.getState().setCopilotOpen(true);

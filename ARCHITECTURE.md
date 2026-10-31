@@ -25,9 +25,31 @@ function, and there is no distributed infrastructure to fail during a live demo.
 │   safety-engine.ts  deterministic policy evaluation + gate         │
 │   comms/            facts · validator · classifiers                │
 │ comms/providers.ts  template provider | Anthropic (optional)      │
+│ copilot/            Ask AMAN: snapshot · display tools · resolver │
+│                     · rule fallback · streamed run (SSE)          │
 │ store.ts / db.ts    SQLite (better-sqlite3), audit log, change bus │
 └───────────────────────────────────────────────────────────────────┘
 ```
+
+## Ask AMAN — generative UI
+
+`POST /api/ops/copilot` (operator session, rate-limited) streams JSON events over SSE:
+`meta → step → thinking… → component_start → component → check… → text… → done`.
+
+1. `copilot/context.ts` builds a compact snapshot of the live incident. Citizen free text is fenced
+   in `<citizen_text>` as data; tokens and exact coordinates are left out.
+2. `copilot/run.ts` streams Claude (`claude-opus-5-5`, adaptive thinking with summarised display,
+   low effort, server-side fallback) with six **display-only** tools (`strict`,
+   `eager_input_streaming`). A tool call opens a skeleton card immediately; when its input is
+   complete it is validated with zod and passed to the resolver. A short tool result goes back so
+   the model can write a one-to-three-sentence explanation (at most three turns).
+3. `copilot/resolve.ts` turns ids into record-backed props (unknown ids are dropped and reported
+   back), recomputes the safety checks (gate, validator over every variant, bilingual consistency)
+   and gates every suggested action against the workflow state (the operator APIs still enforce roles).
+4. `copilot/rules.ts` answers the same questions with keyword intents when no key is configured or
+   the API fails before showing anything. It is labelled "Rule-based" and emits no thinking events.
+5. The client (`lib/copilot-client.ts`, `components/copilot/*`) reduces the events into text and
+   card parts in arrival order; buttons call the same operator APIs as the panels.
 
 ## Data flow (one incident)
 

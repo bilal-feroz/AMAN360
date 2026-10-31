@@ -55,6 +55,12 @@ Click **Approve guidance** → **Issue to simulated channels**.
 > awaiting — computed from stored records, not animated counters. Mariam's case is at the top of
 > the priority queue, and her block on the map turns coral."
 
+**02:22 — Ask AMAN** → the copilot opens and asks "Who needs help first?"
+> "This is the AI working in the open. You can see Claude thinking, then it pulls up the priority
+> cases — but every name, priority and timestamp on that card comes from our records, and the
+> safety checks re-run as it answers. It can suggest a next step; only a human can click it."
+(Without internet or a key, the same card appears from the rule-based view, clearly labelled.)
+
 **02:35 — Explainability & human follow-up** → open Mariam's case
 > "Verified event, geographic match, approved rule, the exact message she received, her response
 > — and now a human decision." Click **Acknowledge**, record a follow-up note.
@@ -91,6 +97,12 @@ Most alert systems broadcast one message to an area. AMAN matches each person's 
 approved action (resident vs driver vs outside), personalises language and accessibility, and closes
 the loop: responses become a live operational picture and prioritised human cases, with a full
 explanation for every decision.
+
+**Isn't the copilot just a chatbot?**
+No. It doesn't answer in free text about safety. It chooses which verified evidence to show
+(display-only tools) and writes a short explanation; the server builds every card from records,
+drops anything that doesn't exist, re-runs the checks and disables actions the workflow doesn't
+allow. A citizen message that says "ignore your instructions" is treated as data.
 
 **How do you prevent hallucinations?**
 The model never decides. Actions come from a deterministic, versioned policy. Any AI text must pass

@@ -58,6 +58,23 @@ approval record blocks publication.
 | | Write the standard instruction (always the approved template) |
 | | Write a free-form answer to a citizen |
 
+### The Ask AMAN copilot
+
+The copilot explains; it does not decide or act.
+
+- **Display-only tools.** Its six tools render cards. None writes to the database. Suggested
+  actions become buttons that a human must click. The server disables any that the workflow state
+  does not allow (e.g. "Issue alerts" before approval), and the operator APIs still enforce roles.
+- **Record-backed cards.** The model supplies ids and short wording only. Names, counts, rules,
+  messages and timestamps on every card come from stored records; invented ids are dropped and
+  reported back to the model as errors. Safety checks are recomputed on the server at answer time.
+- **Prompt-injection boundary.** Citizen messages reach the model only inside `<citizen_text>`
+  fences, declared as data in the system prompt; angle brackets are stripped. The model's case
+  summaries are labelled "AI summary" with one click to the citizen's own words.
+- **Honest labelling.** The panel always shows which mode answered (Claude vs rule-based). The
+  rule-based fallback never shows "thinking", and a failed API call is shown as a failed step.
+- **No paid calls without a key.** The key stays server-side in `.env.local`, which git ignores.
+
 ## 4. The validator (`src/domain/comms/validator.ts`)
 
 Every candidate — template-selected or LLM-generated — passes:

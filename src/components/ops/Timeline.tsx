@@ -31,7 +31,7 @@ export function Timeline() {
   };
 
   return (
-    <div className="pointer-events-auto flex items-stretch gap-3">
+    <div className="@container/tl pointer-events-auto flex items-stretch gap-3">
       <div className="flex min-w-0 flex-1 items-center gap-4 rounded-2xl bg-surface/95 px-5 py-3 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
         <div className="relative flex min-w-0 flex-1 items-start">
           <div className="absolute inset-x-[18px] top-[9px] h-[2px] rounded bg-line" />
@@ -65,19 +65,19 @@ export function Timeline() {
                   className={cn(
                     "max-w-[120px] text-[11px] font-medium leading-tight",
                     current ? "text-ink" : reached ? "text-ink-2" : "text-muted/70",
-                    !current && "hidden min-[1600px]:block",
+                    !current && "hidden @[1000px]/tl:block",
                   )}
                 >
                   {L(s.label)}
                 </span>
-                <span className={cn("tnum text-[10.5px] text-muted", !current && "hidden min-[1600px]:block")}>{s.at ? fmtTime(s.at, lang, true) : "—"}</span>
+                <span className={cn("tnum text-[10.5px] text-muted", !current && "hidden @[1000px]/tl:block")}>{s.at ? fmtTime(s.at, lang, true) : "—"}</span>
               </button>
             );
           })}
         </div>
       </div>
       {m.alertsSent > 0 && (
-        <div className="flex items-center gap-3 rounded-2xl bg-surface/95 px-4 py-3 min-[1600px]:gap-5 min-[1600px]:px-5 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
+        <div className="flex items-center gap-3 rounded-2xl bg-surface/95 px-4 py-3 @[1000px]/tl:gap-5 @[1000px]/tl:px-5 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
           <Metric label={t("alertsSent")} value={m.alertsSent} />
           <Metric label={t("safe")} value={m.safe} tone="text-teal" />
           <Metric label={t("assistance")} value={m.assistance} tone="text-coral-ink" />

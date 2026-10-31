@@ -25,6 +25,23 @@ const ago = (iso: string | null | undefined, lang: Lang) => {
   return L(lang, `${Math.round(m / 60)}h`, `${Math.round(m / 60)} س`);
 };
 
+const WORDS: Record<string, { en: string; ar: string }> = {
+  verified: { en: "verified", ar: "موثّق" },
+  unverified: { en: "unverified", ar: "غير موثّق" },
+  conflicting: { en: "conflicting", ar: "متعارض" },
+  revoked: { en: "revoked", ar: "ملغى" },
+  queued: { en: "queued", ar: "في الانتظار" },
+  sent: { en: "sent", ar: "مُرسلة" },
+  failed: { en: "failed", ar: "فشلت" },
+  expired: { en: "expired", ar: "منتهية" },
+  superseded: { en: "superseded", ar: "مستبدلة" },
+  open: { en: "open", ar: "مفتوحة" },
+  acknowledged: { en: "acknowledged", ar: "تم الاستلام" },
+  follow_up_recorded: { en: "follow-up recorded", ar: "سُجّلت المتابعة" },
+  resolved: { en: "resolved", ar: "مغلقة" },
+};
+const word = (key: string, lang: Lang) => WORDS[key]?.[lang] ?? key.replace(/_/g, " ");
+
 export function snapshotState(): OpsState {
   return getOpsState(null);
 }
@@ -92,7 +109,7 @@ export function overviewProps(s: OpsState, lang: Lang, headline: string, emphasi
       id: "verification",
       label: L(lang, "Verified the hazard feed", "التحقق من موجز الخطر"),
       tags: [{ text: s.incident.sourceAgency.id, tone: "teal" }, { text: s.incident.sourceRef }],
-      meta: s.incident.verification.status === "verified" ? `${L(lang, "system", "النظام")} · ${ago(at("verified"), lang)}` : s.incident.verification.status,
+      meta: s.incident.verification.status === "verified" ? `${L(lang, "system", "النظام")} · ${ago(at("verified"), lang)}` : word(s.incident.verification.status, lang),
       tone: s.incident.state === "blocked" ? "blocked" : tone(s.incident.verification.status === "verified", "attention"),
     },
     {
@@ -289,7 +306,7 @@ export function traceProps(recipientId: string, lang: Lang, explanation: string)
       id: "event",
       label: L(lang, "Verified event", "حدث موثّق"),
       tags: [{ text: chain.incident.id }, { text: chain.incident.sourceAgency.id, tone: "teal" }],
-      meta: chain.incident.verification.status,
+      meta: word(chain.incident.verification.status, lang),
       tone: chain.incident.verification.status === "verified" ? "done" : "pending",
     },
     {
@@ -317,7 +334,7 @@ export function traceProps(recipientId: string, lang: Lang, explanation: string)
     {
       id: "message",
       label: m
-        ? L(lang, `Message ${m.deliveredAt ? "delivered" : m.state}`, `الرسالة ${m.deliveredAt ? "سُلّمت" : m.state}`)
+        ? L(lang, `Message ${m.deliveredAt ? "delivered" : word(m.state, "en")}`, `الرسالة ${m.deliveredAt ? "سُلّمت" : word(m.state, "ar")}`)
         : d?.outcome === "NO_ACTION"
           ? L(lang, "No message — none needed", "لا رسالة — غير ضرورية")
           : L(lang, "Message", "الرسالة"),
@@ -341,7 +358,7 @@ export function traceProps(recipientId: string, lang: Lang, explanation: string)
     },
     {
       id: "followup",
-      label: chain.case ? L(lang, `Case ${chain.case.status.replace(/_/g, " ")}`, `الحالة: ${chain.case.status}`) : L(lang, "Human follow-up", "متابعة بشرية"),
+      label: chain.case ? L(lang, `Case ${word(chain.case.status, "en")}`, `الحالة: ${word(chain.case.status, "ar")}`) : L(lang, "Human follow-up", "متابعة بشرية"),
       tags: chain.case ? [{ text: chain.case.id }, { text: chain.case.priority, tone: chain.case.priority === "P1" ? "coral" : "amber" }] : [],
       meta: chain.case?.acknowledgedAt ? ago(chain.case.acknowledgedAt, lang) : "—",
       tone: chain.case ? (chain.case.status === "open" ? "help" : "done") : "pending",

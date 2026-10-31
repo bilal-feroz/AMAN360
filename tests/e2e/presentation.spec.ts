@@ -31,6 +31,7 @@ test("presentation mode completes the guided demo on real records", async ({ bro
     "Communication",
     "Citizen interaction",
     "The picture updates",
+    "Ask AMAN — AI you can check",
     "Explainability & human follow-up",
     "Every response changes the picture",
   ];
@@ -39,6 +40,11 @@ test("presentation mode completes the guided demo on real records", async ({ bro
     if (title === "Safety intelligence") {
       await page.waitForTimeout(3500);
       await page.screenshot({ path: `${SHOTS}/15-presentation-safety-intelligence.png` });
+    }
+    if (title === "Ask AMAN — AI you can check") {
+      await expect(page.getByRole("complementary", { name: "Ask AMAN copilot" }).getByText(/Priority cases|Who needs help first/).first()).toBeVisible({ timeout: 30_000 });
+      await page.waitForTimeout(4000);
+      await page.screenshot({ path: `${SHOTS}/16b-presentation-copilot.png` });
     }
     if (title === "Citizen interaction") {
       await page.waitForTimeout(16_000);

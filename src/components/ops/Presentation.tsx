@@ -102,6 +102,7 @@ export function Presentation() {
         if ((await fresh()).incident.state !== "draft") await opsRef.current.demo("reset");
         ui.setFinale(false);
         ui.closePhones();
+        ui.setCopilotOpen(false);
         ui.setViewAt(null);
         ui.setView("queue");
         ui.flyTo({ kind: "overview" });
@@ -198,12 +199,30 @@ export function Presentation() {
       },
     },
     {
+      id: "copilot",
+      clock: "02:22",
+      title: { en: "Ask AMAN — AI you can check", ar: "اسأل أمان — ذكاء اصطناعي يمكن التحقق منه" },
+      caption: {
+        en: "The copilot picks the evidence and explains it. Every card is built from stored records, and the rules engine re-checks it.",
+        ar: "يختار المساعد الأدلة ويشرحها. كل بطاقة مبنية من السجلات المخزنة، ويعيد محرك القواعد فحصها.",
+      },
+      hold: 6000,
+      run: async ({ wait }) => {
+        ui.setView("responses");
+        useUi.getState().askCopilot(ops.lang === "ar" ? "من يحتاج المساعدة أولاً؟" : "Who needs help first?");
+        // Wait for the answer to start, then to finish (bounded so the walkthrough never stalls).
+        for (let i = 0; i < 20 && !useUi.getState().copilotBusy; i++) await wait(150);
+        for (let i = 0; i < 100 && useUi.getState().copilotBusy; i++) await wait(250);
+      },
+    },
+    {
       id: "explain",
       clock: "02:35",
       title: { en: "Explainability & human follow-up", ar: "قابلية التفسير والمتابعة البشرية" },
       caption: { en: "Verified event → geographic match → approved rule → communication → citizen response → human follow-up.", ar: "حدث موثّق ← مطابقة جغرافية ← قاعدة معتمدة ← تواصل ← رد المواطن ← متابعة بشرية." },
       hold: 9000,
       run: async ({ wait }) => {
+        ui.setCopilotOpen(false);
         let c = await freshCase("RES-014");
         if (!c) {
           await wait(1500);
@@ -286,7 +305,7 @@ export function Presentation() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement)?.closest("input, textarea")) return;
+      if (e.target instanceof Element && e.target.closest("input, textarea")) return;
       if (e.key === " ") {
         e.preventDefault();
         setPaused((p) => !p);
@@ -339,7 +358,7 @@ export function Presentation() {
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className={cn("pointer-events-auto absolute left-1/2 z-30", ui.phone.open ? "top-4" : "bottom-[132px]", " w-[min(760px,calc(100%-560px))] -translate-x-1/2 overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-24px_rgb(0_0_0/0.6)]")}
+        className={cn("pointer-events-auto absolute left-1/2 z-30", ui.phone.open ? "top-4 w-[min(760px,calc(100%-560px))]" : "bottom-[132px] w-[min(760px,calc(100%-48px))]", "-translate-x-1/2 overflow-hidden rounded-2xl bg-ink text-white shadow-[0_24px_60px_-24px_rgb(0_0_0/0.6)]")}
         role="region"
         aria-label="Presentation controls"
       >

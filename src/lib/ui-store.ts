@@ -29,6 +29,8 @@ interface UiState {
   guidance: { actionId: string | null; variant: "standard" | "plain" | "audio" };
   finale: boolean;
   copilot: { open: boolean; ask: { q: string; nonce: number } | null };
+  /** True while an answer is streaming (lets Presentation Mode wait for it). */
+  copilotBusy: boolean;
   setCopilotOpen: (open: boolean) => void;
   /** Opens the copilot and submits a question (used by suggestion chips and Presentation Mode). */
   askCopilot: (q: string) => void;
@@ -84,6 +86,7 @@ export const useUi = create<UiState>((set) => ({
   guidance: { actionId: null, variant: "standard" },
   finale: false,
   copilot: { open: false, ask: null },
+  copilotBusy: false,
   setCopilotOpen: (open) => set((s) => ({ copilot: { ...s.copilot, open } })),
   askCopilot: (q) => set((s) => ({ copilot: { open: true, ask: { q, nonce: (s.copilot.ask?.nonce ?? 0) + 1 } } })),
   setGuidance: (g) => set((s) => ({ guidance: { ...s.guidance, ...g } })),

@@ -149,7 +149,6 @@ export function CopilotPanel() {
   const [status, setStatus] = useState<{ llm: boolean; model: string } | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const stick = useRef(true);
   const handled = useRef(0);
 
   useEffect(() => {
@@ -169,11 +168,19 @@ export function CopilotPanel() {
     if (open) setTimeout(() => inputRef.current?.focus(), 250);
   }, [open]);
 
-  // Keep the newest content in view while it streams, unless the operator scrolled up.
+  useEffect(() => {
+    useUi.setState({ copilotBusy: busy });
+  }, [busy]);
+  useEffect(() => () => useUi.setState({ copilotBusy: false }), []);
+
+  // A new question scrolls to the top of the panel so its answer builds underneath it.
+  const count = exchanges.length;
   useEffect(() => {
     const el = scrollRef.current;
-    if (el && stick.current) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
-  }, [exchanges]);
+    const target = el?.querySelector<HTMLElement>(`[data-exchange="${exchanges.at(-1)?.id}"]`);
+    if (el && target) el.scrollTo({ top: target.offsetTop - 12, behavior: "smooth" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [count]);
 
   const last = exchanges.at(-1);
   const mode: CopilotMode | null = last?.meta?.mode ?? (status ? (status.llm ? "llm" : "rules") : null);
@@ -181,7 +188,6 @@ export function CopilotPanel() {
 
   const send = (q: string) => {
     if (!q.trim() || busy) return;
-    stick.current = true;
     void submit(q);
     setDraft("");
   };
@@ -211,11 +217,7 @@ export function CopilotPanel() {
 
       <div
         ref={scrollRef}
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          stick.current = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
-        }}
-        className="scroll-thin @container min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
+        className="scroll-thin @container relative min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
       >
         {exchanges.length === 0 && (
           <div className="space-y-4 pt-2">
@@ -243,8 +245,10 @@ export function CopilotPanel() {
             </div>
           </div>
         )}
-        {exchanges.map((x) => (
-          <ExchangeView key={x.id} x={x} lang={lang} />
+        {exchanges.map((x, i) => (
+          <div key={x.id} data-exchange={x.id} style={i === exchanges.length - 1 ? { minHeight: "calc(100% - 8px)" } : undefined}>
+            <ExchangeView x={x} lang={lang} />
+          </div>
         ))}
       </div>
 

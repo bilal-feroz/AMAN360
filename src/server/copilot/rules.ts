@@ -60,11 +60,8 @@ export function rulePlan(question: string, s: OpsState, lang: Lang): Plan {
     if (id) {
       const r = store.recipients.get(id)!;
       return {
-        calls: [
-          { name: "show_decision_trace", input: { recipient_id: id, explanation: traceExplanation(id, lang) } },
-          { name: "suggest_actions", input: { actions: [{ kind: "open_recipient", target: id, label: L(lang, "Open on map", "عرض على الخريطة") }] } },
-        ],
-        text: L(lang, `This is the recorded decision chain for ${r.displayName}.`, `هذا مسار القرار المسجّل لـ ${r.displayName}.`),
+        calls: [{ name: "show_decision_trace", input: { recipient_id: id, explanation: traceExplanation(id, lang) } }],
+        text: L(lang, `Recorded decision chain for ${r.displayName} (${id}).`, `مسار القرار المسجّل لـ ${r.displayName} (${id}).`),
       };
     }
   }

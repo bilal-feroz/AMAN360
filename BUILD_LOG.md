@@ -54,12 +54,19 @@ A concise record of what was built, tested and verified — kept so work can res
     fail-closed drill, responses-complete checkpoint), before/after response comparison, cluster
     click-to-focus; curated screenshots in `docs/screenshots/`.
 
+12. **Ask AMAN — generative-UI copilot** — streamed Claude with adaptive thinking and six strict,
+    display-only tools; server-side resolver builds record-backed cards, re-runs safety checks and
+    gates suggested actions; labelled rule-based fallback; Presentation Mode stage; prompt-injection
+    fencing of citizen text. Found and fixed during review: auto-scroll stopping short while cards
+    grow, timeline labels colliding when the panel narrows the map, and a map projection call
+    throwing during hot reload ("Style is not done loading").
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` | 83 / 83 passed |
+| `npm test` | 93 / 93 passed (incl. 10 copilot tests with a scripted model stream) |
 | `npm run build` | succeeds |
 | `npm run test:e2e` against production build | 2 / 2 passed (demo loop 1.8 min, presentation 3.3 min) |
 | `npm run evaluate` | results recorded in EVALUATION.md |
@@ -70,7 +77,8 @@ A concise record of what was built, tested and verified — kept so work can res
 
 ## Not verified / known limitations
 
-- The LLM provider was not called against the live Anthropic API (no key available); its
-  integration is covered by tests with a fake provider and the validator.
+- The LLM provider and the copilot have not yet been called against the live Anthropic API (the
+  value supplied was a key id, which returns 401); both are covered by tests with scripted
+  providers, and the copilot's rule-based mode was verified in the browser.
 - Weak/older GPUs were not tested on hardware; quality presets exist for them.
 - Translations are self-authored and need expert review.

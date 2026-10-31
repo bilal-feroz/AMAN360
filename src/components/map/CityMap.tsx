@@ -83,6 +83,21 @@ function clusterData(state: OpsState): ClusterDatum[] {
   });
 }
 
+/** setProjection throws while a style is (re)loading — e.g. after a hot reload — so defer it instead. */
+function setProjectionSafe(map: MlMap, type: "globe" | "mercator") {
+  try {
+    map.setProjection({ type });
+  } catch {
+    map.once("style.load", () => {
+      try {
+        map.setProjection({ type });
+      } catch {
+        /* map was removed */
+      }
+    });
+  }
+}
+
 function stageReached(state: OpsState, id: string): boolean {
   const s = state.stages.find((x) => x.id === id);
   if (!s?.at) return false;
@@ -278,13 +293,13 @@ export default function CityMap(props: Props) {
     introRef.current?.cancel();
     const stageCb = propsRef.current.onIntroStage;
     if (props.skipIntro || props.reducedMotion) {
-      map.setProjection({ type: "mercator" });
+      setProjectionSafe(map, "mercator");
       map.jumpTo({ center: OVERVIEW.center, zoom: OVERVIEW.zoom, pitch: OVERVIEW.pitch, bearing: OVERVIEW.bearing, padding: propsRef.current.padding });
       layerRef.current?.revealInstant();
       stageCb("done");
       return;
     }
-    map.setProjection({ type: "globe" });
+    setProjectionSafe(map, "globe");
     map.setPadding({ left: 0, right: 0, top: 0, bottom: 0 });
     prefetchTiles();
     let stage: IntroStage = "earth";
@@ -292,7 +307,7 @@ export default function CityMap(props: Props) {
     let revealed = false;
     const runner = playPath(map, INTRO_KEYS, (t) => {
       const z = map.getZoom();
-      if (z > 11.6 && map.getProjection()?.type === "globe") map.setProjection({ type: "mercator" });
+      if (z > 11.6 && map.getProjection()?.type === "globe") setProjectionSafe(map, "mercator");
       if (t > 1.4 && stage === "earth") stageCb((stage = "approach"));
       if (t > 4.6 && stage === "approach") stageCb((stage = "city"));
       if (t > 4.9 && !revealed) {
@@ -341,7 +356,7 @@ export default function CityMap(props: Props) {
     const map = mapRef.current;
     if (!map || !ready || props.camera.nonce === 0) return;
     introRef.current?.cancel();
-    if (map.getProjection()?.type === "globe") map.setProjection({ type: "mercator" });
+    if (map.getProjection()?.type === "globe") setProjectionSafe(map, "mercator");
     layerRef.current?.revealInstant();
     const t = props.camera.target;
     const padding = props.padding;

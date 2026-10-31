@@ -33,6 +33,12 @@ Built for the **Universities Challenge 2026, Sharjah**.
    mobile-first app. Help requests become prioritised, human-reviewed cases.
 7. **Explains every decision:** verified event → geographic match → approved rule →
    communication → citizen response → human follow-up.
+8. **Ask AMAN — a generative-UI copilot.** Operators ask questions in Arabic or English ("Who needs
+   help first?", "Why did Mariam get this message?"). Claude streams its reasoning and picks which
+   evidence to show; the server builds each live card (incident overview, priority cases, decision
+   trace, bilingual guidance, safety checks) from stored records and re-runs the deterministic
+   checks. The copilot is read-only: suggested next steps are buttons a human clicks, gated by the
+   workflow.
 
 The key boundary: **AI communicates safety decisions. AI does not invent safety decisions.**
 
@@ -75,6 +81,13 @@ laptop's IP). Responses on a device update the command center live over Server-S
 | Daniel R. (RES-047) | Driver approaching the confirmed closure | English |
 | Omar K. (RES-131) | Resident outside the zone — receives no emergency instruction | Arabic |
 
+### Ask AMAN (copilot)
+
+Click **Ask AMAN** in the top bar (or press `/`). Try the suggestion chips. With a key configured,
+the panel shows Claude thinking ("Thinking… 3.2s", expandable), then the cards fill in as the model
+calls its display tools, check pills tick as the safety checks re-run, and a short explanation
+follows. The badge always says which mode answered: **Claude Opus 5.5 · live** or **Rule-based**.
+
 ### Presentation mode
 
 Settings (gear) also offers **scenario presets** — the start state, a *fail-closed drill* with conflicting feeds, and a *responses complete* checkpoint for Q&A — plus quality, motion and simulation speed.
@@ -96,9 +109,11 @@ exited at any time. See [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 | `npm run evaluate` | Headless evaluation run that prints the measured results in EVALUATION.md |
 | `npm run data:osm` | Re-extract focus-area OSM data (Overpass) |
 
-Optional: set `ANTHROPIC_API_KEY` (server-side only) to enable the bounded LLM layer. Without it,
-the demo uses the approved bilingual template library and deterministic classifiers, and the UI says
-so ("Approved templates (deterministic)").
+Optional: set `ANTHROPIC_API_KEY` (server-side only) in `.env.local` to enable the bounded LLM
+layer and the live **Ask AMAN** copilot. The value is the secret key that starts with
+`sk-ant-api03-` (not the `apikey_01…` id shown in the console's key list). Without a key, the demo
+uses the approved bilingual template library and deterministic classifiers, the copilot answers
+from keyword rules, and the UI says so ("Approved templates (deterministic)", "Rule-based").
 
 ## Screenshots
 
@@ -120,9 +135,9 @@ More in [docs/screenshots](docs/screenshots).
   34,331 OSM buildings with a facade shader and real-time sun shadows, water shader, hazard volume,
   privacy-aggregated population columns, delivery ripples
 - **Turf.js** spatial processing; **SQLite** (better-sqlite3) persistence; **SSE** real-time sync
-- **Anthropic Claude** (optional, server-side, structured outputs, validated) for simplification and
-  question routing only
-- **Vitest** (83 tests) and **Playwright** (full demo loop + Presentation Mode)
+- **Anthropic Claude** (optional, server-side): validated simplification and question routing, and
+  the streaming generative-UI copilot (adaptive thinking, strict display-only tools)
+- **Vitest** (93 tests) and **Playwright** (full demo loop + Presentation Mode)
 
 ## Data & attribution
 

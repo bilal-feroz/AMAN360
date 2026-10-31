@@ -25,6 +25,14 @@ function wordCount(s: string): number {
   return s.trim().split(/\s+/).filter(Boolean).length;
 }
 
+/** Length limits a candidate must respect — shared with the LLM prompt so both use the same numbers. */
+export function variantLimits(approved: ActionTemplate, variant: ActionVariant) {
+  return {
+    maxChars: Math.floor(flatten(approved).length * 1.6 + 40),
+    maxWordsPerStep: variant === "plain" ? Math.max(16, ...approved.steps.map((a) => wordCount(a.text))) : null,
+  };
+}
+
 export function validateCandidate(
   candidate: Candidate,
   expected: { action: ApprovedAction; language: Lang; variant: ActionVariant; facts: MessageFacts },
@@ -97,14 +105,16 @@ export function validateCandidate(
     detail: `${Math.round(ratio * 100)}% ${language === "ar" ? "Arabic" : "Latin"} letters`,
   });
 
-  const tooLong = text.length > approvedText.length * 1.6 + 40;
-  const longSentence =
-    variant === "plain" && candidate.content.steps.some((s) => wordCount(s.text) > Math.max(16, ...approved.steps.map((a) => wordCount(a.text))));
+  const limits = variantLimits(approved, variant);
+  const tooLong = text.length > limits.maxChars;
+  const longStep = limits.maxWordsPerStep === null ? undefined : candidate.content.steps.find((s) => wordCount(s.text) > limits.maxWordsPerStep!);
   checks.push({
     id: "length",
     label: variant === "plain" ? "Plain-language length limits" : "Length within bounds",
-    passed: !tooLong && !longSentence,
-    detail: `${text.length} chars vs approved ${approvedText.length}`,
+    passed: !tooLong && !longStep,
+    detail: longStep
+      ? `step ${longStep.id} has ${wordCount(longStep.text)} words (limit ${limits.maxWordsPerStep})`
+      : `${text.length} chars vs approved ${approvedText.length} (limit ${limits.maxChars})`,
   });
 
   return { passed: checks.every((c) => c.passed), checks };

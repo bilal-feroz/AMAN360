@@ -6,18 +6,25 @@ import type { OpsState } from "../services/state";
  * citizens is passed as quoted data inside <citizen_text> and never as instructions; tokens,
  * secrets and exact coordinates are not included.
  */
+/** Times are given in UAE local time (GST, UTC+4) — the operators' clock. */
+const gst = (iso: string | null | undefined) =>
+  iso
+    ? new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Dubai", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(iso)) + " GST"
+    : null;
+
 export function buildSnapshot(s: OpsState) {
   const a = s.assessment?.summary ?? null;
   const m = s.metrics;
   return {
     scenario: "TRAINING SCENARIO — SYNTHETIC DATA",
+    now: gst(new Date().toISOString()),
     incident: {
       id: s.incident.id,
       state: s.incident.state,
       title: s.incident.title.en,
       severity: s.incident.severity,
       source: { agency: s.incident.sourceAgency.id, ref: s.incident.sourceRef, verification: s.incident.verification.status },
-      validUntil: s.incident.validUntil,
+      validUntil: gst(s.incident.validUntil),
     },
     safetyGate: s.gate.ok ? "open" : { blocked: s.gate.blocks.map((b) => b.ruleId) },
     stages: s.stages.map((x) => ({ id: x.id, reached: !!x.at })),
@@ -39,7 +46,7 @@ export function buildSnapshot(s: OpsState) {
       name: c.recipient?.displayName ?? null,
       area: c.recipient?.areaLabel.en ?? null,
       vulnerability: c.recipient?.vulnerability ?? [],
-      openedAt: c.openedAt,
+      openedAt: gst(c.openedAt),
       citizen_text: `<citizen_text>${c.summary.replace(/[<>]/g, "")}</citizen_text>`,
     })),
     openReviews: s.reviews.filter((r) => r.status === "open").map((r) => ({ id: r.id, kind: r.kind, recipientId: r.recipientId })),

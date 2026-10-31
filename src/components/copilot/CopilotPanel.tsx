@@ -31,7 +31,7 @@ function modelName(model: string | null) {
 function ModeBadge({ mode, model, lang }: { mode: CopilotMode | null; model: string | null; lang: Lang }) {
   if (!mode) return null;
   return mode === "llm" ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-[#e3f7f4] px-2 py-[3px] text-[11px] font-medium text-[#0d6e66]" title={model ?? undefined}>
+    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-[#e3f7f4] px-2 py-[3px] text-[11px] font-medium text-[#0d6e66]" title={model ?? undefined}>
       <Sparkles size={11} />
       {modelName(model)} · {L(lang, "live", "مباشر")}
     </span>
@@ -200,7 +200,7 @@ export function CopilotPanel() {
         </span>
         <div className="min-w-0">
           <div className="text-[14px] font-semibold leading-tight text-ink">{L(lang, "Ask AMAN", "اسأل أمان")}</div>
-          <div className="text-[11px] leading-tight text-muted">{L(lang, "Generative copilot · read-only", "مساعد توليدي · للقراءة فقط")}</div>
+          <div className="truncate text-[11px] leading-tight text-muted">{L(lang, "Generative copilot · read-only", "مساعد توليدي · للقراءة فقط")}</div>
         </div>
         <div className="ms-auto flex items-center gap-1">
           <ModeBadge mode={mode} model={model} lang={lang} />

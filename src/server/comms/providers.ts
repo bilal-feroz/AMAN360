@@ -18,6 +18,8 @@ export interface LocalizeRequest {
   variant: ActionVariant;
   approvedStandard: ActionTemplate;
   lockedFacts: string[];
+  /** The validator's limits for this variant, stated to the model up front. */
+  limits?: { maxChars: number; maxWordsPerStep: number | null };
 }
 
 export interface CommunicationProvider {
@@ -92,6 +94,11 @@ export function createAnthropicProvider(apiKey: string, model: string): Communic
               language: req.language,
               approved_action_id: req.actionId,
               locked_facts: req.lockedFacts,
+              limits: req.limits && {
+                max_total_characters: req.limits.maxChars,
+                ...(req.limits.maxWordsPerStep ? { max_words_per_step: req.limits.maxWordsPerStep } : {}),
+                note: "Hard limits checked automatically; a candidate over a limit is discarded. If a locked fact is long, split the step's other words into a short sentence and keep the fact intact.",
+              },
               approved_wording: req.approvedStandard,
             }),
           },

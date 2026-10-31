@@ -4,7 +4,7 @@ import type { ActionVariant, GuidanceDraft, Incident, Lang, Message, ValidationC
 import { assess, checkIncidentGate } from "@/domain/safety-engine";
 import { assertValidZone } from "@/domain/geo";
 import { renderApproved, lockedFactValues, type MessageFacts } from "@/domain/comms/facts";
-import { validateCandidate, checkBilingualConsistency } from "@/domain/comms/validator";
+import { validateCandidate, checkBilingualConsistency, variantLimits } from "@/domain/comms/validator";
 import { actionById, SAFETY_POLICY } from "@/scenario/policy";
 import { db, getMeta, J, tx } from "../db";
 import { audit } from "../bus";
@@ -182,7 +182,30 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
   const provider = getProvider();
   const drafts: GuidanceDraft[] = [];
 
-  for (const need of variantsNeeded(incidentId)) {
+  const needs = variantsNeeded(incidentId);
+  // Model rewrites run concurrently (one request per variant); validation below stays sequential
+  // and deterministic. Standard variants are never sent to a model.
+  const candidates = await Promise.all(
+    needs.map(async (need) => {
+      if (provider.id === "template" || need.variant === "standard") return { candidate: null, error: null };
+      const action = actionById(need.actionId)!;
+      try {
+        const candidate = await provider.rewriteVariant({
+          actionId: action.id,
+          language: need.language,
+          variant: need.variant,
+          approvedStandard: renderApproved(action, need.language, "standard", facts),
+          lockedFacts: lockedFactValues(action, need.language, facts),
+          limits: variantLimits(renderApproved(action, need.language, need.variant, facts), need.variant),
+        });
+        return { candidate, error: null };
+      } catch (e) {
+        return { candidate: null, error: e as Error };
+      }
+    }),
+  );
+
+  for (const [i, need] of needs.entries()) {
     const action = actionById(need.actionId)!;
     const approved = renderApproved(action, need.language, need.variant, facts);
     let content = approved;
@@ -192,14 +215,11 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
     let passed: boolean;
 
     if (provider.id !== "template" && need.variant !== "standard") {
-      try {
-        const candidate = await provider.rewriteVariant({
-          actionId: action.id,
-          language: need.language,
-          variant: need.variant,
-          approvedStandard: renderApproved(action, need.language, "standard", facts),
-          lockedFacts: lockedFactValues(action, need.language, facts),
-        });
+      const { candidate, error } = candidates[i];
+      if (error) {
+        fallbackUsed = true;
+        audit("comms-provider", "guidance.provider_error", `Provider unavailable (${error.name}) — approved template used`, { entity: incidentId });
+      } else {
         if (candidate) {
           const v = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content: candidate }, { action, language: need.language, variant: need.variant, facts }, SAFETY_POLICY);
           if (v.passed) {
@@ -213,9 +233,6 @@ export async function prepareGuidance(incidentId: string, actor: string): Promis
             });
           }
         } else fallbackUsed = true;
-      } catch (e) {
-        fallbackUsed = true;
-        audit("comms-provider", "guidance.provider_error", `Provider unavailable (${(e as Error).name}) — approved template used`, { entity: incidentId });
       }
     }
     ({ checks, passed } = validateCandidate({ actionId: action.id, language: need.language, variant: need.variant, content }, { action, language: need.language, variant: need.variant, facts }, SAFETY_POLICY));

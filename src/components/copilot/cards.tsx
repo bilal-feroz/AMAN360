@@ -42,24 +42,34 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 // ---------------------------------------------------------------------------------- primitives
 
-/** Renders model/rule prose: **bold** and record ids in mono. */
-export function Prose({ text, streaming }: { text: string; streaming?: boolean }) {
-  const parts = text.split(/(\*\*[^*]+\*\*|\b(?:RES|CASE|EVT|HZ|RC|ACT|REV)-[A-Z0-9-]+\b|\bR-\d{2}-[A-Z]+\b|\bPOLICY-\d{4}-\d{2}\b)/g);
+const ID_RE = /(\*\*[^*]+\*\*|\b(?:RES|CASE|EVT|HZ|RC|ACT|REV|SIM|OP)-[A-Za-z0-9/-]+\b|\bR-\d{2}-[A-Z]+\b|\bPOLICY-\d{4}-\d{2}\b)/g;
+
+/** **bold** and record ids (kept left-to-right and unbroken, also inside Arabic text). */
+function Rich({ text }: { text: string }) {
   return (
-    <p className="whitespace-pre-wrap text-[13.5px] leading-[1.6] text-ink">
-      {parts.map((p, i) =>
+    <>
+      {text.split(ID_RE).map((p, i) =>
         !p ? null : p.startsWith("**") ? (
           <strong key={i} className="font-semibold">
             {p.slice(2, -2)}
           </strong>
-        ) : /^(RES|CASE|EVT|HZ|RC|ACT|REV|R|POLICY)-/.test(p) ? (
-          <span key={i} className="font-id text-[12px] text-teal-ink" dir="ltr">
+        ) : /^(RES|CASE|EVT|HZ|RC|ACT|REV|SIM|OP|R|POLICY)-/.test(p) ? (
+          <bdi key={i} dir="ltr" className="whitespace-nowrap font-id text-[0.9em] text-teal-ink">
             {p}
-          </span>
+          </bdi>
         ) : (
           <span key={i}>{p}</span>
         ),
       )}
+    </>
+  );
+}
+
+/** Renders model/rule prose. */
+export function Prose({ text, streaming }: { text: string; streaming?: boolean }) {
+  return (
+    <p className="whitespace-pre-wrap text-[13.5px] leading-[1.6] text-ink">
+      <Rich text={text} />
       {streaming && <span className="ms-0.5 inline-block h-[1.05em] w-[2px] translate-y-[2px] animate-pulse bg-teal align-baseline" />}
     </p>
   );
@@ -372,6 +382,23 @@ function CasesCard({ p, label, lang }: { p: CasesProps; label: string; lang: Lan
     <Shell
       kind="cases"
       label={label}
+      footer={
+        p.items[0]?.summaryBy === "llm" ? (
+          <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
+            <Sparkles size={11} className="mt-[2px] shrink-0 text-teal" />
+            {L(
+              lang,
+              "Order and summaries suggested by Claude. P1/P2 priority comes from the rules engine; an operator decides who to contact.",
+              "الترتيب والملخصات مقترحة من Claude. أولوية P1/P2 من محرك القواعد، والمشغّل يقرر من يتواصل معه.",
+            )}
+          </p>
+        ) : (
+          <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
+            <ShieldCheck size={11} className="mt-[2px] shrink-0" />
+            {L(lang, "Ordered by rules: P1 first, then oldest first.", "مرتبة بالقواعد: P1 أولاً ثم الأقدم.")}
+          </p>
+        )
+      }
       aside={
         <span className="text-[11px] text-muted tnum">
           {L(lang, `${p.totals.open} open · ${p.totals.p1} urgent`, `${p.totals.open} مفتوحة · ${p.totals.p1} عاجلة`)}
@@ -390,7 +417,7 @@ function CasesCard({ p, label, lang }: { p: CasesProps; label: string; lang: Lan
             <div className="flex items-center gap-2">
               <span className="grid h-5 w-5 place-items-center rounded-full bg-ink text-[10.5px] font-semibold text-white tnum">{i + 1}</span>
               <span className={cn("rounded px-1.5 py-[1px] text-[10.5px] font-bold", c.priority === "P1" ? "bg-coral text-white" : "bg-amber-soft text-amber-ink")}>{c.priority}</span>
-              <span className="min-w-0 truncate text-[13px] font-semibold text-ink">{c.displayName}</span>
+              <bdi className="min-w-0 truncate text-[13px] font-semibold text-ink">{c.displayName}</bdi>
               <span className="rounded-full bg-coral-soft px-2 py-[1px] text-[10.5px] font-medium text-coral-ink">{c.need}</span>
               <span className="ms-auto whitespace-nowrap text-[11px] text-muted">{ago(c.openedAt, lang)}</span>
             </div>
@@ -435,13 +462,13 @@ function TraceCard({ p, label, lang, mode }: { p: TraceProps; label: string; lan
             <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">
               {mode === "llm" ? L(lang, "Claude's explanation", "شرح Claude") : L(lang, "Policy rule", "قاعدة السياسة")}
             </div>
-            <p className="mt-0.5 text-[12.5px] leading-[1.55] text-ink">{p.explanation}</p>
+            <p className="mt-0.5 text-[12.5px] leading-[1.55] text-ink"><Rich text={p.explanation} /></p>
           </div>
         </div>
       }
     >
       <div className="mb-2 flex items-center gap-2 px-2">
-        <span className="text-[14.5px] font-semibold text-ink">{p.displayName}</span>
+        <bdi className="text-[14.5px] font-semibold text-ink">{p.displayName}</bdi>
         <span className="rounded bg-surface-2 px-1.5 py-[1px] text-[10.5px] font-medium uppercase text-ink-2 ring-1 ring-line">{p.language}</span>
         {p.location && (
           <span className="ms-auto">

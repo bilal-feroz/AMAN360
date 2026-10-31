@@ -1,0 +1,171 @@
+{
+ "version": "triage-v1",
+ "model": "claude-opus-5-5",
+ "builtAt": "2026-10-31T07:41:35.982Z",
+ "items": {
+  "f503017380241cbfa5ed8bea": {
+   "needs": [
+    "medical",
+    "power"
+   ],
+   "urgency": "P1",
+   "summary_en": "The citizen reports that their father needs an oxygen device and the electricity in the apartment has been cut.",
+   "summary_ar": "يفيد المواطن بأن والده يحتاج إلى جهاز أكسجين وأن الكهرباء انقطعت في الشقة.",
+   "reasons": [
+    "يحتاج إلى جهاز أكسجين",
+    "انقطعت الكهرباء",
+    "medical device without power"
+   ],
+   "language": "Arabic (Modern Standard)",
+   "confidence": 0.93,
+   "model": "claude-opus-5-5",
+   "text": "والدي يحتاج إلى جهاز أكسجين، وانقطعت الكهرباء في الشقة."
+  },
+  "0774b6aacb41530ddc1d3114": {
+   "needs": [
+    "water_entering",
+    "information"
+   ],
+   "urgency": "P2",
+   "summary_en": "The caller reports that the building's basement parking is flooded and residents on their floor are asking what to do.",
+   "summary_ar": "يفيد المتصل بأن موقف السيارات في الطابق السفلي للمبنى غمرته المياه وأن سكان طابقه يستفسرون عما يجب فعله.",
+   "reasons": [
+    "basement parking is flooded",
+    "residents asking what to do",
+    "no one reported trapped or at medical risk"
+   ],
+   "language": "English",
+   "confidence": 0.8,
+   "model": "claude-opus-5-5",
+   "text": "The basement parking is flooded and residents on our floor are asking what to do."
+  },
+  "6d9a5db48a1d3bb5d45f0663": {
+   "needs": [
+    "trapped",
+    "water_entering"
+   ],
+   "urgency": "P1",
+   "summary_en": "The citizen reports being trapped on the ground floor with water rising at the entrance.",
+   "summary_ar": "يفيد المواطن بأنهم عالقون في الطابق الأرضي وأن المياه ترتفع عند المدخل.",
+   "reasons": [
+    "عالقون في الطابق الأرضي (trapped on ground floor)",
+    "المياه ترتفع عند المدخل (water rising at entrance)"
+   ],
+   "language": "Arabic (Modern Standard)",
+   "confidence": 0.9,
+   "model": "claude-opus-5-5",
+   "text": "عالقون في الطابق الأرضي والمياه ترتفع عند المدخل."
+  },
+  "463a7e027c263896662bab1e": {
+   "needs": [
+    "mobility",
+    "trapped"
+   ],
+   "urgency": "P1",
+   "summary_en": "A wheelchair user on the third floor reports that the lift is not working, leaving them unable to leave the building on their own.",
+   "summary_ar": "يفيد مستخدم كرسي متحرك في الطابق الثالث بأن المصعد معطل، مما يجعله غير قادر على مغادرة المبنى بمفرده.",
+   "reasons": [
+    "wheelchair user",
+    "3rd floor",
+    "lift is not working"
+   ],
+   "language": "English",
+   "confidence": 0.7,
+   "model": "claude-opus-5-5",
+   "text": "Wheelchair user on the 3rd floor and the lift is not working."
+  },
+  "f49f557401b78d5655f4063d": {
+   "needs": [
+    "child",
+    "medical",
+    "trapped"
+   ],
+   "urgency": "P1",
+   "summary_en": "A parent reports their child is ill and the family needs assistance to leave the building safely.",
+   "summary_ar": "يفيد أحد الوالدين بأن طفله مريض وأن الأسرة بحاجة إلى مساعدة لمغادرة المبنى بأمان.",
+   "reasons": [
+    "طفلي مريض (my child is sick)",
+    "نحتاج إلى مساعدة للخروج من المبنى (need help to leave the building)",
+    "profile records child"
+   ],
+   "language": "Arabic (Modern Standard)",
+   "confidence": 0.75,
+   "model": "claude-opus-5-5",
+   "text": "طفلي مريض ونحتاج إلى مساعدة للخروج من المبنى بأمان."
+  },
+  "9bda6134ce7773c318e415bc": {
+   "needs": [
+    "vehicle"
+   ],
+   "urgency": "P2",
+   "summary_en": "The citizen reports their car stalled in water near the building entrance and cannot be moved; they state they are okay.",
+   "summary_ar": "يفيد المواطن بأن سيارته تعطلت في المياه قرب مدخل المبنى ولا يستطيع تحريكها، ويذكر أنه بخير.",
+   "reasons": [
+    "car stalled in water",
+    "I am okay",
+    "cannot move it"
+   ],
+   "language": "English",
+   "confidence": 0.93,
+   "model": "claude-opus-5-5",
+   "text": "My car stalled in water near the building entrance. I am okay but cannot move it."
+  },
+  "37de3493ddc038677aa7d851": {
+   "needs": [
+    "elderly",
+    "mobility",
+    "water_entering"
+   ],
+   "urgency": "P1",
+   "summary_en": "Water is entering the building's ground floor lobby and the caller's elderly mother cannot use the stairs.",
+   "summary_ar": "تدخل المياه إلى ردهة الطابق الأرضي في المبنى، ووالدة المتصل المسنّة لا تستطيع استخدام الدرج.",
+   "reasons": [
+    "water is entering the ground floor lobby",
+    "elderly mother",
+    "cannot use the stairs"
+   ],
+   "language": "English",
+   "confidence": 0.9,
+   "model": "claude-opus-5-5",
+   "text": "Water is entering the ground floor lobby. My elderly mother cannot use the stairs."
+  },
+  "5660d0547bb7b9f11094e8f7": {
+   "needs": [
+    "water_entering",
+    "elderly",
+    "mobility"
+   ],
+   "urgency": "P1",
+   "summary_en": "Water has entered the ground floor and the citizen's elderly father cannot climb the stairs.",
+   "summary_ar": "دخلت المياه إلى الطابق الأرضي، ووالد المواطن مسنّ ولا يستطيع صعود الدرج.",
+   "reasons": [
+    "المياه دخلت إلى الطابق الأرضي",
+    "والدي كبير في السن",
+    "لا يستطيع صعود الدرج"
+   ],
+   "language": "Arabic (Modern Standard)",
+   "confidence": 0.93,
+   "model": "claude-opus-5-5",
+   "text": "المياه دخلت إلى الطابق الأرضي، ووالدي كبير في السن ولا يستطيع صعود الدرج."
+  },
+  "bd86d0c549adcbc334e813d4": {
+   "needs": [
+    "water_entering",
+    "mobility",
+    "elderly"
+   ],
+   "urgency": "P1",
+   "summary_en": "Water is entering the citizen's flat and their grandmother, who cannot walk, is in the home.",
+   "summary_ar": "تتسرب المياه إلى شقة المواطن وتوجد في المنزل جدته التي لا تستطيع المشي.",
+   "reasons": [
+    "water is coming into our flat",
+    "grandmother cannot walk",
+    "mobility-impaired elderly person with water entering"
+   ],
+   "language": "English",
+   "confidence": 0.93,
+   "model": "claude-opus-5-5",
+   "text": "Water is coming into our flat and my grandmother cannot walk"
+  }
+ }
+}

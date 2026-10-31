@@ -2,7 +2,8 @@
 import { create } from "zustand";
 import type { Lang } from "./i18n";
 
-export type PanelView = "queue" | "impact" | "guidance" | "responses" | "case" | "recipient" | "audit";
+export type PanelView = "queue" | "impact" | "guidance" | "responses" | "case" | "recipient" | "audit" | "signals";
+export type SignalDatasetId = "scenario" | "replay";
 export type Quality = "cinematic" | "balanced" | "lite";
 
 export type CameraTarget =
@@ -10,7 +11,9 @@ export type CameraTarget =
   | { kind: "zone" }
   | { kind: "closure" }
   | { kind: "point"; lngLat: [number, number]; zoom?: number; pitch?: number; bearing?: number }
-  | { kind: "city" };
+  | { kind: "city" }
+  | { kind: "bounds"; bounds: [[number, number], [number, number]]; pitch?: number; bearing?: number; maxZoom?: number }
+  | { kind: "replay" };
 
 interface UiState {
   lang: Lang;
@@ -29,6 +32,9 @@ interface UiState {
   guidance: { actionId: string | null; variant: "standard" | "plain" | "audio" };
   finale: boolean;
   copilot: { open: boolean; ask: { q: string; nonce: number } | null };
+  /** Social intelligence: which dataset is shown, and the selected post / hotspot. */
+  signals: { dataset: SignalDatasetId; postId: string | null; hotspotId: string | null };
+  setSignals: (s: Partial<UiState["signals"]>) => void;
   /** True while an answer is streaming (lets Presentation Mode wait for it). */
   copilotBusy: boolean;
   setCopilotOpen: (open: boolean) => void;
@@ -87,6 +93,8 @@ export const useUi = create<UiState>((set) => ({
   finale: false,
   copilot: { open: false, ask: null },
   copilotBusy: false,
+  signals: { dataset: "scenario", postId: null, hotspotId: null },
+  setSignals: (p) => set((s) => ({ signals: { ...s.signals, ...p } })),
   setCopilotOpen: (open) => set((s) => ({ copilot: { ...s.copilot, open } })),
   askCopilot: (q) => set((s) => ({ copilot: { open: true, ask: { q, nonce: (s.copilot.ask?.nonce ?? 0) + 1 } } })),
   setGuidance: (g) => set((s) => ({ guidance: { ...s.guidance, ...g } })),

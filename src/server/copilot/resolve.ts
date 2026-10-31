@@ -1,5 +1,6 @@
 import "server-only";
-import type { ActionItem, CaseRow, CasesProps, CheckItem, ChecksProps, GraphRow, GuidanceProps, OverviewProps, Tone, TraceProps, CopilotMode } from "@/domain/copilot";
+import type { ActionItem, CaseRow, CasesProps, CheckItem, ChecksProps, GraphRow, GuidanceProps, OverviewProps, SignalsProps, Tone, TraceProps, CopilotMode } from "@/domain/copilot";
+import { signalsView } from "../signals/service";
 import { formatUntil, lockedFactValues } from "@/domain/comms/facts";
 import { validateCandidate, checkBilingualConsistency } from "@/domain/comms/validator";
 import { actionById, SAFETY_POLICY } from "@/scenario/policy";
@@ -73,8 +74,37 @@ export function gateAction(kind: ActionItem["kind"], target: string, label: stri
       return s.metrics.alertsSent > 0 ? ok : deny(L(lang, "No alerts issued yet", "لم تصدر تنبيهات بعد"));
     case "fly_zone":
     case "fly_closure":
+    case "open_signals":
+    case "open_replay":
       return ok;
   }
+}
+
+// ------------------------------------------------------------------------------------- signals
+
+export function signalsProps(dataset: "scenario" | "replay", lang: Lang, headline: string): SignalsProps {
+  const v = signalsView(dataset);
+  const f = v.funnel;
+  return {
+    dataset,
+    headline,
+    source: L(lang, v.meta.source, dataset === "replay" ? "بحث Oriane للفيديو · منشورات عامة" : "منشورات اصطناعية للسيناريو التدريبي"),
+    synthetic: v.meta.synthetic,
+    funnel: { found: f.found, relevant: f.relevant, noise: f.noise, located: f.located, hotspots: f.hotspots, corroborated: f.corroborated, viewedFrames: f.viewedFrames },
+    hotspots: v.hotspots.slice(0, 5).map((h) => ({
+      id: h.id,
+      label: L(lang, h.label.en, h.label.ar),
+      posts: h.postIds.length,
+      sources: h.sources,
+      corroborated: h.corroborated,
+      status: h.status,
+      insideZone: h.insideZone,
+      categories: h.categories,
+      thumb: v.items.find((i) => h.postIds.includes(i.post.id) && i.post.frames[0])?.post.frames[0].src ?? null,
+    })),
+    rumours: v.rumours.map((r) => ({ id: r.id, claim: r.claim, posts: r.postIds.length, status: r.status })),
+    questions: v.confusion.map((q) => ({ question: q.question, posts: q.postIds.length, answerId: q.answer?.id ?? null })),
+  };
 }
 
 function nextStep(s: OpsState, lang: Lang): OverviewProps["next"] {

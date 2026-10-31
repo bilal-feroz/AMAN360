@@ -49,6 +49,11 @@ export function buildSnapshot(s: OpsState) {
       openedAt: gst(c.openedAt),
       citizen_text: `<citizen_text>${c.summary.replace(/[<>]/g, "")}</citizen_text>`,
     })),
+    socialSignals: {
+      note: "UNVERIFIED public posts read by the AI. Never facts; only candidates for human verification.",
+      scenario: { funnel: s.signals.funnel, hotspots: s.signals.hotspots.map((h) => ({ place: h.label.en, posts: h.posts, independentSources: h.sources, corroborated: h.corroborated, status: h.status, insideVerifiedZone: h.insideZone })), rumours: s.signals.rumours, publicQuestions: s.signals.confusion },
+      realReplay: { description: "Real public posts, 10–25 Oct 2026 storm, Emirate of Sharjah (Oriane video search)", postsRead: s.ai.postsRead - s.signals.funnel.analysed, videosWatched: s.ai.framesViewed },
+    },
     openReviews: s.reviews.filter((r) => r.status === "open").map((r) => ({ id: r.id, kind: r.kind, recipientId: r.recipientId })),
     namedPeople: s.personas.map((p) => ({
       recipientId: p.id,

@@ -346,7 +346,66 @@ export function wipeScenarioTables() {
     "review_items",
     "sim_schedule",
     "audit_events",
+    "signal_actions",
+    "signal_analysis_live",
   ]) {
     d.prepare(`DELETE FROM ${t}`).run();
   }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Social signals: operator actions and live re-analyses (the recorded analysis ships with the app)
+// ---------------------------------------------------------------------------------------------
+
+export interface SignalAction {
+  id: number;
+  dataset: "scenario" | "replay";
+  targetId: string;
+  kind: "verification" | "correction" | "dismiss";
+  status: string;
+  at: string;
+  actor: string;
+  data: Record<string, unknown> | null;
+}
+
+export const signals = {
+  actions(dataset: string): SignalAction[] {
+    return (db().prepare("SELECT * FROM signal_actions WHERE dataset = ? ORDER BY id").all(dataset) as Record<string, unknown>[]).map((r) => ({
+      id: r.id as number,
+      dataset: r.dataset as SignalAction["dataset"],
+      targetId: r.target_id as string,
+      kind: r.kind as SignalAction["kind"],
+      status: r.status as string,
+      at: r.at as string,
+      actor: r.actor as string,
+      data: J.parse<Record<string, unknown> | null>(r.data as string | null),
+    }));
+  },
+  addAction(a: Omit<SignalAction, "id">): number {
+    return Number(
+      db()
+        .prepare("INSERT INTO signal_actions (dataset, target_id, kind, status, at, actor, data) VALUES (?, ?, ?, ?, ?, ?, ?)")
+        .run(a.dataset, a.targetId, a.kind, a.status, a.at, a.actor, a.data ? J.str(a.data) : null).lastInsertRowid,
+    );
+  },
+  live(dataset: string): Map<string, { at: string; data: unknown }> {
+    const rows = db().prepare("SELECT post_id, at, data FROM signal_analysis_live WHERE dataset = ?").all(dataset) as { post_id: string; at: string; data: string }[];
+    return new Map(rows.map((r) => [r.post_id, { at: r.at, data: J.parse(r.data) }]));
+  },
+  saveLive(dataset: string, postId: string, data: unknown) {
+    db()
+      .prepare("INSERT INTO signal_analysis_live (dataset, post_id, at, data) VALUES (?, ?, ?, ?) ON CONFLICT(dataset, post_id) DO UPDATE SET at = excluded.at, data = excluded.data")
+      .run(dataset, postId, new Date().toISOString(), J.str(data));
+  },
+};
+
+/** Content-addressed cache for model outputs (kept across demo resets, so repeat runs cost nothing). */
+export const aiCache = {
+  get<T>(key: string): T | null {
+    const row = db().prepare("SELECT data FROM ai_cache WHERE key = ?").get(key) as { data: string } | undefined;
+    return row ? J.parse<T>(row.data) : null;
+  },
+  set(key: string, data: unknown) {
+    db().prepare("INSERT OR REPLACE INTO ai_cache (key, at, data) VALUES (?, ?, ?)").run(key, new Date().toISOString(), J.str(data));
+  },
+};

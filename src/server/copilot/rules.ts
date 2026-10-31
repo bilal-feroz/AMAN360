@@ -106,6 +106,28 @@ export function rulePlan(question: string, s: OpsState, lang: Lang): Plan {
     }
   }
 
+  // "What is social media saying?"
+  if (has(q, ["social", "post", "rumour", "rumor", "tiktok", "instagram", "video", "real storm", "october", "twitter", "تواصل", "منشور", "شائعة", "فيديو", "العاصفة"])) {
+    const dataset = has(q, ["real", "october", "replay", "2026", "حقيقي", "أكتوبر", "العاصفة"]) ? "replay" : "scenario";
+    const f = dataset === "replay" ? null : s.signals.funnel;
+    return {
+      calls: [
+        {
+          name: "show_social_signals",
+          input: {
+            dataset,
+            headline:
+              dataset === "replay"
+                ? L(lang, "Real public posts from the October 2026 storm in Sharjah, read by AI — unverified.", "منشورات عامة حقيقية من عاصفة أكتوبر 2026 في الشارقة قرأها الذكاء الاصطناعي — غير متحقق منها.")
+                : L(lang, `${f!.relevant} relevant posts in ${f!.hotspots} hotspots — unverified until a human checks.`, `${f!.relevant} منشورًا ذا صلة في ${f!.hotspots} بؤر — غير متحقق منها حتى يراجعها إنسان.`),
+          },
+        },
+        { name: "suggest_actions", input: { actions: [{ kind: dataset === "replay" ? "open_replay" : "open_signals", target: "", label: L(lang, "Open signals", "فتح الرصد") }] } },
+      ],
+      text: L(lang, "Unverified signals from public posts; they can only lead to a verification request.", "إشارات غير متحقق منها من منشورات عامة؛ لا تؤدي إلا إلى طلب تحقق."),
+    };
+  }
+
   // "Is it safe to send?"
   if (has(q, ["check", "safe to", "validat", "verify", "gate", "فحص", "تحقق", "بوابة"])) {
     return {

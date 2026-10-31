@@ -11,6 +11,7 @@ import { dataDir } from "@/server/db";
  *
  *  - OpenFreeMap vector tiles, glyphs (OpenMapTiles schema, © OpenStreetMap contributors, ODbL)
  *  - EOxCloudless Sentinel-2 mosaic (CC BY-NC-SA 4.0 for non-commercial / education use)
+ *  - Terrain Tiles on AWS Open Data (Terrarium PNG elevation; SRTM and other public sources)
  */
 
 const UA = "AMAN360-prototype/0.1 (Universities Challenge 2026 training demo)";
@@ -24,6 +25,10 @@ function resolve(parts: string[]): { upstream: string; type: string; key: string
     return { upstream: `https://tiles.openfreemap.org/planet/${m[1]}/${m[2]}/${m[3]}/${m[4]}.pbf`, type: "application/x-protobuf", key: p };
   if ((m = p.match(/^fonts\/([A-Za-z ]{3,40})\/(\d{1,5}-\d{1,5})\.pbf$/)))
     return { upstream: `https://tiles.openfreemap.org/fonts/${encodeURIComponent(m[1])}/${m[2]}.pbf`, type: "application/x-protobuf", key: p };
+  // Terrain (Terrarium-encoded elevation; AWS Open Data "Terrain Tiles", sources incl. SRTM) for the
+  // 3D real-world replay view of the Hajar mountains and Sharjah's central region.
+  if ((m = p.match(/^dem\/(\d{1,2})\/(\d{1,6})\/(\d{1,6})\.png$/)) && Number(m[1]) <= 13)
+    return { upstream: `https://elevation-tiles-prod.s3.amazonaws.com/terrarium/${m[1]}/${m[2]}/${m[3]}.png`, type: "image/png", key: p };
   if ((m = p.match(/^eox\/(\d{1,2})\/(\d{1,6})\/(\d{1,6})\.jpg$/)))
     return {
       upstream: `https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/g/${m[1]}/${m[2]}/${m[3]}.jpg`,

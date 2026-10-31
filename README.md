@@ -39,6 +39,26 @@ Built for the **Universities Challenge 2026, Sharjah**.
    trace, bilingual guidance, safety checks) from stored records and re-runs the deterministic
    checks. The copilot is read-only: suggested next steps are buttons a human clicks, gated by the
    workflow.
+9. **Social intelligence — read by AI, verified by people.** Claude reads public posts and videos in
+   any language (Arabic dialects, English, Hindi, Urdu, Malayalam, Tagalog…), fills a fixed form for
+   each one and throws out the noise ("savings storm" sales, the footballer *Matar*, the *Rain Room*).
+   Place names are matched to an **OpenStreetMap gazetteer by code** — the model never produces a
+   coordinate. Nearby reports become **hotspots** (corroborated only when independent sources agree),
+   and the only thing a hotspot can trigger is a **verification request** to a human. Rumours (*"Al
+   Wahda bridge collapsed"*) get an approved clarification template; public questions are matched to
+   the approved-answer library.
+10. **Proof on real data — the 12–20 October 2026 storm in Sharjah.** 88 real public Instagram, TikTok
+    and YouTube posts retrieved through the **Oriane** video-search API. Claude read every post and
+    **watched 49 videos frame by frame**; 39 were rejected as noise; 39 reports were placed on the map
+    in 13 hotspots (Mleiha, Al Madam, Al Dhaid, Wadi Al Helo…), drawn over **3D satellite terrain** of
+    the Hajar mountains. Each original video plays inside AMAN through the platform's official embed.
+11. **AI triage of help requests.** Claude reads each help request (any language or spelling) and names
+    the needs it states. The deterministic rule always runs too and the queue takes the *higher*
+    priority — **the model can raise a case to P1, never lower one**.
+12. **"Try to break the AI".** A live stress test in the guidance panel applies typical unsafe model
+    edits (invented evacuation, "help is on the way", a detour, a new phone number, a changed time…) to
+    the real approved message and runs them through the exact validator every Claude output must
+    pass. Writing this test found — and we fixed — an Arabic medical-advice gap in the validator.
 
 The key boundary: **AI communicates safety decisions. AI does not invent safety decisions.**
 
@@ -85,11 +105,21 @@ the panel shows Claude thinking ("Thinking… 3.2s", expandable), then the cards
 calls its display tools, check pills tick as the safety checks re-run, and a short explanation
 follows. The badge always says which mode answered: **Claude Opus 5.5 · live** or **Rule-based**.
 
+### Social signals
+
+Open **Social signals** in the left rail. *Live scenario* shows the synthetic posts arriving on the
+scenario clock (hotspots, a spreading rumour, public questions). *Real storm · Oct 2026* flies the map
+to Sharjah's central region and east coast over 3D terrain: pick a hotspot, open a post to see the
+frames Claude looked at, its reading (water depth, hail, people at risk, evidence), the deterministic
+location match (mention → OSM feature, precision radius), and **Play original** to watch the real
+video. **Re-run live with Claude** re-reads a post on the spot.
+
 ### Presentation mode
 
 Settings (gear) also offers **scenario presets** — the start state, a *fail-closed drill* with conflicting feeds, and a *responses complete* checkpoint for Q&A — plus quality, motion and simulation speed.
 
-Click **Presentation** in the top bar for the guided ~3-minute walkthrough. It drives the real
+Click **Presentation** in the top bar for the guided ~4-minute walkthrough (now including social
+intelligence, the red-team stress test, a rumour clarification and the real October 2026 storm). It drives the real
 product (same APIs and the real citizen UI), and can be paused (Space), skipped (← →), restarted or
 exited at any time. See [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 
@@ -105,6 +135,10 @@ exited at any time. See [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
 | `npm run test:e2e` | End-to-end tests incl. full demo loop and Presentation Mode (Playwright; first run `npx playwright install chromium`) |
 | `npm run evaluate` | Headless evaluation run that prints the measured results in EVALUATION.md |
 | `npm run data:osm` | Re-extract focus-area OSM data (Overpass) |
+| `npm run data:gazetteer` | Rebuild the OSM place/road gazetteer for Sharjah emirate (Overpass) |
+| `npm run data:social` | Re-fetch the real storm posts from Oriane (needs `ORIANE_API_KEY`; each query is cached, never re-sent) |
+| `npm run data:replay` | Re-run Claude over the real posts (text, then frames); cached per post |
+| `npm run data:scenario-signals` / `data:triage` | Re-record Claude's reading of the synthetic posts / scripted help requests |
 
 Optional: set `ANTHROPIC_API_KEY` (server-side only) in `.env.local` to enable the bounded LLM
 layer and the live **Ask AMAN** copilot. The value is the secret key that starts with
@@ -122,6 +156,9 @@ from keyword rules, and the UI says so ("Approved templates (deterministic)", "R
 | ![Guidance](docs/screenshots/06-bilingual-guidance-approval.jpg) Bilingual guidance approval | ![Responses](docs/screenshots/10-response-intelligence.jpg) Response intelligence (120 · 85 · 8 · 27) |
 | ![Case](docs/screenshots/11-case-explainability.jpg) Case with full decision chain | ![Arabic](docs/screenshots/12-command-center-arabic.jpg) Arabic command center (RTL) |
 | ![Arabic citizen](docs/screenshots/07-citizen-arabic.jpg) Citizen app — Arabic | ![English citizen](docs/screenshots/08-citizen-english.jpg) Citizen app — English driver |
+| ![Social signals](docs/screenshots/16-social-signals.jpg) Social intelligence — hotspots go to human verification | ![Real storm](docs/screenshots/19-real-storm-3d.jpg) Real storm, 12–20 Oct 2026 — over 3D terrain |
+| ![Real post](docs/screenshots/20-real-post-claude-reading.jpg) A real video and the frames Claude looked at | ![Red team](docs/screenshots/17-try-to-break-the-ai.jpg) Try to break the AI — blocked by the validator |
+| ![Rumour](docs/screenshots/18-rumour-clarification.jpg) Rumour → approved clarification | |
 
 More in [docs/screenshots](docs/screenshots).
 
@@ -134,7 +171,10 @@ More in [docs/screenshots](docs/screenshots).
 - **Turf.js** spatial processing; **SQLite** (better-sqlite3) persistence; **SSE** real-time sync
 - **Anthropic Claude** (optional, server-side): validated simplification and question routing, and
   the streaming generative-UI copilot (adaptive thinking, strict display-only tools)
-- **Vitest** (94 tests) and **Playwright** (full demo loop + Presentation Mode)
+- **Social intelligence:** Oriane video search (real posts), Claude vision over video frames,
+  OpenStreetMap gazetteer (1,600+ places, 230+ roads) with deterministic fuzzy matching, MapLibre
+  raster-DEM terrain + hillshade for the 3D replay
+- **Vitest** (247 tests) and **Playwright** (full demo loop + Presentation Mode)
 
 ## Data & attribution
 
@@ -143,6 +183,13 @@ More in [docs/screenshots](docs/screenshots).
   estimate. The city is a geometric model, **not photogrammetry**.
 - Basemap tiles: OpenFreeMap / OpenMapTiles. Earth imagery: EOxCloudless 2024 by EOX IT Services
   GmbH (contains modified Copernicus Sentinel data), CC BY-NC-SA 4.0 for non-commercial/education.
+- Terrain: Terrain Tiles on AWS Open Data (Terrarium elevation; sources include SRTM).
+- Gazetteer: OpenStreetMap contributors (ODbL) via the Overpass API and Nominatim.
+- Real-world replay: public posts found through the Oriane video-search API. Only what the demo needs
+  is stored (caption, a short transcript excerpt, up to three frames, the post id); handles, names and
+  profile data are not stored or shown, and the author is a one-way hash used only to count
+  independent sources. Videos play through Instagram / TikTok / YouTube's own embed players, with the
+  creator's credit.
 - Attribution is always visible in the map.
 
 ## Documentation
@@ -163,5 +210,8 @@ More in [docs/screenshots](docs/screenshots).
 - Arabic and English wording was written for this prototype and needs expert review.
 - The 3D city is OSM-based geometry with estimated heights for untagged buildings.
 - Simulation time is compressed (seconds instead of minutes).
+- The real-world replay is a past event with no live ingestion; live social monitoring would need
+  agreements with the platforms. Locations are town- or road-level (never guessed), and a post may
+  later be deleted by its author (its embed then stops playing; the recorded frames remain).
 - Demo mode has no sign-in; optional authentication is a shared passcode with signed sessions, not
   a government identity provider.

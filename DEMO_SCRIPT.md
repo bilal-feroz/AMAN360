@@ -1,3 +1,56 @@
+# Ten-minute presentation (Universities Challenge 2026 format)
+
+The challenge gives each team 15 minutes: about 10 to present, 5 for the judges' questions. Criteria:
+**Technology & AI 30%**, Implementation 25%, Plan & Strategy 25%, Outcomes & Impact 20%.
+
+| Time | Beat | What is on screen | Criterion it serves |
+|---|---|---|---|
+| 0:00–1:00 | **Problem.** April 2024: the heaviest rain in 75 years. Today's alerts are one-way — nobody knows who is safe, and rumours spread faster than facts. | Slide | Impact |
+| 1:00–1:45 | **Solution in one line:** *"AMAN listens to the city, checks the facts, sends the right message to each person, stops rumours, and makes sure everyone who needs help reaches a human."* | Slide | Plan |
+| 1:45–6:15 | **Live demo** — press **Presentation** (about 4 min; Space pauses). Beats below. | Product | Tech & AI, Implementation |
+| 6:15–7:30 | **How the AI is used safely:** reads, sorts, summarises and flags; code checks; a human approves. Show the AI pill in the top bar (counts from records). | Product / slide | Tech & AI |
+| 7:30–8:30 | **Impact:** SDG 11 (resilient cities), 13 (climate adaptation), 10 (language & accessibility equity), 16 (accountable institutions). Measured results from EVALUATION.md. | Slide | Impact |
+| 8:30–9:30 | **Roadmap & scaling:** NCEMA cell broadcast + SMS link (no app to install), other hazards (sand, heat, fog), other emirates, Urdu/Hindi/Malayalam templates, private sector (schools, malls, campuses). | Slide | Plan |
+| 9:30–10:00 | **Close:** *"From a warning to the right next step."* | Slide | — |
+
+**Live demo beats (Presentation Mode):**
+
+1. **Calm city** — digital twin of Al Majaz.
+2. **A verified alert arrives** — simulated government feed.
+3. **Social intelligence** — Claude has read the public posts in six languages; reports cluster over
+   Al Majaz; the operator clicks *Request verification* (the only thing a hotspot can do).
+4. **Geographic & safety intelligence** — who is inside, who is driving into the closure, who gets nothing.
+5. **Communication** — bilingual guidance, Claude's plain-language rewrite, validated, approved by a human.
+6. **Try to break the AI** — "help is on the way" injected → blocked by the validator.
+7. **Citizen interaction** — Daniel is safe; Mariam asks for help. *Claude triage* orders the queue.
+8. **Stopping a rumour** — posts claiming the Al Wahda bridge collapsed keep spreading; an approved clarification is issued (and appears on the citizens' phones).
+9. **Ask AMAN** — the copilot builds evidence cards from records.
+10. **Explainability & follow-up** — the full decision chain for Mariam.
+11. **Proof on real data** — the map flies to Sharjah's central region over 3D terrain: real posts from
+    the 12–20 Oct 2026 storm, Claude watched the videos, hotspots at Mleiha, Al Madam, Al Dhaid. Open a
+    post and press **Play original** to show the real video.
+
+**Live extras for Q&A** (by hand): type *"Water is coming into our flat and my grandmother cannot
+walk"* on Priya's English phone — the keyword rule says P2, Claude raises it to P1. In a post, press
+**Re-run live with Claude** to show a fresh reading in a few seconds.
+
+**Judge questions about the new parts**
+
+- **"Isn't social media unreliable?"** Yes — that's why it never triggers anything. It only creates
+  verification requests; a hotspot needs two independent sources to count as corroborated; old reposts
+  and noise are flagged; places come from OpenStreetMap, never from the model.
+- **"Where does the data come from?"** The replay uses public posts found through the Oriane video-
+  search API, reduced to the minimum (no handles or profile data). Live monitoring would need
+  agreements with the platforms.
+- **"How accurate is the mapping?"** Town- or road-level, shown as a radius (e.g. ±3.5 km for a town).
+  A place the gazetteer can't match, or one far outside the area, is simply not placed.
+- **"Can the AI lower someone's priority?"** No. The keyword rule always runs; the queue takes the
+  higher of the two. Unit-tested.
+- **"What if the AI writes something dangerous?"** It's blocked before any human sees it — try it
+  live with *Try to break the AI*. Building that test found a real Arabic gap, which we fixed.
+
+---
+
 # Three-minute live demo
 
 **Setup (before judges arrive, ~5 min)**

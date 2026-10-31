@@ -10,6 +10,7 @@ import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
 import { speak } from "@/lib/speech";
 import { PanelHeader } from "./PanelHeader";
+import { RedTeamCard } from "./RedTeamCard";
 
 export function highlightFacts(text: string, facts: string[]): ReactNode {
   const present = facts.filter((f) => f && text.includes(f));
@@ -190,6 +191,8 @@ export function GuidancePanel() {
           </ul>
         </div>
       </div>
+
+      <RedTeamCard actionId={current} variant={variant} lang={lang} />
 
       <div className="sticky bottom-0 mt-auto border-t border-line bg-surface/95 px-5 py-4 backdrop-blur">
         {!allValid && (

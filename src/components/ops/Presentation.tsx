@@ -8,6 +8,7 @@ import { useUi } from "@/lib/ui-store";
 import type { OpsState } from "@/lib/use-ops-state";
 import { useOps } from "./context";
 import { api } from "@/lib/api";
+import { signalAction, useSignalsStore, type SignalsView } from "@/lib/use-signals";
 
 /**
  * Presentation Mode — a guided ~3-minute walkthrough that drives the *real* product: every stage
@@ -30,6 +31,18 @@ interface StepCtx {
 }
 
 class Cancelled extends Error {}
+
+/** Scrolls only the context panel (scrollIntoView would also scroll the full-screen shell). */
+function scrollPanelTo(selector: string, align: "start" | "end" = "start") {
+  const el = document.querySelector<HTMLElement>(selector);
+  const box = el?.closest<HTMLElement>(".scroll-thin");
+  if (!el || !box) return;
+  const r = el.getBoundingClientRect();
+  const b = box.getBoundingClientRect();
+  // "end" keeps the bottom of the element clear of the sticky action bar at the foot of the panel.
+  const top = align === "start" ? r.top - b.top + box.scrollTop - 96 : r.bottom - b.bottom + box.scrollTop + 150;
+  box.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+}
 
 export function Presentation() {
   const ops = useOps();
@@ -120,8 +133,32 @@ export function Presentation() {
       },
     },
     {
+      id: "signals",
+      clock: "00:25",
+      title: { en: "Social intelligence — read by AI, verified by people", ar: "رصد التواصل — يقرؤه الذكاء الاصطناعي ويتحقق منه البشر" },
+      caption: {
+        en: "Claude reads public posts in Arabic, English, Hindi, Urdu, Malayalam and Tagalog, drops the noise, and the code maps each report. The operator asks for verification — no alert ever comes from social media.",
+        ar: "يقرأ Claude المنشورات العامة بالعربية والإنجليزية والهندية والأردية والمالايالامية والتاغالوغية، ويستبعد الضوضاء، ويحدّد الكود موقع كل بلاغ. يطلب المشغّل التحقق — ولا يصدر أي تنبيه من وسائل التواصل.",
+      },
+      hold: 6500,
+      run: async ({ wait }) => {
+        ui.setSignals({ dataset: "scenario", postId: null, hotspotId: null });
+        ui.setView("signals");
+        ui.flyTo({ kind: "zone" });
+        await useSignalsStore.getState().load("scenario");
+        await wait(3500);
+        const v = useSignalsStore.getState().views.scenario;
+        const h = v?.hotspots.find((x) => x.status === "unverified" && x.corroborated);
+        if (h && opsRef.current.canAct) {
+          useUi.getState().setSignals({ hotspotId: h.id });
+          await signalAction("request_verification", "scenario", h.id).catch(() => undefined);
+          await useSignalsStore.getState().load("scenario");
+        }
+      },
+    },
+    {
       id: "geo",
-      clock: "00:35",
+      clock: "00:45",
       title: { en: "Geographic intelligence", ar: "الذكاء الجغرافي" },
       caption: { en: "The source is verified, the zone and closure are drawn, and every synthetic recipient is matched by real spatial computation.", ar: "يتم التحقق من المصدر ورسم المنطقة والإغلاق، ومطابقة كل مستلم اصطناعي بحساب مكاني فعلي." },
       hold: 9500,
@@ -170,8 +207,29 @@ export function Presentation() {
       },
     },
     {
+      id: "redteam",
+      clock: "01:40",
+      title: { en: "Try to break the AI", ar: "حاول كسر الذكاء الاصطناعي" },
+      caption: {
+        en: "A model output that promises “help is on the way” is blocked by the validator before any human sees it — the approved template is used instead.",
+        ar: "يُحجب مخرج نموذج يعد بأن «المساعدة في الطريق» بواسطة المدقق قبل أن يراه أي إنسان — ويُستخدم القالب المعتمد بدلًا منه.",
+      },
+      hold: 6500,
+      run: async ({ wait }) => {
+        await ensurePrepared();
+        ui.closePhones();
+        ui.setView("guidance");
+        await wait(900);
+        scrollPanelTo("[data-redteam-panel]");
+        await wait(700);
+        window.dispatchEvent(new CustomEvent("aman:redteam", { detail: { attack: "dispatch" } }));
+        await wait(1200);
+        scrollPanelTo("[data-redteam-panel]", "end");
+      },
+    },
+    {
       id: "citizen",
-      clock: "01:45",
+      clock: "01:55",
       title: { en: "Citizen interaction", ar: "تفاعل المواطنين" },
       caption: { en: "Daniel confirms he is safe. Mariam asks for help for her elderly father — each tap is a real response.", ar: "يؤكد دانيال أنه بخير. وتطلب مريم المساعدة لوالدها المسن — كل نقرة رد حقيقي." },
       hold: 6000,
@@ -199,8 +257,31 @@ export function Presentation() {
       },
     },
     {
+      id: "rumour",
+      clock: "02:20",
+      title: { en: "Stopping a rumour", ar: "إيقاف شائعة" },
+      caption: {
+        en: "Posts are spreading a claim that a bridge on Al Wahda Street collapsed. No verified source supports it. The operator approves a clarification built from an approved template — the model’s wording is never published.",
+        ar: "تنتشر منشورات تزعم انهيار جسر في شارع الوحدة. لا يدعم ذلك أي مصدر موثق. يعتمد المشغّل توضيحًا مبنيًا على قالب معتمد — ولا تُنشر صياغة النموذج أبدًا.",
+      },
+      hold: 6500,
+      run: async ({ wait }) => {
+        ui.setSignals({ dataset: "scenario", postId: null, hotspotId: null });
+        ui.setView("signals");
+        await useSignalsStore.getState().load("scenario");
+        await wait(1200);
+        scrollPanelTo("[data-rumours]");
+        await wait(2600);
+        const r = useSignalsStore.getState().views.scenario?.rumours.find((x) => x.status === "flagged");
+        if (r && opsRef.current.canAct) {
+          await signalAction("issue_clarification", "scenario", r.id).catch(() => undefined);
+          await useSignalsStore.getState().load("scenario");
+        }
+      },
+    },
+    {
       id: "copilot",
-      clock: "02:22",
+      clock: "02:35",
       title: { en: "Ask AMAN — AI you can check", ar: "اسأل أمان — ذكاء اصطناعي يمكن التحقق منه" },
       caption: {
         en: "The copilot picks the evidence and explains it. Every card is built from stored records, and the rules engine re-checks it.",
@@ -217,7 +298,7 @@ export function Presentation() {
     },
     {
       id: "explain",
-      clock: "02:35",
+      clock: "02:50",
       title: { en: "Explainability & human follow-up", ar: "قابلية التفسير والمتابعة البشرية" },
       caption: { en: "Verified event → geographic match → approved rule → communication → citizen response → human follow-up.", ar: "حدث موثّق ← مطابقة جغرافية ← قاعدة معتمدة ← تواصل ← رد المواطن ← متابعة بشرية." },
       hold: 9000,
@@ -239,12 +320,40 @@ export function Presentation() {
       },
     },
     {
+      id: "realworld",
+      clock: "03:10",
+      title: { en: "Proof on real data — Sharjah storm, 12–20 Oct 2026", ar: "إثبات على بيانات حقيقية — عاصفة الشارقة، 12–20 أكتوبر 2026" },
+      caption: {
+        en: "88 real public posts and videos found through Oriane. Claude read every one, watched 49 videos frame by frame and rejected the noise; the code mapped real reports to Mleiha, Al Madam and Al Dhaid.",
+        ar: "88 منشورًا ومقطعًا عامًا حقيقيًا عبر Oriane. قرأها Claude جميعها وشاهد 49 مقطعًا لقطة بلقطة واستبعد الضوضاء، وحدّد الكود مواقع البلاغات الحقيقية في مليحة والمدام والذيد.",
+      },
+      hold: 9000,
+      run: async ({ wait }) => {
+        ui.setCopilotOpen(false);
+        ui.closePhones();
+        ui.setSignals({ dataset: "replay", postId: null, hotspotId: null });
+        ui.setView("signals");
+        ui.flyTo({ kind: "replay" });
+        await useSignalsStore.getState().load("replay");
+        await wait(6000);
+        const v: SignalsView | undefined = useSignalsStore.getState().views.replay;
+        const h = v?.hotspots[0];
+        if (!v || !h) return;
+        useUi.getState().setSignals({ hotspotId: h.id });
+        useUi.getState().flyTo({ kind: "point", lngLat: h.center, zoom: 11.6, pitch: 62 });
+        await wait(4500);
+        const post = v.items.find((i) => h.postIds.includes(i.post.id) && i.post.frames.length > 1) ?? v.items.find((i) => h.postIds.includes(i.post.id));
+        if (post) useUi.getState().setSignals({ postId: post.post.id });
+      },
+    },
+    {
       id: "final",
-      clock: "02:55",
+      clock: "03:35",
       title: { en: "Every response changes the picture", ar: "كل رد يغيّر الصورة" },
       caption: { en: "AMAN 360 — from a warning to the right next step.", ar: "أمان 360 — من التحذير إلى الخطوة الصحيحة التالية." },
       hold: 600000,
       run: async () => {
+        ui.setSignals({ dataset: "scenario", postId: null, hotspotId: null });
         ui.flyTo({ kind: "city" });
         ui.setView("responses");
         ui.setFinale(true);

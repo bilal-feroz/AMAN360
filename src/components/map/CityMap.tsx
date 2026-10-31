@@ -13,6 +13,8 @@ import type { OpsState } from "@/lib/use-ops-state";
 import type { Lang } from "@/lib/i18n";
 import scenarioGeometry from "@/scenario/geometry.json";
 import type { CameraTarget } from "@/lib/ui-store";
+import type { SignalsView } from "@/lib/use-signals";
+import { addSignalLayers, clearSignals, prefetchReplay, setReplayMode, updateSignals } from "./signals-layer";
 
 export type IntroStage = "earth" | "approach" | "city" | "data" | "done";
 
@@ -32,6 +34,11 @@ interface Props {
   onSelectClosure: () => void;
   onHover: (h: { x: number; y: number; title: string; lines: string[] } | null) => void;
   onStatus?: (s: { cityReady: boolean; offline: boolean; buildings: number; estimated: number }) => void;
+  signals?: SignalsView | null;
+  selectedPostId?: string | null;
+  selectedHotspotId?: string | null;
+  onSelectPost?: (id: string) => void;
+  onSelectHotspot?: (id: string) => void;
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -110,6 +117,7 @@ export default function CityMap(props: Props) {
   const layerRef = useRef<CityLayer | null>(null);
   const introRef = useRef<PathRunner | null>(null);
   const markers = useRef<Map<string, maplibregl.Marker>>(new Map());
+  const sigMarkers = useRef<Map<string, maplibregl.Marker>>(new Map());
   const deliveredRef = useRef<Map<string, number>>(new Map());
   const propsRef = useRef(props);
   propsRef.current = props;
@@ -162,6 +170,10 @@ export default function CityMap(props: Props) {
       layerRef.current = layer;
       addScenarioLayers(map);
       map.addLayer(layer, "road-label");
+      addSignalLayers(map);
+      // Warm the tile cache for the real-world replay (imagery + terrain) once the city is up.
+      const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => setTimeout(f, 4000));
+      idle(() => prefetchReplay(window.location.origin));
       setReady(true);
 
       // City pack: OSM buildings + water for central Sharjah (bundled, works offline)
@@ -182,9 +194,22 @@ export default function CityMap(props: Props) {
 
     // Interactions
     map.on("click", "closure-line", () => propsRef.current.onSelectClosure());
+    map.on("click", "sig-points", (e) => {
+      const id = e.features?.[0]?.properties?.id;
+      if (id) propsRef.current.onSelectPost?.(String(id));
+    });
+    map.on("click", "sig-area-fill", (e) => {
+      if (map.queryRenderedFeatures(e.point, { layers: ["sig-points"] }).length) return;
+      const id = e.features?.[0]?.properties?.id;
+      if (id) propsRef.current.onSelectHotspot?.(String(id));
+    });
+    for (const id of ["sig-points", "sig-area-fill"]) {
+      map.on("mouseenter", id, () => (map.getCanvas().style.cursor = "pointer"));
+      map.on("mouseleave", id, () => (map.getCanvas().style.cursor = ""));
+    }
     map.on("click", (e) => {
       const st = propsRef.current.state;
-      if (!st || map.getZoom() < 13) return;
+      if (!st || map.getZoom() < 13 || propsRef.current.signals) return;
       const hit = st.clusters.find((c) => {
         const q = map.project(c.center);
         return Math.hypot(q.x - e.point.x, q.y - e.point.y) < 22;
@@ -360,6 +385,26 @@ export default function CityMap(props: Props) {
     layerRef.current?.revealInstant();
     const t = props.camera.target;
     const padding = props.padding;
+    if (t.kind === "replay") {
+      // Hand-framed: Al Dhaid, Mleiha and Al Madam in front, the Hajar mountains and the east coast behind.
+      const target = { center: [56.0, 25.12] as [number, number], zoom: 9.55, pitch: 58, bearing: -10, padding };
+      if (props.reducedMotion) map.jumpTo(target);
+      else map.flyTo({ ...target, duration: 3400, curve: 1.6, essential: true, easing: (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) });
+      return;
+    }
+    if (t.kind === "bounds") {
+      const bounds = t.bounds;
+      const pitch = t.pitch ?? 50;
+      const bearing = t.bearing ?? 0;
+      // cameraForBounds already offsets its centre for the padding, so fly without padding here.
+      const cam = map.cameraForBounds(bounds, { padding, bearing, maxZoom: t.maxZoom ?? 11 });
+      if (cam) {
+        const target = { center: cam.center, zoom: (cam.zoom ?? 9) + 0.25, pitch, bearing, padding: { top: 0, bottom: 0, left: 0, right: 0 } };
+        if (props.reducedMotion) map.jumpTo(target);
+        else map.flyTo({ ...target, duration: 3200, curve: 1.6, essential: true, easing: (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2) });
+      }
+      return;
+    }
     const opts =
       t.kind === "overview"
         ? { center: OVERVIEW.center, zoom: OVERVIEW.zoom, pitch: OVERVIEW.pitch, bearing: OVERVIEW.bearing }
@@ -382,6 +427,86 @@ export default function CityMap(props: Props) {
     map.easeTo({ padding: props.padding, duration: props.reducedMotion ? 0 : 700 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.padding.left, props.padding.right, props.padding.bottom, props.padding.top, ready]);
+
+  // ---------------------------------------------------------------- social signals
+  const replayOn = props.signals?.dataset === "replay";
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    setReplayMode(map, replayOn, window.location.origin);
+    if (layerRef.current) {
+      layerRef.current.hidden = replayOn;
+      map.triggerRepaint();
+    }
+    // Leaving the replay from anywhere: if the camera is still out over the emirate, bring it home.
+    const c = map.getCenter();
+    const farFromCity = Math.hypot(c.lng - OVERVIEW.center[0], c.lat - OVERVIEW.center[1]) > 0.15;
+    if (!replayOn && (farFromCity || (map.getZoom() < 12.5 && propsRef.current.camera.target.kind === "replay"))) {
+      map.flyTo({ center: OVERVIEW.center, zoom: OVERVIEW.zoom, pitch: OVERVIEW.pitch, bearing: OVERVIEW.bearing, padding: propsRef.current.padding, duration: 2600, essential: true });
+    }
+  }, [replayOn, ready]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const v = props.signals;
+    const old = sigMarkers.current;
+    if (!v) {
+      clearSignals(map);
+      old.forEach((m) => m.remove());
+      old.clear();
+      return;
+    }
+    updateSignals(map, v, { postId: props.selectedPostId ?? null, hotspotId: props.selectedHotspotId ?? null });
+    const lang = propsRef.current.lang;
+    const replay = v.dataset === "replay";
+    const seen = new Set<string>();
+    for (const h of v.hotspots) {
+      if (h.status === "dismissed") continue;
+      seen.add(h.id);
+      let m = old.get(h.id);
+      if (!m) {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className = "aman-signal-pin";
+        el.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          propsRef.current.onSelectHotspot?.(h.id);
+        });
+        m = new maplibregl.Marker({ element: el, anchor: "bottom" }).setLngLat(h.center).addTo(map);
+        old.set(h.id, m);
+      }
+      m.setLngLat(h.center);
+      const el = m.getElement();
+      const sel = props.selectedHotspotId === h.id;
+      const thumbs = replay ? v.items.filter((i) => h.postIds.includes(i.post.id) && i.post.frames[0]).slice(0, 3).map((i) => i.post.frames[0].src) : [];
+      const label = lang === "ar" ? h.label.ar : h.label.en;
+      const statusTxt =
+        h.status === "unverified" ? (lang === "ar" ? "غير متحقق" : "UNVERIFIED") : h.status === "requested" ? (lang === "ar" ? "قيد التحقق" : "VERIFYING") : lang === "ar" ? "تم التحقق" : "VERIFIED";
+      el.style.zIndex = sel ? "6" : h.corroborated ? "3" : "2";
+      el.setAttribute("aria-label", `${label}: ${h.postIds.length} posts`);
+      el.title = `${label} · ${h.postIds.length} ${lang === "ar" ? "منشورات" : "posts"} · ${h.sources} ${lang === "ar" ? "مصادر" : "sources"}`;
+      // Single-source spots stay compact so corroborated hotspots read first.
+      if (!h.corroborated && !sel) {
+        el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;font-family:var(--font-sans)"><span style="display:flex;align-items:center;gap:5px;padding:3px 8px 3px 4px;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:0 8px 20px -12px rgba(43,29,122,.7),0 0 0 1px rgba(109,76,240,.3);white-space:nowrap"><span style="width:14px;height:14px;border-radius:99px;background:#6d4cf0;color:#fff;display:grid;place-items:center;font:700 9px/1 var(--font-sans)">${h.postIds.length}</span><span style="font:600 10.5px/1 var(--font-sans);color:#1b1440">${label}</span></span><span style="width:2px;height:10px;background:linear-gradient(#6d4cf0,transparent)"></span></div>`;
+        continue;
+      }
+      el.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;gap:0;font-family:var(--font-sans)">
+        <div style="display:flex;align-items:center;gap:8px;padding:${thumbs.length ? "4px 10px 4px 4px" : "5px 10px"};border-radius:14px;background:${sel ? "#2b1d7a" : "rgba(255,255,255,.94)"};color:${sel ? "#fff" : "#1b1440"};box-shadow:0 12px 30px -14px rgba(43,29,122,.75),0 0 0 1px rgba(109,76,240,${sel ? ".9" : ".35"});backdrop-filter:blur(10px);white-space:nowrap">
+          ${thumbs.length ? `<span style="display:flex">${thumbs.map((t, i) => `<img src="${t}" alt="" style="width:30px;height:30px;object-fit:cover;border-radius:9px;border:2px solid ${sel ? "#2b1d7a" : "#fff"};margin-inline-start:${i ? "-12px" : "0"}"/>`).join("")}</span>` : ""}
+          <span style="display:flex;flex-direction:column;line-height:1.15">
+            <span style="font:600 12px/1.15 var(--font-sans)">${label}</span>
+            <span style="font:500 10.5px/1.2 var(--font-sans);opacity:.75">${h.postIds.length} ${lang === "ar" ? "منشورات" : h.postIds.length === 1 ? "post" : "posts"} · ${h.sources} ${lang === "ar" ? "مصادر" : h.sources === 1 ? "source" : "sources"}</span>
+          </span>
+          <span style="font:700 9.5px/1 var(--font-sans);letter-spacing:.06em;padding:3px 6px;border-radius:7px;background:${h.status === "unverified" ? "#6d4cf0" : h.status === "requested" ? "#e8ac45" : "#087f7a"};color:#fff">${statusTxt}</span>
+        </div>
+        <span style="width:2px;height:${replay ? 22 : 14}px;background:linear-gradient(#6d4cf0,transparent)"></span>
+        <span style="position:relative;width:12px;height:12px"><span class="aman-pulse" style="position:absolute;inset:0;border-radius:99px;background:#6d4cf0"></span><span style="position:absolute;inset:2px;border-radius:99px;background:#6d4cf0;border:2px solid #fff"></span></span>
+      </div>`;
+    }
+    for (const [id, m] of old) if (!seen.has(id)) (m.remove(), old.delete(id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.signals, props.selectedPostId, props.selectedHotspotId, props.lang, ready]);
 
   // ---------------------------------------------------------------- data sync
   useEffect(() => {

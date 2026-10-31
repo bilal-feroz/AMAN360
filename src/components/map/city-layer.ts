@@ -544,9 +544,12 @@ export class CityLayer implements CustomLayerInterface {
     return active || now < this.animateUntil;
   }
 
+  /** Set while another scene owns the map (the real-world replay over 3D terrain). */
+  hidden = false;
+
   render(_gl: WebGLRenderingContext | WebGL2RenderingContext, args: CustomRenderMethodInput) {
     // The city model is drawn in the mercator (street-scale) part of the flight only.
-    if (this.map.getProjection()?.type === "globe" || this.map.getZoom() < 10.5) return;
+    if (this.hidden || this.map.getProjection()?.type === "globe" || this.map.getZoom() < 10.5) return;
     const now = performance.now();
     const t = (now - this.startTime) / 1000;
     this.waterUniforms.uTime.value = t;

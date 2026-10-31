@@ -68,12 +68,29 @@ A concise record of what was built, tested and verified — kept so work can res
     answers ran long, gender inferred from a name; bidi glitches for Latin names and ids inside
     Arabic. Prompt-injection probe passed (see EVALUATION.md).
 
+14. **AI signal intelligence (2026-10-31)** — social intelligence (synthetic scenario posts in seven
+    languages + a real-world replay), AI triage of help requests, a live red-team stress test, an
+    always-visible AI status, copilot signals card, four new Presentation stages.
+    - Real data: 9 Oriane video-search queries (cached; 88 unique public posts, 10–25 Oct 2026,
+      Emirate of Sharjah). Claude Opus 5.5 read all posts (text stage) and looked at up to three
+      frames of each of the 49 kept videos (vision stage); ≈ $2.74 to build, recorded so the demo
+      costs nothing. Frames stored at ≤ 3 per post; no handles or profile data stored.
+    - OSM gazetteer (Overpass + one Nominatim lookup): 1,636 places, 234 named roads.
+    - 3D replay: EOxCloudless imagery over Terrarium raster-DEM terrain with hillshade; city layer
+      hidden during the replay; imagery/terrain tiles go through the allow-listed cache and are
+      prefetched.
+    - Found and fixed during the build: an Arabic diacritics range that stripped Arabic letters from
+      place names; a road anchored on a same-named street 60 km away (Al Wahda Street, Kalba); a
+      mountain peak preferred over the town of Mleiha; a replay camera that applied padding twice;
+      `scrollIntoView` scrolling the full-screen shell during Presentation Mode; and — via the new
+      red-team suite — Arabic first-aid advice not caught by the validator.
+
 ## Verified (executed, not assumed)
 
 | Check | Result |
 |---|---|
 | `npm run typecheck` | clean |
-| `npm test` | 94 / 94 passed (incl. 11 copilot tests with a scripted model stream) |
+| `npm test` | 247 / 247 passed (incl. 132 red-team cases, gazetteer/hotspot/rumour logic, triage rule) |
 | `npm run build` | succeeds |
 | `npm run test:e2e` against production build | 2 / 2 passed, also with live Claude enabled (demo loop 1.5 min, presentation 3.5 min) |
 | `npm run evaluate` | results recorded in EVALUATION.md |

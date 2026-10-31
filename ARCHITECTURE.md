@@ -86,6 +86,30 @@ function, and there is no distributed infrastructure to fail during a live demo.
 Every mutation writes an audit event and bumps a version; SSE streams notify clients, which
 re-fetch derived state. If the stream drops, clients poll and reconnect automatically.
 
+## Social intelligence pipeline
+
+```
+Oriane video search ──(9 cached queries)──► .data/oriane/raw-*.json   (gitignored, full API response)
+        │ scripts/build-replay.mts — reduce: no handles/names/profile data; author → one-way hash
+        ▼
+replay-posts.json ──► Stage A: Claude reads caption + speech + on-screen text (batches of 20)
+                 └──► Stage B: Claude looks at ≤ 3 frames per kept video (vision)  ──► replay-analysis.json
+synthetic scenario-posts.json ──► Claude (text) ──► scenario-analysis.json
+
+At runtime (src/server/signals/service.ts):
+  post + recorded (or live re-run) reading
+    → resolvePlaces()   OSM gazetteer, kind-aware exact/alias/fuzzy match, focus + distance checks
+    → buildHotspots()   single-linkage grouping (380 m city / 6 km emirate), independent sources
+    → buildRumours() / buildConfusion()   token-set similarity; questions matched to approved answers
+    → operator actions  request verification · approved clarification · dismiss (audited)
+```
+
+The map draws hotspot halos, post pins (spread inside each place's precision radius, never outside)
+and highlighted roads as MapLibre layers. The real-world replay switches the map to EOxCloudless
+imagery over a raster-DEM terrain with hillshade (Hajar mountains, 1.7× exaggeration) and hides the
+Three.js city layer; leaving the replay restores the calm city style. Imagery and terrain tiles go
+through the same allow-listed tile cache, and are prefetched once the city loads.
+
 ## Derived state & time travel
 
 `state.ts` never stores counters. Metrics are computed from records (`messages`, `responses`,

@@ -6,6 +6,7 @@ import { Button, Chip, cn, Section, Stat } from "@/components/ui";
 import { fmtDuration, fmtPct, fmtTime } from "@/lib/format";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
+import { TriageTags } from "./TriageCard";
 import { PanelHeader } from "./PanelHeader";
 import { Bar } from "./ImpactPanel";
 
@@ -129,7 +130,8 @@ export function ResponsePanel() {
                     “{c.summary}”
                   </p>
                   <div className="mt-1.5 flex items-center gap-2 text-[11px] text-muted">
-                    <span>{c.recipient?.areaLabel[lang]}</span>
+                    <TriageTags triage={c.triage} lang={lang} />
+                    <span className="truncate">{c.recipient?.areaLabel[lang]}</span>
                     <span className="ms-auto">
                       <CaseStatusChip status={c.status} />
                     </span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { BookOpen, Inbox, LayoutGrid, LifeBuoy, MessageSquareText, RotateCcw, ScrollText, Smartphone, Users } from "lucide-react";
+import { BookOpen, Inbox, LayoutGrid, LifeBuoy, MessageSquareText, Radar, RotateCcw, ScrollText, Smartphone, Users } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/components/ui";
 import { useUi, type PanelView } from "@/lib/ui-store";
@@ -11,8 +11,11 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
   const view = useUi((s) => s.view);
   const setView = useUi((s) => s.setView);
   const openCases = state ? state.metrics.cases.total - state.metrics.cases.resolved : 0;
-  const items: { v: PanelView; icon: typeof Inbox; label: string; badge?: number; tone?: "coral" }[] = [
+  const sig = state?.signals;
+  const signalAlerts = sig ? sig.hotspots.filter((h) => h.status === "unverified" && h.corroborated && h.insideZone !== true).length + sig.rumours.filter((r) => r.status === "flagged").length : 0;
+  const items: { v: PanelView; icon: typeof Inbox; label: string; badge?: number; tone?: "coral" | "violet" }[] = [
     { v: "queue", icon: Inbox, label: t("incidents") },
+    { v: "signals", icon: Radar, label: t("signals"), badge: signalAlerts, tone: "violet" },
     { v: "impact", icon: Users, label: t("impact") },
     { v: "guidance", icon: MessageSquareText, label: t("messages") },
     { v: "responses", icon: LayoutGrid, label: t("responses") },
@@ -21,7 +24,7 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
   ];
   return (
     <nav aria-label="Primary" className="relative z-20 flex w-[76px] flex-col items-center gap-1 border-e border-line bg-surface py-3">
-      {items.map(({ v, icon: Icon, label, badge }) => {
+      {items.map(({ v, icon: Icon, label, badge, tone }) => {
         const active = view === v || (v === "case" && view === "case") || (v === "impact" && view === "recipient");
         return (
           <button
@@ -31,6 +34,7 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
               ui.setView(v === "case" && !ui.selectedCaseId ? "responses" : v);
               if ((v === "impact" || v === "guidance" || v === "responses") && state?.assessment) ui.flyTo({ kind: "zone" });
               if (v === "queue") ui.flyTo({ kind: "overview" });
+              if (v === "signals") ui.flyTo(ui.signals.dataset === "replay" ? { kind: "replay" } : { kind: "zone" });
             }}
             aria-current={active ? "page" : undefined}
             className={cn(
@@ -41,7 +45,7 @@ export function Rail({ onDevices }: { onDevices: () => void }) {
             <Icon size={19} strokeWidth={1.8} />
             <span className="line-clamp-2 text-center">{label}</span>
             {!!badge && (
-              <span className="tnum absolute end-2 top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full bg-coral px-1 text-[10px] font-semibold text-white">{badge}</span>
+              <span className={cn("tnum absolute end-2 top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full px-1 text-[10px] font-semibold text-white", tone === "violet" ? "bg-violet" : "bg-coral")}>{badge}</span>
             )}
           </button>
         );

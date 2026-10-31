@@ -25,6 +25,9 @@ import { CasePanel } from "./panels/CasePanel";
 import { WhyPanel } from "./panels/WhyPanel";
 import { AuditPanel } from "./panels/AuditPanel";
 import { CopilotPanel } from "@/components/copilot/CopilotPanel";
+import { SignalsPanel } from "@/components/signals/SignalsPanel";
+import { ReplayTimeline } from "@/components/signals/ReplayTimeline";
+import { useSignalsStore, useSignalsSync } from "@/lib/use-signals";
 
 const CityMap = dynamic(() => import("@/components/map/CityMap"), {
   ssr: false,
@@ -66,7 +69,9 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
   const [vw, setVw] = useState(1920);
   const chrome = stage === "done";
   const rtl = ops.lang === "ar";
-  const panelWidth = ui.view === "guidance" ? Math.min(660, Math.max(520, vw * 0.34)) : vw < 1500 ? 400 : 440;
+  const panelWidth = ui.view === "guidance" ? Math.min(660, Math.max(520, vw * 0.34)) : ui.view === "signals" ? (vw < 1500 ? 430 : 480) : vw < 1500 ? 400 : 440;
+  useSignalsSync(ops.state?.version);
+  const signalsView = useSignalsStore((s) => (ui.view === "signals" ? s.views[ui.signals.dataset] ?? null : null));
   const copilotOpen = ui.copilot.open && chrome;
   const copilotWidth = Math.round(Math.min(480, Math.max(380, vw * 0.27)));
   const leftInset = RAIL + (copilotOpen ? copilotWidth + 12 : 0);
@@ -154,6 +159,8 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         return <WhyPanel />;
       case "audit":
         return <AuditPanel />;
+      case "signals":
+        return <SignalsPanel />;
     }
   })();
 
@@ -178,6 +185,11 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         onSelectZone={onSelectZone}
         onSelectClosure={onSelectClosure}
         onHover={ui.setHover}
+        signals={signalsView}
+        selectedPostId={ui.signals.postId}
+        selectedHotspotId={ui.signals.hotspotId}
+        onSelectPost={(id) => ui.setSignals({ postId: id })}
+        onSelectHotspot={(id) => ui.setSignals({ hotspotId: id, postId: null })}
       />
 
       {/* Top bar */}
@@ -245,13 +257,13 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
           animate={{ y: chrome ? 0 : 160, opacity: chrome ? 1 : 0 }}
           transition={{ type: "spring", stiffness: 140, damping: 22, delay: chrome ? 0.26 : 0 }}
         >
-          <Timeline />
+          {signalsView?.dataset === "replay" ? <ReplayTimeline view={signalsView} lang={ops.lang} /> : <Timeline />}
         </motion.div>
         {ui.hoverInfo && chrome && <HoverCard info={ui.hoverInfo} />}
         <AnimatePresence>
           {closureInfo && chrome && <ClosureCard onClose={() => setClosureInfo(false)} />}
         </AnimatePresence>
-        {chrome && <Legend />}
+        {chrome && signalsView?.dataset !== "replay" && <Legend />}
         <Attribution />
         <AnimatePresence>{devicesOpen && <div className="pointer-events-auto"><DevicesDrawer onClose={() => setDevicesOpen(false)} /></div>}</AnimatePresence>
         {ops.error && (
@@ -398,6 +410,8 @@ function Attribution() {
       <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener" className="hover:text-ink">OpenMapTiles</a>
       {" · "}
       <a href="https://cloudless.eox.at" target="_blank" rel="noopener" className="hover:text-ink">EOxCloudless 2024 (contains modified Copernicus Sentinel data)</a>
+      {" · "}
+      <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener" className="hover:text-ink">Terrain Tiles (AWS Open Data, SRTM)</a>
       {" · "}
       <a href="https://maplibre.org" target="_blank" rel="noopener" className="hover:text-ink">MapLibre</a>
     </div>

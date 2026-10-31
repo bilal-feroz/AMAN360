@@ -18,6 +18,11 @@ const pick = [
   ["review/14-timeline-replay", "13-timeline-replay"],
   ["review/17-presentation-final", "14-presentation-final"],
   ["review/23-command-center-1366x768", "15-laptop-1366x768"],
+  ["review/18-presentation-social-signals", "16-social-signals"],
+  ["review/19-presentation-redteam", "17-try-to-break-the-ai"],
+  ["review/20-presentation-rumour", "18-rumour-clarification"],
+  ["review/21-presentation-real-storm", "19-real-storm-3d"],
+  ["review/22-presentation-real-post", "20-real-post-claude-reading"],
 ];
 mkdirSync("docs/screenshots", { recursive: true });
 const browser = await chromium.launch();

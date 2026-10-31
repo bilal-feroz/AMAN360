@@ -108,7 +108,11 @@ export const GLOBAL_FORBIDDEN_CLAIMS: { id: string; label: string; pattern: RegE
     pattern: /alternative route|alternate route|detour|instead,? (take|use)|take .{1,30} instead|طريق بديل|مسار بديل|تحويلة|سلوك طريق/i,
   },
   { id: "severity", label: "Severity escalation wording", pattern: /catastroph|extreme danger|life-threatening flood|كارثي|خطر شديد جدا/i },
-  { id: "medical", label: "Unsupported medical or rescue guidance", pattern: /\b(cpr|tourniquet|first aid steps)\b|إنعاش قلبي|عاصبة/i },
+  {
+    id: "medical",
+    label: "Unsupported medical or rescue guidance",
+    pattern: /\b(cpr|tourniquet|first aid steps|bandage|splint|apply pressure|chest compressions)\b|إنعاش قلبي|عاصبة|رباط|ضماد|نزيف|جبيرة|ضغطات الصدر|إسعافات أولية|اسعافات اولية/i,
+  },
   { id: "url", label: "Links", pattern: /https?:\/\/|www\./i },
 ];
 

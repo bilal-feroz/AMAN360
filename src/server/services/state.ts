@@ -10,6 +10,8 @@ import { providerStatus } from "../comms/providers";
 import * as store from "../store";
 import type { StoredMessage } from "../store";
 import { nextState } from "./citizen";
+import { signalsSummary } from "../signals/service";
+import { RECORDED_ANALYSIS } from "@/scenario/signals";
 
 /**
  * Derived operational state. Every number shown in the command center is computed here from
@@ -198,10 +200,27 @@ export function getOpsState(atIso?: string | null) {
       };
     });
 
+  const signals = signalsSummary(atIso);
+  const recordedReplay = Object.values(RECORDED_ANALYSIS.replay);
+  const events = store.auditLog.recent(5000);
+  const ai = {
+    configured: providerStatus().llmConfigured,
+    model: providerStatus().model,
+    rewritesValidated: store.guidance.forIncident(INCIDENT_ID).filter((g) => g.mode === "llm" && !g.fallbackUsed).length,
+    rewritesFellBack: store.guidance.forIncident(INCIDENT_ID).filter((g) => g.fallbackUsed).length,
+    triaged: cases.filter((c) => c.triage?.method === "llm").length,
+    raised: cases.filter((c) => c.triage?.raised).length,
+    postsRead: signals.funnel.analysed + recordedReplay.length,
+    framesViewed: recordedReplay.filter((a) => a.stage === "vision").length,
+    redteamBlocked: events.filter((e) => e.type === "redteam.blocked").length,
+  };
+
   return {
     version: currentVersion(),
     serverTime: new Date().toISOString(),
     viewAt: atIso ?? null,
+    signals,
+    ai,
     scenario: { label: SCENARIO_LABEL, resetAt: getMeta("reset_at"), simSpeed: Number(getMeta("sim_speed") ?? 1) },
     provider: providerStatus(),
     policy: { version: SAFETY_POLICY.version, name: SAFETY_POLICY.name, status: SAFETY_POLICY.status, expiresAt: SAFETY_POLICY.expiresAt, rules: SAFETY_POLICY.rules },

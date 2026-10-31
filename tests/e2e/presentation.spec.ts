@@ -1,13 +1,13 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 
-/** Presentation Mode runs the real workflow end to end, in real time (~3 minutes). */
+/** Presentation Mode runs the real workflow end to end, in real time (~4.5 minutes). */
 
 const SHOTS = "screenshots/review";
 mkdirSync(SHOTS, { recursive: true });
 
 test("presentation mode completes the guided demo on real records", async ({ browser }) => {
-  test.setTimeout(330_000);
+  test.setTimeout(480_000);
   const ctx = await browser.newContext();
   const login = await ctx.request.post("/api/auth/login", { data: { operatorId: "OP-ALYA", passcode: process.env.AMAN_OPERATOR_PASSCODE ?? "aman-demo-2026" } });
   expect(login.ok()).toBeTruthy();
@@ -26,17 +26,43 @@ test("presentation mode completes the guided demo on real records", async ({ bro
   const stages = [
     "A calm city",
     "A verified alert arrives",
+    "Social intelligence — read by AI, verified by people",
     "Geographic intelligence",
     "Safety intelligence",
     "Communication",
+    "Try to break the AI",
     "Citizen interaction",
     "The picture updates",
+    "Stopping a rumour",
     "Ask AMAN — AI you can check",
     "Explainability & human follow-up",
+    "Proof on real data — Sharjah storm, 12–20 Oct 2026",
     "Every response changes the picture",
   ];
   for (const [i, title] of stages.entries()) {
     await expect(bar.getByText(title, { exact: true })).toBeVisible({ timeout: 60_000 });
+    if (title === "Social intelligence — read by AI, verified by people") {
+      await expect(page.getByText("Request verification").first().or(page.getByText("Verification requested").first())).toBeVisible({ timeout: 20_000 });
+      await page.waitForTimeout(4000);
+      await page.screenshot({ path: `${SHOTS}/18-presentation-social-signals.png` });
+    }
+    if (title === "Try to break the AI") {
+      await expect(page.getByText(/Blocked by \d check/)).toBeVisible({ timeout: 20_000 });
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: `${SHOTS}/19-presentation-redteam.png` });
+    }
+    if (title === "Stopping a rumour") {
+      await expect(page.getByText("Clarification issued").first()).toBeVisible({ timeout: 20_000 });
+      await page.screenshot({ path: `${SHOTS}/20-presentation-rumour.png` });
+    }
+    if (title === "Proof on real data — Sharjah storm, 12–20 Oct 2026") {
+      await expect(page.getByText("REAL public posts", { exact: true })).toBeVisible({ timeout: 20_000 });
+      await page.waitForTimeout(9000);
+      await page.screenshot({ path: `${SHOTS}/21-presentation-real-storm.png` });
+      await expect(page.getByText("Claude's reading", { exact: true })).toBeVisible({ timeout: 20_000 });
+      await page.waitForTimeout(2500);
+      await page.screenshot({ path: `${SHOTS}/22-presentation-real-post.png` });
+    }
     if (title === "Safety intelligence") {
       await page.waitForTimeout(3500);
       await page.screenshot({ path: `${SHOTS}/15-presentation-safety-intelligence.png` });

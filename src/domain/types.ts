@@ -275,6 +275,30 @@ export interface CitizenResponse {
 
 export type CaseStatus = "open" | "acknowledged" | "follow_up_recorded" | "resolved";
 
+export const TRIAGE_NEEDS = ["mobility", "medical", "elderly", "child", "water_entering", "trapped", "vehicle", "power", "information", "other"] as const;
+export type TriageNeed = (typeof TRIAGE_NEEDS)[number];
+
+/**
+ * AI-assisted reading of a help request, for ordering human review only. The model may *raise*
+ * a priority above the deterministic rule result, never lower it, and never decides a response.
+ */
+export interface CaseTriage {
+  method: "llm" | "rules";
+  model: string | null;
+  needs: TriageNeed[];
+  summary: Bilingual | null;
+  reasons: string[];
+  language: string | null;
+  rulePriority: "P1" | "P2";
+  suggestedPriority: "P1" | "P2";
+  finalPriority: "P1" | "P2";
+  raised: boolean;
+  confidence: number;
+  cached: boolean;
+  ms: number;
+  at: string;
+}
+
 export interface AssistanceCase {
   id: string;
   incidentId: string;
@@ -287,6 +311,7 @@ export interface AssistanceCase {
   acknowledgedAt: string | null;
   resolvedAt: string | null;
   notes: { at: string; by: string; text: string }[];
+  triage?: CaseTriage | null;
 }
 
 export interface ReviewItem {

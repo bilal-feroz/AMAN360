@@ -20,6 +20,8 @@ export const SUGGESTIONS: { en: string; ar: string }[] = [
   { en: "Why did Mariam get this message?", ar: "لماذا وصلت هذه الرسالة إلى مريم؟" },
   { en: "Show the Arabic and English guidance", ar: "اعرض الإرشادات بالعربية والإنجليزية" },
   { en: "Run the safety checks", ar: "شغّل فحوص السلامة" },
+  { en: "What is social media saying?", ar: "ماذا تقول وسائل التواصل؟" },
+  { en: "Show the real October storm posts", ar: "اعرض منشورات العاصفة الحقيقية في أكتوبر" },
 ];
 
 function modelName(model: string | null) {

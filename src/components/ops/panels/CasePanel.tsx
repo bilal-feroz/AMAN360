@@ -9,6 +9,7 @@ import { useOps } from "../context";
 import { PanelHeader } from "./PanelHeader";
 import { ChainView, useChain } from "./ChainView";
 import { CaseStatusChip } from "./ResponsePanel";
+import { TriageCard } from "./TriageCard";
 
 export function CasePanel() {
   const { state, t, lang, caseAction, busy, canAct } = useOps();
@@ -72,6 +73,10 @@ export function CasePanel() {
             <LocateFixed size={13} /> {lang === "ar" ? "إظهار الموقع (صلاحية الحالة فقط)" : "Show location (case access only)"}
           </button>
         )}
+      </Section>
+
+      <Section title={lang === "ar" ? "الفرز بالذكاء الاصطناعي" : "AI triage"}>
+        <TriageCard triage={c.triage} lang={lang} />
       </Section>
 
       <Section title={t("chain")}>{chain ? <ChainView chain={chain} /> : <div className="h-40 animate-pulse rounded-xl bg-surface-2" />}</Section>

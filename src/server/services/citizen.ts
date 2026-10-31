@@ -149,6 +149,8 @@ export async function submitResponse(input: SubmitInput): Promise<SubmitResult> 
           resolvedAt: null,
           notes: [],
         });
+        // AI triage runs straight after, off the citizen's request path (it can only raise priority).
+        store.schedule.add(Date.now(), "case_triage", { caseId });
       }
       audit(actor, "response.assistance", `${recipient.id} requested assistance — ${caseId} (${c.priority}) opened for human review`, {
         entity: caseId,

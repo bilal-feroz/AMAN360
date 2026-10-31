@@ -1,12 +1,13 @@
 "use client";
 
-import { MapPin, Presentation, Radio, Settings2, LogOut, Sparkles, ShieldCheck } from "lucide-react";
+import { MapPin, Presentation, Radio, Settings2, LogOut, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { AmanMark, Button, Chip, cn, Segmented, useNow } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "./context";
 import { SettingsMenu } from "./SettingsMenu";
 import { api } from "@/lib/api";
+import { AiStatus } from "./AiStatus";
 
 export function TopBar({ connection, onPresent }: { connection: "live" | "reconnecting" | "polling"; onPresent: () => void }) {
   const { t, lang, state, operator, signInRequired } = useOps();
@@ -69,14 +70,7 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
         <div className="tnum hidden whitespace-nowrap text-[12.5px] font-medium text-ink-2 sm:block" aria-label={t("uaeTime")}>
           {time} <span className="text-muted">{lang === "ar" ? "بتوقيت الإمارات" : "GST"}</span>
         </div>
-        {state?.provider && (
-          <span className="hidden 2xl:inline-flex">
-          <Chip tone={state.provider.llmConfigured ? "cyan" : "neutral"}>
-            {state.provider.llmConfigured ? <Sparkles size={12} /> : <ShieldCheck size={12} />}
-            {state.provider.llmConfigured ? t("llmMode") : t("templateMode")}
-          </Chip>
-          </span>
-        )}
+        <AiStatus />
         <Segmented
           ariaLabel={t("language")}
           size="sm"

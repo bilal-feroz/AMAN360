@@ -79,6 +79,13 @@ export function citizenInbox(token: string) {
     },
     scenarioLabel: SCENARIO_LABEL,
     alerts,
+    // Approved rumour clarifications reach the same people as the alert (simulated channel).
+    clarifications: alerts.length
+      ? store.signals
+          .actions("scenario")
+          .filter((a) => a.kind === "correction" && a.data?.text)
+          .map((a) => ({ id: a.targetId, at: a.at, text: a.data!.text as { en: string; ar: string } }))
+      : [],
   };
 }
 

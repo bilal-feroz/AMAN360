@@ -265,6 +265,15 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
       )}
 
       <main className="flex-1 overflow-y-auto px-5 pb-6 pt-4" aria-live="polite">
+        {inbox?.clarifications.map((n) => (
+          <div key={n.id} role="status" className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-soft px-3.5 py-3 text-[13.5px] leading-relaxed text-teal-ink ring-1 ring-teal/25">
+            <ShieldCheck size={17} className="mt-0.5 shrink-0" />
+            <span>
+              <b className="block text-[12px] font-semibold uppercase tracking-[0.06em] rtl:tracking-normal">{lang === "ar" ? "توضيح رسمي" : "Official clarification"}</b>
+              {n.text[lang]}
+            </span>
+          </div>
+        ))}
         {!inbox ? (
           <div className="space-y-3">
             <div className="h-36 animate-pulse rounded-2xl bg-surface-2" />

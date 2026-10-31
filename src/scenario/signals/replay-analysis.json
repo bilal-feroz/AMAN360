@@ -1,0 +1,4411 @@
+{
+ "version": "signals-v1",
+ "model": "claude-opus-5-5",
+ "builtAt": "2026-10-31T07:31:08.884Z",
+ "items": {
+  "ig:DeTGj_PCcQt": {
+   "postId": "ig:DeTGj_PCcQt",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Coastal flooding emergency in Newport Beach, California, outside the UAE.",
+   "places": [
+    {
+     "text": "Newport Beach",
+     "nameEn": "Newport Beach",
+     "nameAr": "نيوبورت بيتش",
+     "kind": "town"
+    },
+    {
+     "text": "Balboa Peninsula",
+     "nameEn": "Balboa Peninsula",
+     "nameAr": "شبه جزيرة بالبوا",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Newport Beach, California declared a local emergency over coastal flooding from Tropical Storm Rachel.",
+    "ar": "أعلنت مدينة نيوبورت بيتش في كاليفورنيا حالة طوارئ محلية بسبب فيضانات ساحلية ناجمة عن العاصفة الاستوائية رايتشل."
+   },
+   "evidence": [
+    "Caption: City of Newport Beach declared a local emergency due to coastal flooding.",
+    "Speech: Mayor describes flooding along Balboa Peninsula."
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "d53e27d6ac73dd48"
+  },
+  "ig:DeTp_8pRnfg": {
+   "postId": "ig:DeTp_8pRnfg",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Persian-language travel/retreat promotion in Chiang Mai, unrelated to UAE weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A travel post promotes a digital-detox retreat abroad.",
+    "ar": "منشور سياحي يروّج لمنتجع للابتعاد عن الأجهزة الرقمية خارج الدولة."
+   },
+   "evidence": [
+    "Caption: Booking and consultation details for a retreat called true nature.",
+    "Speech: Describes yoga and meditation without phones."
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "3b37ad9a3155325d"
+  },
+  "ig:DeYfVfOtVfR": {
+   "postId": "ig:DeYfVfOtVfR",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "News about the Al Dhaid Dates Festival, not weather-related.",
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "إكسبو الذيد",
+     "nameEn": "Expo Al Dhaid",
+     "nameAr": "إكسبو الذيد",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "The Al Dhaid Dates Festival 2026 concluded with strong visitor turnout.",
+    "ar": "اختُتم مهرجان الذيد للتمور 2026 بإقبال لافت من الزوار."
+   },
+   "evidence": [
+    "Caption: Festival organised by Sharjah Chamber of Commerce at Expo Al Dhaid."
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "9ce032d8c14d9722"
+  },
+  "tt:7695725965900516609": {
+   "postId": "tt:7695725965900516609",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Shoe retailer water-test video; 'acid rain' refers to a stain, not weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A shop tests a returned waterproof shoe for a customer complaint.",
+    "ar": "متجر يختبر حذاءً مقاوماً للماء أعاده أحد الزبائن بسبب شكوى."
+   },
+   "evidence": [
+    "Caption: Customer returned Salomon XT-6 Gore-Tex; water test performed."
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "7ed6c5c0557f86cd"
+  },
+  "tt:7695751213689670932": {
+   "postId": "tt:7695751213689670932",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Municipal infrastructure project news; mentions drainage networks but no current weather.",
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "town"
+    },
+    {
+     "text": "اليرموك",
+     "nameEn": "Al Yarmouk",
+     "nameAr": "اليرموك",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah Municipality completed a zoning and roads project in Al Yarmouk including stormwater drainage.",
+    "ar": "أنجزت بلدية الشارقة مشروع تنظيم منطقة اليرموك بما يشمل الطرق وشبكات تصريف مياه الأمطار."
+   },
+   "evidence": [
+    "Caption: Sharjah Municipality completes Al Yarmouk area project.",
+    "Speech: Project included rainwater drainage and sewage networks."
+   ],
+   "confidence": 0.85,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "c1b53bb915514e23"
+  },
+  "ig:DeZOK1btGSj": {
+   "postId": "ig:DeZOK1btGSj",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Maleha",
+     "nameEn": "Maleha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video posted on 12 October shows hail on a road surface and heavy rain with reduced visibility on a highway in Maleha, Sharjah, during a storm on the afternoon of 12 October.",
+    "ar": "يُظهر مقطع فيديو نُشر في 12 أكتوبر حبات برد على سطح طريق وأمطاراً غزيرة مع انخفاض في مدى الرؤية على طريق سريع في مليحة بالشارقة خلال عاصفة بعد ظهر يوم 12 أكتوبر."
+   },
+   "evidence": [
+    "Caption: describes a powerful storm at Maleha, Sharjah on Monday 12 October 2026 at 4:10 PM",
+    "Frame 0:10: hailstones scattered on asphalt next to a yellow road marking",
+    "Frame 0:37: heavy rain and haze on a multi-lane highway with a wet surface and vehicles driving",
+    "Frame 0:44: blurred view through a windshield showing reduced visibility on a wet road"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:29.486Z",
+   "inputHash": "36aa11204b870351"
+  },
+  "ig:DeZRqRKNqU3": {
+   "postId": "ig:DeZRqRKNqU3",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "امارة الشارقة",
+     "nameEn": "Emirate of Sharjah",
+     "nameAr": "إمارة الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "ankle",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video posted on 12 October shows rain over a desert highway in the Emirate of Sharjah, with standing muddy water and debris on the road shoulder while traffic keeps moving.",
+    "ar": "يُظهر مقطع نُشر في 12 أكتوبر هطول أمطار على طريق سريع صحراوي في إمارة الشارقة، مع تجمّع مياه موحلة وحصى على جانب الطريق بينما تستمر حركة السير."
+   },
+   "evidence": [
+    "Caption: 'امطار الخير حالياً على امارة الشارقة' (rain currently over the Emirate of Sharjah); includes a snowflake emoji but no hail is vis…",
+    "Frame 0:02: wet road with a shallow sheet of muddy water and gravel across the shoulder; vehicles driving normally.",
+    "Frame 0:08: SUV parked on a wet, gravel-strewn shoulder with standing water below wheel-rim level.",
+    "Frame 0:13: dark rain clouds over the highway; muddy pooling along the sandy roadside."
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:31.644Z",
+   "inputHash": "7f455f9b9b21a846"
+  },
+  "ig:DeZT9ntD_Fh": {
+   "postId": "ig:DeZT9ntD_Fh",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Mleiha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Maleha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A post shows a powerful storm in Mleiha, Sharjah, on the afternoon of 12 October 2026, with hazy skies and ground covered in white pellets that appear to be hail.",
+    "ar": "يُظهر المنشور عاصفة قوية في مليحة بإمارة الشارقة بعد ظهر يوم 12 أكتوبر 2026، مع سماء مغبرة وأرض مغطاة بحبيبات بيضاء يبدو أنها برد."
+   },
+   "evidence": [
+    "On screen: \"Powerful storm at Maleha, Sharjah Emirate, Monday 12-October-2026 at 4.10 PM\"",
+    "Frame 0:00: open ground covered with dense white pellets resembling hail",
+    "Frame 0:00: hazy, dusty sky with reduced visibility",
+    "Caption: \"A massive storm rolled through this afternoon at around 4:10pm\""
+   ],
+   "confidence": 0.75,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:30.958Z",
+   "inputHash": "6166f4aecd3f577d"
+  },
+  "tt:7695771726449364276": {
+   "postId": "tt:7695771726449364276",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "رأس الخيمة",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    },
+    {
+     "text": "شارع الوطن",
+     "nameEn": "Al Watan Road",
+     "nameAr": "شارع الوطن",
+     "kind": "road"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Emarat Al Youm video shows heavy rain and hail falling on Al Watan Road, with the caption reporting rain over several areas of Sharjah and Ras Al Khaimah on 12 October.",
+    "ar": "يُظهر مقطع لصحيفة الإمارات اليوم هطول أمطار غزيرة وتساقط البرد على شارع الوطن، مع إشارة التعليق إلى أمطار على عدة مناطق في الشارقة ورأس الخيمة في 12 أكتوبر."
+   },
+   "evidence": [
+    "Caption: rain falling on several areas in Sharjah and Ras Al Khaimah",
+    "Speech: heavy rain and hail on Al Watan Road, dated 12 October",
+    "Frame 0:17: hailstones scattered on wet road lanes",
+    "On screen: Emarat Al Youm logo and text about rain over several areas"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:31.855Z",
+   "inputHash": "0b728fcc13bcafcc"
+  },
+  "ig:DeZWG63io-Q": {
+   "postId": "ig:DeZWG63io-Q",
+   "relevant": true,
+   "category": "flooding",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "high",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": false,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video posted on 12 October shows a vehicle driving through flowing muddy floodwater in an underpass and on roads during heavy rain in Al Madam, Sharjah.",
+    "ar": "يُظهر مقطع نُشر في 12 أكتوبر مركبة تسير عبر مياه سيول موحلة متدفقة داخل نفق وعلى الطرق أثناء هطول أمطار غزيرة في المدام بالشارقة."
+   },
+   "evidence": [
+    "Caption: states rain is falling now on Al Madam in Sharjah, dated 12/10/2026",
+    "Frame 0:04: water flowing across the road inside an underpass as the vehicle drives through",
+    "Frame 0:19: road surface fully covered by muddy water with rain splashes near an underpass",
+    "Speech: says the water is rushing with force"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:39.824Z",
+   "inputHash": "4d0cc9f284dafb36"
+  },
+  "ig:DeZaOY8qOyW": {
+   "postId": "ig:DeZaOY8qOyW",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Madam",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video from Al Madam, Sharjah, on 12 October shows heavy rain with what appear to be hailstones, wet roads and passing trucks spraying water onto a pavement where adults and children are standing.",
+    "ar": "يُظهر مقطع فيديو من المدام في الشارقة بتاريخ 12 أكتوبر أمطاراً غزيرة مع ما يبدو أنه حبات برد، وطرقاً مبللة، وشاحنات عابرة ترش المياه على رصيف يقف عليه بالغون وأطفال."
+   },
+   "evidence": [
+    "Caption: storm chase at Madam, Sharjah Emirate, Monday 12 October 2026 at 5.40 PM",
+    "Frame 0:05: passing truck throws a large spray of water over two men standing on the pavement",
+    "Frame 0:10: wet road with heavy rain and hazy visibility as trucks drive through water",
+    "Frame 0:24: small white pellets, likely hail, visible on clothes and the pavement around children"
+   ],
+   "confidence": 0.7,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:43.213Z",
+   "inputHash": "73274c1f248ce917"
+  },
+  "tt:7695785169910877447": {
+   "postId": "tt:7695785169910877447",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Perfume product promotion, unrelated to weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video promotes a perfume product at an exhibition.",
+    "ar": "مقطع يروّج لعطر في أحد المعارض."
+   },
+   "evidence": [
+    "Speech: Describes saffron, floral and amber perfume notes."
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "dfdd9c93822ebc8f"
+  },
+  "ig:DeZdNYqOQ1M": {
+   "postId": "ig:DeZdNYqOQ1M",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Perfume product promotion, unrelated to weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video promotes a perfume product at an exhibition.",
+    "ar": "مقطع يروّج لعطر في أحد المعارض."
+   },
+   "evidence": [
+    "Speech: Describes saffron, floral and amber perfume notes."
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "c0d180000e0f04cf"
+  },
+  "ig:DeZgl6iFXCW": {
+   "postId": "ig:DeZgl6iFXCW",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "ankle",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A lifestyle news account shared footage, credited to @storm_ae, of rain and reported hail in parts of Sharjah, showing water on roads and reduced visibility.",
+    "ar": "نشر حساب إخباري منوع مقاطع منسوبة إلى @storm_ae تُظهر أمطاراً وبرداً مُبلَّغاً عنه في مناطق من الشارقة، مع تجمع المياه على الطرق وانخفاض الرؤية."
+   },
+   "evidence": [
+    "On screen: \"Rain and hail hit parts of Sharjah today!\"",
+    "Frame 0:05: vehicles splash through standing water covering a road near a roundabout",
+    "On screen: \"With rainwater flowing along some roads\"",
+    "Frame 0:24: heavy rain and haze reduce visibility as a tanker and cars drive on a wet road"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:40.849Z",
+   "inputHash": "de0204f4b4cf64db"
+  },
+  "tt:7695869758800923937": {
+   "postId": "tt:7695869758800923937",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Religious sermon; the word 'madam' means 'as long as' here.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A religious talk about anxiety and trust in God.",
+    "ar": "حديث ديني عن القلق والطمأنينة بالله."
+   },
+   "evidence": [
+    "Caption: Quote attributed to Chaykh Tariq Khawaldah."
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "68d5cee69da4a805"
+  },
+  "tt:7696042979277999378": {
+   "postId": "tt:7696042979277999378",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Philippine Senate impeachment news; 'Madam' is a form of address.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Philippine senator comments on the withdrawal of impeachment articles.",
+    "ar": "سيناتور فلبيني يعلّق على سحب مواد العزل."
+   },
+   "evidence": [
+    "Caption: Senator-Judge Alan Peter Cayetano on impeachment articles withdrawal."
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "e8e2dd5eb2465648"
+  },
+  "tt:7696052786236034324": {
+   "postId": "tt:7696052786236034324",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Philippine Senate impeachment news; 'Madam' is a form of address.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Philippine senator says the impeachment trial should not be rushed.",
+    "ar": "سيناتور فلبيني يقول إن محاكمة العزل لا ينبغي التعجل فيها."
+   },
+   "evidence": [
+    "Caption: Cayetano says impeachment trial should not be rushed."
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "b216a8b6f2dc5dd7"
+  },
+  "ig:DebqHvKCn45": {
+   "postId": "ig:DebqHvKCn45",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "فلي",
+     "nameEn": "Fili",
+     "nameAr": "فلي",
+     "kind": "village"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video filmed from a vehicle in Fili, Sharjah on 13 October shows a thunderstorm with heavy rain, strong winds and small hailstones.",
+    "ar": "يُظهر مقطع مصوَّر من داخل مركبة في منطقة فلي بالشارقة يوم 13 أكتوبر عاصفة رعدية مصحوبة بأمطار غزيرة ورياح قوية وحبات برد صغيرة."
+   },
+   "evidence": [
+    "Caption: reports rain falling now on Fili in Sharjah, dated 13/10/2026",
+    "Speech: thunderstorm on Fili with heavy rain, hail, thunder and strong winds on 13 October",
+    "Frame 0:01: heavy rain on windscreen with very low visibility over sandy ground",
+    "Frame 0:16: small white hailstones scattered on wet gravel ground"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:40.631Z",
+   "inputHash": "580c84d150eccb7f"
+  },
+  "ig:Debr0vKtBdK": {
+   "postId": "ig:Debr0vKtBdK",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "فلي",
+     "nameEn": "Fili",
+     "nameAr": "فلي",
+     "kind": "village"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news network shares video of heavy rain falling on open ground in Fili, Sharjah, with people standing under umbrellas beside a vehicle.",
+    "ar": "تنشر شبكة إخبارية مقطعاً لهطول أمطار غزيرة على أرض مفتوحة في فلي بالشارقة، مع أشخاص يقفون تحت المظلات بجانب مركبة."
+   },
+   "evidence": [
+    "Caption: \"حالياً .. هطول أمطار الخير على فلي في الشارقة\"",
+    "On screen: Abu Dhabi News Network banner dated 13/10/2026",
+    "Frame 0:00: heavy rain on wet sandy ground, people with umbrellas next to a white SUV",
+    "Frame 0:05: hazy view of power pylons and trees through heavy rain, no standing deep water"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:46.343Z",
+   "inputHash": "271cea51567a75a2"
+  },
+  "ig:Debte5-iMRy": {
+   "postId": "ig:Debte5-iMRy",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Sports academy advertisement listing branch locations.",
+   "places": [
+    {
+     "text": "Al Barsha",
+     "nameEn": "Al Barsha",
+     "nameAr": "البرشاء",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A sports academy advertises football and swimming classes in Al Barsha.",
+    "ar": "أكاديمية رياضية تعلن عن دروس كرة قدم وسباحة في البرشاء."
+   },
+   "evidence": [
+    "Caption: Special offer AED 399 for football and swimming sessions."
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:23:17.597Z",
+   "inputHash": "37eaa3175a03041d"
+  },
+  "ig:DebwLsjoJhB": {
+   "postId": "ig:DebwLsjoJhB",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "فلي",
+     "nameEn": "Fili",
+     "nameAr": "فلي",
+     "kind": "village"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "طريق مسافي",
+     "nameEn": "Masafi Road",
+     "nameAr": "طريق مسافي",
+     "kind": "road"
+    },
+    {
+     "text": "ثوبان",
+     "nameEn": "Thoban",
+     "nameAr": "ثوبان",
+     "kind": "village"
+    },
+    {
+     "text": "شارع الوطن",
+     "nameEn": "Al Watan Street",
+     "nameAr": "شارع الوطن",
+     "kind": "road"
+    },
+    {
+     "text": "حتا",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    },
+    {
+     "text": "طريق كدرا",
+     "nameEn": "Kadra Road",
+     "nameAr": "طريق كدرا",
+     "kind": "road"
+    },
+    {
+     "text": "شارع الشيخ خليفة",
+     "nameEn": "Sheikh Khalifa Street",
+     "nameAr": "شارع الشيخ خليفة",
+     "kind": "road"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "UAE Barq relays the Storm Center report of rainfall in Fili in Sharjah and on roads toward Masafi, Thoban, Hatta, Kadra and Fujairah.",
+    "ar": "نقلت برق الإمارات عن مركز العاصفة هطول أمطار على فلي في الشارقة وعلى طرق مسافي وثوبان وحتا وكدرا والفجيرة."
+   },
+   "evidence": [
+    "Caption: \"مركز العاصفة\" reports rain on Fili in Sharjah, Masafi and Thoban road, Al Watan Street to Hatta, Kadra road and Sheikh Khalifa St…",
+    "On screen: date 13-10-2026 and UAE Barq branding",
+    "Frame 0:00: rain falling on wet sandy ground with puddles, hazy view, SUVs and people in background",
+    "On screen: unrelated Mohammed bin Rashid Leadership Forum advertisement at bottom"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:55.999Z",
+   "inputHash": "44a965074882dfe9"
+  },
+  "ig:Deb4pLgtBMu": {
+   "postId": "ig:Deb4pLgtBMu",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video filmed from a moving car shows rain falling on a wet highway beside rocky hills under overcast skies, captioned as rain in Sharjah.",
+    "ar": "مقطع مصوّر من سيارة متحركة يُظهر هطول الأمطار على طريق سريع مبتل بمحاذاة تلال صخرية تحت سماء ملبدة بالغيوم، مع تعليق يشير إلى أمطار في الشارقة."
+   },
+   "evidence": [
+    "Caption: 'امطار الخير في الشارقة' (blessed rains in Sharjah)",
+    "Frame 0:00: wet highway with spray from passing SUV beside a rocky hillside",
+    "Frame 0:10: raindrops on side mirror, standing water sheen on road surface",
+    "Frame 0:11: vehicles driving normally on wet road, no deep water visible"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:46.601Z",
+   "inputHash": "8d505f64ced2fbec"
+  },
+  "ig:Deb_E5xDYUJ": {
+   "postId": "ig:Deb_E5xDYUJ",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Media training programme announcement using 'storm' metaphorically",
+   "places": [
+    {
+     "text": "University of Sharjah",
+     "nameEn": "University of Sharjah",
+     "nameAr": "جامعة الشارقة",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Announcement of a crisis communications training programme in Sharjah.",
+    "ar": "إعلان عن برنامج تدريبي في إدارة الأزمات الإعلامية في الشارقة."
+   },
+   "evidence": [
+    "Caption: SGMB launches eight-week media crisis programme"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "1b683e0dd1a8ca31"
+  },
+  "ig:DecICS6iDcS": {
+   "postId": "ig:DecICS6iDcS",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Hatta",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    },
+    {
+     "text": "Mleiha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Al Madam",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "Al Ukhaidir",
+     "nameEn": "Al Ukhaidir",
+     "nameAr": "الأخيضر",
+     "kind": "village"
+    },
+    {
+     "text": "Al Ain",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    },
+    {
+     "text": "Ras Al Khaimah",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news-style post reports that rain on 12 October brought hail to Sharjah areas including Mleiha, Al Madam and Al Ukhaidir, flowing water near Hatta, and flash flood warnings, illustrated with an AI-generated image.",
+    "ar": "منشور إخباري يفيد بأن أمطار يوم 12 أكتوبر جلبت البرد إلى مناطق في الشارقة منها مليحة والمدام والأخيضر، مع جريان المياه قرب حتا وتحذيرات من السيول، مرفقاً بصورة مولدة بالذكاء الاصطناعي."
+   },
+   "evidence": [
+    "Caption: hail reported in Sharjah; Mleiha, Al Madam and Al Ukhaidir among affected areas",
+    "Caption: flowing water along roads near Hatta and authority warnings about flash flooding",
+    "Caption: states the image is AI generated and for reference only",
+    "On screen: 'Dubai' and headline 'UAE Rains Bring Hail, Lightning & Flash Flood Warnings as More Showers Loom'"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:52.737Z",
+   "inputHash": "449f7e591fb3bd1c"
+  },
+  "ig:Decgu3suv7H": {
+   "postId": "ig:Decgu3suv7H",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Humanitarian story about winter in Gaza, outside the UAE",
+   "places": [
+    {
+     "text": "Gaza",
+     "nameEn": "Gaza",
+     "nameAr": "غزة",
+     "kind": "district"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video about an elderly woman facing winter in a tent in Gaza.",
+    "ar": "مقطع عن امرأة مسنة تواجه الشتاء في خيمة في غزة."
+   },
+   "evidence": [
+    "Caption: winter in Gaza in a tent"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "3ab906ea81057a48"
+  },
+  "ig:DedMj8fv4l4": {
+   "postId": "ig:DedMj8fv4l4",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Forest fires in Indonesia, outside the UAE",
+   "places": [
+    {
+     "text": "Indonesia",
+     "nameEn": "Indonesia",
+     "nameAr": "إندونيسيا",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video about forest fires and haze in Indonesia with donation links.",
+    "ar": "مقطع عن حرائق الغابات والدخان في إندونيسيا مع روابط للتبرع."
+   },
+   "evidence": [
+    "Speech: Indonesia has been burning since July"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "5aacdd78beb7812e"
+  },
+  "ig:DedoL-DCZ9u": {
+   "postId": "ig:DedoL-DCZ9u",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "Mleiha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Al Madam",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "Al Ukhaidir",
+     "nameEn": "Al Ukhaidir",
+     "nameAr": "الأخيضر",
+     "kind": "village"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Al Ain",
+     "nameEn": "Al Ain",
+     "nameAr": "العين",
+     "kind": "town"
+    },
+    {
+     "text": "Al Watan Road",
+     "nameEn": "Al Watan Road",
+     "nameAr": "طريق الوطن",
+     "kind": "road"
+    },
+    {
+     "text": "Hatta",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news account reports hail in Mleiha, Al Madam and Al Ukhaidir in Sharjah on 12 October, heavy showers near Al Ain, rainwater flowing in low-lying areas along Al Watan Road towards Hatta, and an NCM forecast of more ra…",
+    "ar": "أفاد حساب إخباري بتساقط البرد في مليحة والمدام والأخيضر في الشارقة يوم 12 أكتوبر، وهطول أمطار غزيرة قرب العين، وجريان مياه الأمطار في المناطق المنخفضة على طريق الوطن باتجاه حتا، مع توقعات المركز الوطني للأرصاد بمزيد من …"
+   },
+   "evidence": [
+    "On screen: 'UAE Weather Alert: Hail, Lightning and Heavy Showers Hit Several Areas as More Rain Is Forecast' with Gulf Prime logo",
+    "Frame 0:00: single lightning bolt striking open ground under overcast sky; no water or roads visible",
+    "Caption: hail reported in Mleiha, Al Madam and Al Ukhaidir in Sharjah; lightning captured in Mleiha and Hamda",
+    "Caption: rainwater flowed through low-lying areas along Al Watan Road towards Hatta; NCM says more rain possible until end of week"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:01.236Z",
+   "inputHash": "432ddecea1b78b38"
+  },
+  "ig:Ded8Xghq1DL": {
+   "postId": "ig:Ded8Xghq1DL",
+   "relevant": true,
+   "category": "weather_context",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "جبال المنطقة الشرقية",
+     "nameEn": "Eastern Region mountains",
+     "nameAr": "جبال المنطقة الشرقية",
+     "kind": "district"
+    },
+    {
+     "text": "المنطقة الوسطى",
+     "nameEn": "Central Region",
+     "nameAr": "المنطقة الوسطى",
+     "kind": "district"
+    },
+    {
+     "text": "إمارة الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "طريق دبي العين",
+     "nameEn": "Dubai–Al Ain Road",
+     "nameAr": "طريق دبي العين",
+     "kind": "road"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A UAE news account shares a forecast of continued cumulus cloud formation and rain over the coming days, especially Friday and Saturday, focused on the eastern mountains, Sharjah's Central Region and the Dubai–Al Ain Ro…",
+    "ar": "ينشر حساب إخباري إماراتي توقعات باستمرار تشكل السحب الركامية وهطول الأمطار خلال الأيام القادمة، خاصة يومي الجمعة والسبت، مع تركزها على جبال المنطقة الشرقية والمنطقة الوسطى لإمارة الشارقة وطريق دبي العين، وقد تكون مصحوبة…"
+   },
+   "evidence": [
+    "Speech: forecast of rain over coming days, especially Friday and Saturday, possibly with hail and wadi flow",
+    "Speech: rain expected to focus on eastern mountains, Central Region of Sharjah and Dubai–Al Ain Road",
+    "Frame 0:22: muddy water flowing across and over the edge of a road in a mountainous area",
+    "Frame 0:37: hailstones scattered on the ground beside a man and a pickup truck"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:07.431Z",
+   "inputHash": "db25da950b36b9bc"
+  },
+  "ig:DeeEhTmxjXq": {
+   "postId": "ig:DeeEhTmxjXq",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Education authority website launch, unrelated to weather",
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah Private Education Authority announces its new website.",
+    "ar": "هيئة الشارقة للتعليم الخاص تعلن عن موقعها الإلكتروني الجديد."
+   },
+   "evidence": [
+    "Caption: new website of Sharjah Private Education Authority"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "84686e7a09ae1358"
+  },
+  "ig:DeeOfHRBtE0": {
+   "postId": "ig:DeeOfHRBtE0",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Dubai",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Ajman",
+     "nameEn": "Ajman",
+     "nameAr": "عجمان",
+     "kind": "emirate"
+    },
+    {
+     "text": "Fujairah",
+     "nameEn": "Fujairah",
+     "nameAr": "الفجيرة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Ras Al Khaimah",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Kadra Road",
+     "nameEn": "Kadra Road",
+     "nameAr": "طريق كدرا",
+     "kind": "road"
+    },
+    {
+     "text": "Sheikh Khalifa Road",
+     "nameEn": "Sheikh Khalifa Road",
+     "nameAr": "طريق الشيخ خليفة",
+     "kind": "road"
+    },
+    {
+     "text": "Kadra–Asfani Road",
+     "nameEn": "Kadra–Asfani Road",
+     "nameAr": "طريق كدرا - العصفني",
+     "kind": "road"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Dubai-based news page reports heavy rain and large hail across several emirates including Sharjah, with hail on roads towards Fujairah and a chance of further showers.",
+    "ar": "تفيد صفحة إخبارية في دبي بهطول أمطار غزيرة وتساقط بَرَد كبير في عدة إمارات منها الشارقة، مع بَرَد على الطرق المؤدية إلى الفجيرة واحتمال هطول مزيد من الأمطار."
+   },
+   "evidence": [
+    "Caption: Dubai, Sharjah, Ajman, Fujairah and Ras Al Khaimah experienced rainfall; hail reported on Kadra Road, Sheikh Khalifa Road and Kadr…",
+    "On screen: 'Large hailstones struck roads leading towards Fujairah during heavy rainfall.'",
+    "Frame 0:12: heavy rain over a road with text saying visibility was reduced.",
+    "Frame 0:18: hailstones held in a hand."
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:29:55.807Z",
+   "inputHash": "943ab05b6f887989"
+  },
+  "ig:Deebr4YlPWs": {
+   "postId": "ig:Deebr4YlPWs",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Hospital marketing about allergies and asthma",
+   "places": [
+    {
+     "text": "Medcare Hospital Sharjah",
+     "nameEn": "Medcare Hospital Sharjah",
+     "nameAr": "مستشفى ميدكير الشارقة",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A hospital promotional video about allergies in children.",
+    "ar": "مقطع ترويجي لمستشفى عن الحساسية لدى الأطفال."
+   },
+   "evidence": [
+    "Caption: Book Now! medcare.ae"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "9cf0dba212aac35b"
+  },
+  "tt:7696531145126612244": {
+   "postId": "tt:7696531145126612244",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Tourism post; 'rain' refers to the Rain Room attraction",
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Al Majaz",
+     "nameEn": "Al Majaz",
+     "nameAr": "المجاز",
+     "kind": "district"
+    },
+    {
+     "text": "Sharjah Aquarium",
+     "nameEn": "Sharjah Aquarium",
+     "nameAr": "أكواريوم الشارقة",
+     "kind": "landmark"
+    },
+    {
+     "text": "Rain Room",
+     "nameEn": "Rain Room",
+     "nameAr": "غرفة المطر",
+     "kind": "landmark"
+    },
+    {
+     "text": "Al Layyah Canal",
+     "nameEn": "Al Layyah Canal",
+     "nameAr": "قناة اللية",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A tourism video listing attractions in Sharjah.",
+    "ar": "مقطع سياحي يعرض معالم في الشارقة."
+   },
+   "evidence": [
+    "Caption: 5 Things to Do in Sharjah"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "2a7d74dcb746db79"
+  },
+  "tt:7696851949626608917": {
+   "postId": "tt:7696851949626608917",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "شارع خورفكان",
+     "nameEn": "Khorfakkan Road",
+     "nameAr": "شارع خورفكان",
+     "kind": "road"
+    },
+    {
+     "text": "شارع الإمارات / Emirates Road",
+     "nameEn": "Emirates Road (E611)",
+     "nameAr": "شارع الإمارات",
+     "kind": "road"
+    },
+    {
+     "text": "الشارقة / Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "منطقة الذيد الصناعية / Dhaid Industrial Area",
+     "nameEn": "Dhaid Industrial Area",
+     "nameAr": "منطقة الذيد الصناعية",
+     "kind": "district"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News video shows a heavy rainstorm on Khorfakkan Road near the Emirates Road and Dhaid Industrial Area signs, with heavy spray and reduced visibility for traffic.",
+    "ar": "يُظهر مقطع من الشارقة للأخبار عاصفة مطرية شديدة على شارع خورفكان قرب لافتات شارع الإمارات ومنطقة الذيد الصناعية، مع رذاذ كثيف وانخفاض في الرؤية للمركبات."
+   },
+   "evidence": [
+    "Caption: «عاصفة مطرية» شديدة على شارع خورفكان, posted with #الشارقة_للأخبار",
+    "On screen: Sharjah News (الشارقة للأخبار) logo and headline about a severe rainstorm on Khorfakkan Road",
+    "Frame 0:00: overhead signs read Emirates Road E611 Sharjah and Dhaid Industrial Area 500m",
+    "Frame 0:00: heavy rain spray and mist reduce visibility; road surface wet, vehicles still moving"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:00.828Z",
+   "inputHash": "fe2faf17541a47ac"
+  },
+  "ig:Deg4iJ4tjAe": {
+   "postId": "ig:Deg4iJ4tjAe",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Khudaira",
+     "nameEn": "Khudaira",
+     "nameAr": "الخضيرة",
+     "kind": "village"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows a storm with hail and strong wind over open desert ground at Khudaira, Sharjah Emirate, on 15 October 2026.",
+    "ar": "يُظهر مقطع فيديو عاصفة مصحوبة بالبَرَد ورياح قوية فوق أرض صحراوية مفتوحة في منطقة الخضيرة بإمارة الشارقة يوم 15 أكتوبر 2026."
+   },
+   "evidence": [
+    "Caption: Violent storm with hail at Khudaira, Sharjah Emirate, Thursday 15-October-2026 at 2.50 PM",
+    "On screen: same text overlay naming Khudaira, Sharjah Emirate",
+    "Frame 0:00: hail and wind-driven precipitation over gravel desert ground with heavy haze",
+    "Frame 0:00: visibility greatly reduced, distant pole barely visible"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:07.177Z",
+   "inputHash": "31b51effb0b0c8a8"
+  },
+  "tt:7696868296380960021": {
+   "postId": "tt:7696868296380960021",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "مليحة",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video shared by Sharjah News shows a cup filled with hailstones collected in Mleiha during rain.",
+    "ar": "يُظهر مقطع نشرته الشارقة للأخبار كوبًا ممتلئًا بحبات البرد التي جُمعت في مليحة أثناء هطول الأمطار."
+   },
+   "evidence": [
+    "Caption: 'شوفوا حجم البرد في مليحة' (see the size of the hail in Mleiha)",
+    "On screen: 'شوفوا كمية البرد في مليحة' with Sharjah News logo",
+    "Frame 0:00: hand holding a cup heaped with hailstones",
+    "Frame 0:00: wet, rain-soaked ground and hazy sky in background"
+   ],
+   "confidence": 0.92,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:13.526Z",
+   "inputHash": "0a739c9f1b774f7b"
+  },
+  "ig:Deg8i6YNrid": {
+   "postId": "ig:Deg8i6YNrid",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": true,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows hailstones covering sandy ground and muddy water flowing across a dirt track in a desert area of Sharjah.",
+    "ar": "يُظهر مقطع فيديو حبات البرد تغطي أرضاً رملية ومياهاً موحلة تجري عبر طريق ترابي في منطقة صحراوية بالشارقة."
+   },
+   "evidence": [
+    "Caption: says hail fell in Sharjah",
+    "On screen: 'واخيراً نزل برد في الشارقة | SNOW IN SHARJAH'",
+    "Frame 0:03: large hailstones scattered on red sand",
+    "Frame 0:08: fast muddy water flowing across a dirt track while people watch from the edge and an SUV is parked nearby"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:01.631Z",
+   "inputHash": "2fff2190932581ef"
+  },
+  "ig:Deg9jmAtVF0": {
+   "postId": "ig:Deg9jmAtVF0",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "مليحة",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Dubai Post video shows hail and rain falling on a road in Mleiha, Sharjah, with traffic moving on a wet surface under hazy, dusty skies.",
+    "ar": "يُظهر مقطع لدبي بوست تساقط البَرَد والأمطار على طريق في مليحة بالشارقة، مع حركة مرور على سطح مبلل وأجواء مغبرة ضعيفة الرؤية."
+   },
+   "evidence": [
+    "Caption: \"بشاير الخير هلت على مليحة اليوم\" with #الشارقة #مطر",
+    "On screen: \"البَرَد في مليحة\" text overlay",
+    "Frame 0:04: hailstones visible falling in the air and on a wet highway with vehicles",
+    "Frame 0:32: hazy, dusty conditions with reduced visibility as vehicles drive"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:09.528Z",
+   "inputHash": "1ba1b38cb8ce5cf2"
+  },
+  "tt:7696940405698383125": {
+   "postId": "tt:7696940405698383125",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Chocolate shop advertisement; Abu Hail is a place name",
+   "places": [
+    {
+     "text": "Abu Hail",
+     "nameEn": "Abu Hail",
+     "nameAr": "أبو هيل",
+     "kind": "district"
+    },
+    {
+     "text": "Ajman",
+     "nameEn": "Ajman",
+     "nameAr": "عجمان",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An advertisement for kunafa chocolates in Dubai and Ajman.",
+    "ar": "إعلان عن شوكولاتة الكنافة في دبي وعجمان."
+   },
+   "evidence": [
+    "Caption: offer valid 16-18 Oct at Casabite branches"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "28a26509ee518e51"
+  },
+  "ig:DejTcUbsUuo": {
+   "postId": "ig:DejTcUbsUuo",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Al Zeed",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "Scarf",
+     "nameEn": "Scarf",
+     "nameAr": "سكارف",
+     "kind": "village"
+    },
+    {
+     "text": "Salt",
+     "nameEn": "Salt",
+     "nameAr": "سالت",
+     "kind": "village"
+    },
+    {
+     "text": "central region of Sharjah",
+     "nameEn": "Central Region, Sharjah",
+     "nameAr": "المنطقة الوسطى، الشارقة",
+     "kind": "district"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A reposted video shows hail piling up on and inside a car as residents collect hailstones during heavy rain in Sharjah's central region.",
+    "ar": "يُظهر مقطع فيديو معاد نشره تراكم البَرَد على سيارة وداخلها بينما يجمع السكان حبات البَرَد خلال أمطار غزيرة في المنطقة الوسطى بالشارقة."
+   },
+   "evidence": [
+    "Caption: heavy rain and hail hit Al Zeed, Scarf and Salt in the central region of Sharjah",
+    "Frame 0:09: a large pile of hailstones mixed with leaves on the car dashboard",
+    "Frame 0:07: hail scattered across the car interior and windshield",
+    "On screen: \"This is how Sharjah enjoys the hail\", credited to @storm_ae/IG"
+   ],
+   "confidence": 0.75,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:18.636Z",
+   "inputHash": "d061c2aa3b37db7a"
+  },
+  "ig:DejwZ-wjdWh": {
+   "postId": "ig:DejwZ-wjdWh",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Iranian handball league news; 'مدام' on screen is not Al Madam",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A sports news post about the opening week of Iran's handball league.",
+    "ar": "منشور رياضي عن الأسبوع الأول من دوري كرة اليد الإيراني."
+   },
+   "evidence": [
+    "Caption: men's handball premier league week one results",
+    "On screen: WWW.IRIHF.IR"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:24:33.459Z",
+   "inputHash": "73652eb12a959d14"
+  },
+  "ig:DejwrRiI2aC": {
+   "postId": "ig:DejwrRiI2aC",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Supermarket marketing using the word 'storm' for a sale",
+   "places": [
+    {
+     "text": "Abu Shagara",
+     "nameEn": "Abu Shagara",
+     "nameAr": "أبو شغارة",
+     "kind": "district"
+    },
+    {
+     "text": "King Faisal Street",
+     "nameEn": "King Faisal Street",
+     "nameAr": "شارع الملك فيصل",
+     "kind": "road"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Dream Land Center",
+     "nameEn": "Dream Land Center",
+     "nameAr": "مركز دريم لاند",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A shopping centre in Sharjah advertises an 'October Savings Storm' sale.",
+    "ar": "يعلن مركز تسوق في الشارقة عن تخفيضات بعنوان «عاصفة توفير أكتوبر»."
+   },
+   "evidence": [
+    "Caption: 'THE SAVINGS STORM HAS HIT DREAM LAND!'",
+    "Speech: lists product prices and discounts",
+    "On screen: 'OCTOBER SAVINGS STORM' and 'FREE PARKING'"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "0f08d658c50f9c97"
+  },
+  "ig:Dej04pxNj7E": {
+   "postId": "ig:Dej04pxNj7E",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Wadi Helo",
+     "nameEn": "Wadi Helo",
+     "nameAr": "وادي الحلو",
+     "kind": "village"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video shows a person in a raincoat holding small hailstones during a hailstorm reported at Wadi Helo, Sharjah, on 16 October 2026.",
+    "ar": "يُظهر مقطع فيديو شخصاً يرتدي معطفاً واقياً من المطر يحمل حبات برد صغيرة خلال عاصفة برَد في وادي الحلو بإمارة الشارقة في 16 أكتوبر 2026."
+   },
+   "evidence": [
+    "Caption: Hailstorm at Wadi Helo, Sharjah Emirate, Friday 16-October-2026 at 5.40 PM",
+    "Frame 0:00: Person holds several small white hailstones in an open palm",
+    "Frame 0:00: Wet paved ground, umbrella and raincoat visible",
+    "On screen: Text matches caption date and location, consistent with publication date"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:19.261Z",
+   "inputHash": "7456ba60d842dc14"
+  },
+  "ig:Dej_zqItS2G": {
+   "postId": "ig:Dej_zqItS2G",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Wadi Helo",
+     "nameEn": "Wadi Helo",
+     "nameAr": "وادي الحلو",
+     "kind": "valley"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows evening rain falling at Wadi Helo in Sharjah Emirate on 16 October 2026, with a person standing in the rain beside a parked vehicle on a wet roadside.",
+    "ar": "يُظهر مقطع فيديو هطول أمطار مسائية في وادي الحلو بإمارة الشارقة يوم 16 أكتوبر 2026، مع شخص يقف تحت المطر بجانب مركبة متوقفة على جانب طريق مبلل."
+   },
+   "evidence": [
+    "Caption: First autumn night rain at Wadi Helo, Sharjah Emirate, 16 October 2026, 6:15 PM",
+    "On screen: same text overlay naming Wadi Helo, Sharjah Emirate",
+    "Frame 0:00: visible rain streaks falling at night, wet ground surface",
+    "Frame 0:00: person in rain poncho beside a parked Ford SUV, no standing or flowing water visible"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:07.493Z",
+   "inputHash": "9693fe4324f8b4cd"
+  },
+  "tt:7697327352208002324": {
+   "postId": "tt:7697327352208002324",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Supermarket marketing using the word 'storm' for a sale",
+   "places": [
+    {
+     "text": "Abu Shagara",
+     "nameEn": "Abu Shagara",
+     "nameAr": "أبو شغارة",
+     "kind": "district"
+    },
+    {
+     "text": "King Faisal Street",
+     "nameEn": "King Faisal Street",
+     "nameAr": "شارع الملك فيصل",
+     "kind": "road"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Dream Land Center",
+     "nameEn": "Dream Land Center",
+     "nameAr": "مركز دريم لاند",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A shopping centre in Sharjah advertises an 'October Savings Storm' sale on TikTok.",
+    "ar": "يعلن مركز تسوق في الشارقة عبر تيك توك عن تخفيضات بعنوان «عاصفة توفير أكتوبر»."
+   },
+   "evidence": [
+    "Caption: 'THE SAVINGS STORM HAS HIT DREAM LAND!'",
+    "Caption: sale dates 16–22 October 2026"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "4908aa790bc17ecd"
+  },
+  "ig:DekTW-JiHC4": {
+   "postId": "ig:DekTW-JiHC4",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Musician tour video in Italy; 'rain' is an album title",
+   "places": [
+    {
+     "text": "Italy",
+     "nameEn": "Italy",
+     "nameAr": "إيطاليا",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A musician shares a behind-the-scenes tour video and promotes an album titled 'the color of rain'.",
+    "ar": "تنشر فنانة مقطعاً من كواليس جولتها الفنية وتروّج لألبوم بعنوان «لون المطر»."
+   },
+   "evidence": [
+    "Caption: album 'the color of rain' is out now",
+    "Speech: 'It's 2:30 a.m. We're in Italy.'"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "91518783a6fa4f51"
+  },
+  "ig:DemIEcfjdS8": {
+   "postId": "ig:DemIEcfjdS8",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Adventure tourism video in Jordan, outside the UAE",
+   "places": [
+    {
+     "text": "وادي منشلة",
+     "nameEn": "Wadi Manshala",
+     "nameAr": "وادي منشلة",
+     "kind": "valley"
+    },
+    {
+     "text": "مادبا",
+     "nameEn": "Madaba",
+     "nameAr": "مادبا",
+     "kind": "town"
+    },
+    {
+     "text": "الأردن",
+     "nameEn": "Jordan",
+     "nameAr": "الأردن",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An adventure tourism video from Wadi Manshala in Jordan.",
+    "ar": "مقطع عن سياحة المغامرات في وادي منشلة بالأردن."
+   },
+   "evidence": [
+    "Caption: 'وادي منشلة.. الأردن جنة'",
+    "Caption: hashtags #الاردن #مادبا #سياحة_المغامرات"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "560ce88a12e051e5"
+  },
+  "ig:DeoFwPjseJN": {
+   "postId": "ig:DeoFwPjseJN",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Iranian TV show appearance by an actor, unrelated to weather",
+   "places": [
+    {
+     "text": "ایران",
+     "nameEn": "Iran",
+     "nameAr": "إيران",
+     "kind": "country"
+    },
+    {
+     "text": "تهران",
+     "nameEn": "Tehran",
+     "nameAr": "طهران",
+     "kind": "town"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An Iranian actor thanks a Tehran TV programme for hosting him.",
+    "ar": "يشكر ممثل إيراني برنامجاً تلفزيونياً في طهران على استضافته."
+   },
+   "evidence": [
+    "Caption: guest on the programme 'Tehran Nights'",
+    "Caption: hashtag #شبکه_تهران"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "09cf98fe7e95d797"
+  },
+  "ig:Deo0yvIs4e2": {
+   "postId": "ig:Deo0yvIs4e2",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Temple visit in India; rain mention is outside the UAE",
+   "places": [
+    {
+     "text": "Ujjain",
+     "nameEn": "Ujjain",
+     "nameAr": "أوجين",
+     "kind": "town"
+    },
+    {
+     "text": "Shri Mahakaleshwar Jyotirlinga temple",
+     "nameEn": "Mahakaleshwar Jyotirlinga Temple",
+     "nameAr": "معبد ماهاكاليشوار",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An actress describes a temple visit in Ujjain, India, and mentions rain there.",
+    "ar": "تصف ممثلة زيارتها لمعبد في أوجين بالهند وتذكر هطول المطر هناك."
+   },
+   "evidence": [
+    "Caption: visit to Mahakaleshwar temple in Ujjain",
+    "Caption: 'I brought much needed rain with me'"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "a2f776dc7851ef32"
+  },
+  "ig:DepdFXTiM4N": {
+   "postId": "ig:DepdFXTiM4N",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Retail promotion using 'Savings Storm' as a sale name",
+   "places": [
+    {
+     "text": "King Faisal Street",
+     "nameEn": "King Faisal Street",
+     "nameAr": "شارع الملك فيصل",
+     "kind": "road"
+    },
+    {
+     "text": "Abu Shagara",
+     "nameEn": "Abu Shagara",
+     "nameAr": "أبو شغارة",
+     "kind": "district"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Dream Land Center",
+     "nameEn": "Dream Land Center",
+     "nameAr": "مركز دريم لاند",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Sharjah shopping centre advertises discounts of up to 75% under the name 'October Savings Storm'.",
+    "ar": "يعلن مركز تسوق في الشارقة عن خصومات تصل إلى 75% تحت اسم «عاصفة توفير أكتوبر»."
+   },
+   "evidence": [
+    "Caption: 'Catch the October Savings Storm at Dream Land Center'",
+    "Caption: valid 16 to 22 Oct. 2026"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "4f04185a3de3a8d7"
+  },
+  "ig:DeqgXOSCIi1": {
+   "postId": "ig:DeqgXOSCIi1",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Lifestyle post listing UAE hiking trails, no weather report",
+   "places": [
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    },
+    {
+     "text": "Hajar Mountains",
+     "nameEn": "Hajar Mountains",
+     "nameAr": "جبال الحجر",
+     "kind": "landmark"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Fujairah",
+     "nameEn": "Fujairah",
+     "nameAr": "الفجيرة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Khor Fakkan",
+     "nameEn": "Khor Fakkan",
+     "nameAr": "خورفكان",
+     "kind": "town"
+    },
+    {
+     "text": "Ras Al Khaimah",
+     "nameEn": "Ras Al Khaimah",
+     "nameAr": "رأس الخيمة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Hatta",
+     "nameEn": "Hatta",
+     "nameAr": "حتا",
+     "kind": "town"
+    },
+    {
+     "text": "Shawka Dam",
+     "nameEn": "Shawka Dam",
+     "nameAr": "سد الشوكة",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A content creator lists recommended hiking trails across the UAE.",
+    "ar": "يعرض صانع محتوى قائمة بمسارات المشي الموصى بها في الإمارات."
+   },
+   "evidence": [
+    "Caption: 'my top 12 trail that everyone should hike'",
+    "Caption: 'Follow for more because winter is about to start'"
+   ],
+   "confidence": 0.93,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "ad388dcf55788386"
+  },
+  "ig:DeqieihjVRV": {
+   "postId": "ig:DeqieihjVRV",
+   "relevant": true,
+   "category": "weather_context",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Sharjah TV programme clip features Prof. Hamid Majoul Al Nuaimi explaining that the 2026–27 El Niño is a natural phenomenon that may increase rainfall in some regions and cause drought in others.",
+    "ar": "مقطع من برنامج على تلفزيون الشارقة يشرح فيه الأستاذ الدكتور حميد مجول النعيمي أن ظاهرة النينو 2026-2027 ظاهرة طبيعية قد تزيد الأمطار في مناطق وتسبب الجفاف في مناطق أخرى."
+   },
+   "evidence": [
+    "Caption: هل يحمل شتاء 2026 مفاجآت؟ - programme #الأرض_الأم on Sharjah TV",
+    "Speech: El Niño 26-27 is strong and may increase rain in some areas and cause drought in others",
+    "Frame 0:09: studio interview with Maraya Sharjah logo",
+    "Frame 0:34: stock footage of cracked dry earth with Sharjah TV logo"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:16.045Z",
+   "inputHash": "ccada2f3e1abac11"
+  },
+  "ig:Deqo-3bArd2": {
+   "postId": "ig:Deqo-3bArd2",
+   "relevant": true,
+   "category": "weather_context",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A Lovin news post relays the National Center of Meteorology forecast of five days of rain, thunder, winds up to 50 km/h and blowing dust in parts of the UAE.",
+    "ar": "منشور إخباري من لوفين ينقل توقعات المركز الوطني للأرصاد بهطول أمطار ورعد لمدة خمسة أيام ورياح تصل إلى 50 كم/س وغبار في أجزاء من الإمارات."
+   },
+   "evidence": [
+    "On screen: 'BIG WEATHER UPDATE! 5 DAYS OF RAIN AND THUNDER ARE COMING TO PARTS OF THE UAE'",
+    "On screen: 'ACCORDING TO THE NCM... STRONG WINDS OF UP TO 50KM/H AND BLOWING DUST'",
+    "Frame 0:04: overcast sky over a dry parking lot with parked cars, no visible water",
+    "Caption: 'Check the NCM's latest forecast for your city'"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:24.278Z",
+   "inputHash": "c9f56f1d18412e7d"
+  },
+  "ig:DerTLKosKUs": {
+   "postId": "ig:DerTLKosKUs",
+   "relevant": true,
+   "category": "weather_context",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "مجمع الشارقة للفضاء والفلك",
+     "nameEn": "Sharjah Academy for Astronomy, Space Sciences and Technology",
+     "nameAr": "مجمع الشارقة للفضاء والفلك",
+     "kind": "landmark"
+    },
+    {
+     "text": "الخليج",
+     "nameEn": "Gulf region",
+     "nameAr": "منطقة الخليج",
+     "kind": "country"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News interviews the director of the Sharjah Academy for Astronomy, Space Sciences and Technology, who says rainfall chances in the UAE may be above normal during the 2026–2027 season, with an indirect El Niño in…",
+    "ar": "تجري الشارقة للأخبار مقابلة مع مدير مجمع الشارقة للفضاء والفلك الذي يشير إلى احتمال ارتفاع فرص الأمطار في الإمارات فوق المعدلات المألوفة خلال موسم 2026-2027 مع تأثير غير مباشر لظاهرة النينيو."
+   },
+   "evidence": [
+    "On screen: 'الأمطار تزداد بالإمارات 2026 - 2027' with Sharjah News logo",
+    "Speech: rain chances may rise above normal from November to February and may sometimes be heavy",
+    "Speech: some media and social media users are exaggerating the topic; El Niño effect on the UAE is indirect",
+    "Frame 0:59: rain drops on a car windshield with wipers on a wet mountain road"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:26.648Z",
+   "inputHash": "b97429bcc5a58f9d"
+  },
+  "ig:DerWn6lMr_2": {
+   "postId": "ig:DerWn6lMr_2",
+   "relevant": true,
+   "category": "weather_context",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    },
+    {
+     "text": "مجمع الشارقة للفضاء والفلك",
+     "nameEn": "Sharjah Academy for Astronomy, Space Sciences and Technology",
+     "nameAr": "مجمع الشارقة للفضاء والفلك",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News interviews the director of the Sharjah Academy for Astronomy and Space Sciences, who describes the coming 2026–27 El Niño as a strong natural phenomenon that may increase rainfall in some regions and cause …",
+    "ar": "تستضيف الشارقة للأخبار مدير مجمع الشارقة للفضاء والفلك الذي يصف ظاهرة النينيو المقبلة 2026-2027 بأنها ظاهرة طبيعية قوية قد تزيد الأمطار في مناطق وتسبب الجفاف في مناطق أخرى."
+   },
+   "evidence": [
+    "On screen: «النينيو» ظاهرة طبيعية وتبدو هذه المرة قوية",
+    "Speech: El Niño 26-27 looks strong, Pacific may warm by about 3 degrees",
+    "Frame 0:09: stock imagery of desert dunes and clouds, no rain or flooding shown",
+    "On screen: Sharjah News logo and 'Al Khat Al Mubashir' live-line graphic"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:14.962Z",
+   "inputHash": "6cdb0841716e6581"
+  },
+  "ig:DerZSfHFWdd": {
+   "postId": "ig:DerZSfHFWdd",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "رفادة",
+     "nameEn": "Rafada",
+     "nameAr": "رفادة",
+     "kind": "village"
+    },
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shared by Lovin Sharjah shows rain and reported hail in Rafada, south of Al Madam in Sharjah, with wet roads and reduced visibility.",
+    "ar": "يُظهر مقطع نشرته صفحة لوفين الشارقة هطول أمطار وبَرَد في منطقة رفادة جنوب المدام بالشارقة، مع طرق مبللة وانخفاض في مدى الرؤية."
+   },
+   "evidence": [
+    "Speech: describes rain on Rafada south of Al Madam and says hail is falling again",
+    "On screen: 'Rain hit parts of Sharjah today...'",
+    "Frame 0:20: heavy precipitation, possibly hail, falling over open ground near a fenced farm",
+    "Frame 0:28: cars driving with lights on a wet road in hazy rain with low visibility"
+   ],
+   "confidence": 0.75,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:27.042Z",
+   "inputHash": "d15ddfd5b7b43148"
+  },
+  "ig:Dermzjhn30d": {
+   "postId": "ig:Dermzjhn30d",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Fujairah",
+     "nameEn": "Fujairah",
+     "nameAr": "الفجيرة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news outlet reports rain and hail in Fujairah and Sharjah on 19 October, showing a camel walking on a wet road with traffic in Sharjah and mentioning an NCM outlook for above-average rainfall.",
+    "ar": "تفيد منصة إخبارية بهطول أمطار وبَرَد على الفجيرة والشارقة في 19 أكتوبر، وتعرض جملاً يسير على طريق مبتل وسط حركة السير في الشارقة، مع الإشارة إلى توقعات المركز الوطني للأرصاد بأمطار أعلى من المعدل."
+   },
+   "evidence": [
+    "On screen: 'RAINS, HAIL HIT FUJAIRAH AS CAMEL STROLLS ALONG RAIN-SOAKED SHARJAH ROAD' with Gulf Prime logo",
+    "Frame 0:00: camel walking in a lane of a wet highway beside pickup trucks with lights on",
+    "Frame 0:00: right panel shows heavy rain spray and reduced visibility on a road near mountains",
+    "Caption: NCM warned of possible above-average rainfall due to El Niño into early 2027"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:31.448Z",
+   "inputHash": "491369320ce2aa12"
+  },
+  "ig:DervtctDMvp": {
+   "postId": "ig:DervtctDMvp",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "TV show promotion; 'Madam' and 'hail' are not weather",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A streaming service promotes the final season of a TV drama.",
+    "ar": "تروّج منصة بث للموسم الأخير من مسلسل تلفزيوني."
+   },
+   "evidence": [
+    "Caption: 'The final season of #AllTheQueensMen continues Oct 21'",
+    "Speech: 'All hail the queen.'"
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "39bf32c88ac83204"
+  },
+  "ig:Detu59LNwA6": {
+   "postId": "ig:Detu59LNwA6",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Sports academy advertisement; 'Hail' is part of the place name Abu Hail",
+   "places": [
+    {
+     "text": "Abu Hail",
+     "nameEn": "Abu Hail",
+     "nameAr": "أبو هيل",
+     "kind": "district"
+    },
+    {
+     "text": "Al Nahda 2",
+     "nameEn": "Al Nahda 2",
+     "nameAr": "النهدة 2",
+     "kind": "district"
+    },
+    {
+     "text": "Al Mamzar",
+     "nameEn": "Al Mamzar",
+     "nameAr": "الممزر",
+     "kind": "district"
+    },
+    {
+     "text": "Dubai",
+     "nameEn": "Dubai",
+     "nameAr": "دبي",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A children's sports academy advertises classes at three Dubai locations.",
+    "ar": "تعلن أكاديمية رياضية للأطفال عن حصص في ثلاثة مواقع في دبي."
+   },
+   "evidence": [
+    "Caption: '3 locations across Abu Hail, Al Nahda and Al Mamzar'",
+    "Caption: lists class prices and a free trial"
+   ],
+   "confidence": 0.96,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:25:51.748Z",
+   "inputHash": "e69391b554fddc8f"
+  },
+  "ig:DetxgMYoCDD": {
+   "postId": "ig:DetxgMYoCDD",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A post reports hail falling in Al Dhaid, Sharjah, with in-car footage showing heavy rain, a wet road and reduced visibility.",
+    "ar": "يفيد منشور بتساقط البرد على الذيد في الشارقة، ويُظهر مقطع من داخل سيارة أمطاراً غزيرة وطريقاً مبللاً وضعفاً في الرؤية."
+   },
+   "evidence": [
+    "Caption: states hail is falling now on Al Dhaid in Sharjah, dated 20/10/2026",
+    "Frame 0:00: heavy rain on windscreen, wet road with a yellow bus and car ahead in misty conditions",
+    "Frame 0:02: wipers clearing water, reduced visibility on road",
+    "Frame 0:06: wet road surface, no hailstones clearly visible in frames"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:32.657Z",
+   "inputHash": "679896dfa516d93a"
+  },
+  "tt:7698717409615645970": {
+   "postId": "tt:7698717409615645970",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video filmed from a car shows heavy rain and reduced visibility on a road, with the caption reporting hail falling in Al Dhaid, Sharjah.",
+    "ar": "يُظهر مقطع مصوَّر من داخل سيارة أمطاراً غزيرة وانخفاضاً في الرؤية على طريق، ويشير التعليق إلى تساقط البرد على الذيد في الشارقة."
+   },
+   "evidence": [
+    "Caption: states hail is falling now on Al Dhaid in Sharjah, dated 20/10/2026",
+    "Frame 0:00: rain droplets on windshield and wet road surface with spray behind a yellow bus",
+    "Frame 0:00: hazy, reduced visibility ahead with car brake lights on",
+    "Frame 0:00: no hailstones clearly visible in the frame"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:20.894Z",
+   "inputHash": "1123269ee9991e3f"
+  },
+  "ig:Detx68ZuxK8": {
+   "postId": "ig:Detx68ZuxK8",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "طريق الشارقة - كلباء",
+     "nameEn": "Sharjah–Kalba Road",
+     "nameAr": "طريق الشارقة - كلباء",
+     "kind": "road"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "كلباء",
+     "nameEn": "Kalba",
+     "nameAr": "كلباء",
+     "kind": "town"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": true,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News video shows heavy rain falling on the mountainous Sharjah–Kalba road, with wet road surfaces and small streams running down rock faces.",
+    "ar": "يُظهر مقطع لقناة الشارقة للأخبار أمطاراً غزيرة على طريق الشارقة - كلباء الجبلي مع أسطح طرق مبتلة وجداول صغيرة تنساب على الصخور."
+   },
+   "evidence": [
+    "Caption: أمطار غزيرة على طريق الشارقة - كلباء",
+    "On screen: Sharjah News (الشارقة للأخبار) logo watermark",
+    "Frame 0:05: heavy rain over a mountain face with a small stream of water running down the rock",
+    "Frame 0:24: vehicles driving on a wet road with spray under heavy rain"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:34.437Z",
+   "inputHash": "a28f9f2c8a93b9e4"
+  },
+  "ig:Detyr9uo00l": {
+   "postId": "ig:Detyr9uo00l",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video posted on 20 October reports hail falling in Al Dhaid, Sharjah, showing small hailstones and rain on a wet paved surface with puddles.",
+    "ar": "يُظهر مقطع نُشر في 20 أكتوبر تساقط البرد في الذيد بالشارقة، مع حبات برد صغيرة وأمطار على سطح معبّد مبتل تتجمع فيه برك ماء."
+   },
+   "evidence": [
+    "Caption: states hail is falling now on Al Dhaid in Sharjah, dated 20/10/2026",
+    "Frame 0:00: small white hailstones scattered on wet asphalt with road markings",
+    "Frame 0:12: rain falling with shallow puddles on the paved surface, no flowing water",
+    "Frame 0:00: no people or vehicles visible"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:37.795Z",
+   "inputHash": "679896dfa516d93a"
+  },
+  "ig:Det0mnwsxvO": {
+   "postId": "ig:Det0mnwsxvO",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "المنطقة الوسطى لإمارة الشارقة",
+     "nameEn": "Central Region of Sharjah",
+     "nameAr": "المنطقة الوسطى لإمارة الشارقة",
+     "kind": "district"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News video shows hail and rain in Al Dhaid in Sharjah's Central Region, with wet roads and reduced visibility.",
+    "ar": "يُظهر مقطع من الشارقة للأخبار تساقط البَرَد والأمطار في الذيد بالمنطقة الوسطى لإمارة الشارقة مع طرق مبللة وتدنٍّ في الرؤية."
+   },
+   "evidence": [
+    "Caption: أجواء شتوية مع البرد في الذيد, posted by Sharjah News",
+    "Frame 0:00: hand holding several hailstones, standing water beside the road",
+    "Frame 0:19: hazy rain over a highway with vehicles, reduced visibility; on-screen location المنطقة الوسطى لإمارة الشارقة",
+    "Frame 0:22: rain splashing on a wet road with traffic moving"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:40.659Z",
+   "inputHash": "f0966fa049f2f7f0"
+  },
+  "ig:Det1nC0tza0": {
+   "postId": "ig:Det1nC0tza0",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Abu Dhabi News Network video shows hail and rain falling on a wet road in Al Dhaid, Sharjah.",
+    "ar": "يُظهر مقطع لشبكة أبوظبي الإخبارية تساقط البرد والأمطار على طريق مبتل في الذيد بالشارقة."
+   },
+   "evidence": [
+    "Caption: \"حالياً .. تساقط البرد على الذيد في الشارقة\" (currently hail falling on Al Dhaid in Sharjah)",
+    "On screen: Abu Dhabi News Network banner dated 20/10/2026",
+    "Frame 0:01: small white hailstones visible on wet asphalt with puddles and splashes",
+    "On screen: credit \"مركز العاصفة\" (Storm Center)"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:26.529Z",
+   "inputHash": "b876eb402da911fe"
+  },
+  "ig:Det1ZufItab": {
+   "postId": "ig:Det1ZufItab",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "مليحة",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "جسر مليحة",
+     "nameEn": "Mleiha Bridge",
+     "nameAr": "جسر مليحة",
+     "kind": "landmark"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A driver films heavy rain with small hail on a road heading towards the Mleiha bridge in Sharjah, with reduced visibility and a wet road surface.",
+    "ar": "يصوّر سائق هطول أمطار غزيرة مصحوبة ببَرَد صغير على طريق باتجاه جسر مليحة في الشارقة، مع تدنٍّ في مدى الرؤية وابتلال سطح الطريق."
+   },
+   "evidence": [
+    "Caption: says rain is falling now on Mleiha in Sharjah, dated 20/10/2026",
+    "Speech: rain currently heading towards Mleiha bridge, with small hail",
+    "Frame 0:00: heavy rain on windscreen, hazy sky and reduced visibility over the road",
+    "Frame 0:07: wet road surface with vehicles using headlights, no standing water depth visible"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:44.215Z",
+   "inputHash": "30266e0c71df0b9c"
+  },
+  "tt:7698726819167554824": {
+   "postId": "tt:7698726819167554824",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "مليحة",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Dashboard video shows rain falling on a wet road with reduced visibility, captioned as current rain in Mleiha, Sharjah.",
+    "ar": "يُظهر مقطع مصوّر من داخل سيارة هطول أمطار على طريق مبتل مع انخفاض في مدى الرؤية، ووُصف بأنه أمطار حالية في مليحة بالشارقة."
+   },
+   "evidence": [
+    "Caption: says rain is falling now on Mleiha in Sharjah, dated 20/10/2026",
+    "Frame 0:00: raindrops on windscreen and wet road surface with vehicles using headlights",
+    "Frame 0:00: hazy grey sky with reduced visibility down the road",
+    "Frame 0:00: no standing deep water or hail visible"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:43.880Z",
+   "inputHash": "d66c158f0831f9e8"
+  },
+  "ig:Det2xwQI5wj": {
+   "postId": "ig:Det2xwQI5wj",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الوشاح",
+     "nameEn": "Al Washah",
+     "nameAr": "الوشاح",
+     "kind": "district"
+    },
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "none",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows hail scattered across sandy ground with a rider and camels in dusty, windy conditions, captioned as current hail in Al Washah, Al Dhaid.",
+    "ar": "يُظهر الفيديو حبات البرد متناثرة على أرض رملية مع راكب وإبل وسط أجواء مغبرة وعاصفة، ويشير التعليق إلى تساقط البرد حالياً في الوشاح بالذيد."
+   },
+   "evidence": [
+    "Caption: states hail is falling now on Al Washah, Al Dhaid, dated 20/10/2026",
+    "Frame 0:02: white hailstones scattered over red sand with blowing dust",
+    "Frame 0:20: rider on camel covering face amid dust and wind",
+    "Speech: speaker repeatedly says 'hail' and mentions lightning"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:47.136Z",
+   "inputHash": "92d5a47edfe306c4"
+  },
+  "ig:Det28zEDFXL": {
+   "postId": "ig:Det28zEDFXL",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الذيد",
+     "nameEn": "Al Dhaid",
+     "nameAr": "الذيد",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Al Khaleej newspaper video shows hail and rain falling on a wet residential road in Al Dhaid, Sharjah.",
+    "ar": "يُظهر مقطع لصحيفة الخليج تساقط البرد والأمطار على طريق سكني مبلل في الذيد بالشارقة."
+   },
+   "evidence": [
+    "Caption: البرد يتساقط على الذيد في الشارقة",
+    "On screen: Al Khaleej logo and 'مركز العاصفة' (Storm Centre) watermark",
+    "Frame 0:03: small hailstones bouncing on a wet road surface with standing water",
+    "Frame 0:10: road covered by a shallow water layer below kerb height, no vehicles or people visible"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:31.995Z",
+   "inputHash": "2f731b0d996dfc9c"
+  },
+  "ig:Det3ZrOKULZ": {
+   "postId": "ig:Det3ZrOKULZ",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "المنطقة الوسطى",
+     "nameEn": "Central Region",
+     "nameAr": "المنطقة الوسطى",
+     "kind": "district"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video filmed from a moving car shows very heavy rain and poor visibility on a road in Al Madam, in Sharjah's Central Region.",
+    "ar": "يُظهر مقطع مصوَّر من سيارة متحركة أمطاراً غزيرة جداً وضعفاً في الرؤية على طريق في المدام بالمنطقة الوسطى في الشارقة."
+   },
+   "evidence": [
+    "Caption: says rain is falling now on Al Madam in Sharjah, dated 20/10/2026",
+    "Speech: describes very heavy rain on Al Madam in Sharjah's Central Region",
+    "Frame 0:06: wet highway with heavy rain on the windscreen and very low visibility",
+    "Frame 0:21: dense rain and haze with heavy water streaks on the side window"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:52.435Z",
+   "inputHash": "f2b8eb505457d3bb"
+  },
+  "tt:7698730776132685074": {
+   "postId": "tt:7698730776132685074",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "المنطقة الوسطى للشارجة",
+     "nameEn": "Central Region of Sharjah",
+     "nameAr": "المنطقة الوسطى",
+     "kind": "district"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video filmed from a moving vehicle shows heavy rain with dust and poor visibility in Al Madam, in Sharjah's Central Region, and the speaker mentions hailstones.",
+    "ar": "يُظهر مقطع مصوَّر من مركبة متحركة هطول أمطار غزيرة مصحوبة بالغبار وضعف الرؤية في المدام بالمنطقة الوسطى من الشارقة، ويذكر المتحدث تساقط حبات البَرَد."
+   },
+   "evidence": [
+    "Caption: says heavy rain is now falling on Al Madam in Sharjah, dated 20/10/2026",
+    "Speech: describes very heavy rain on Al Madam in Sharjah's Central Region and mentions hailstones",
+    "Frame 0:14: dense dust and rain haze sharply reduce visibility over desert terrain",
+    "Frame 0:21: wet road surface with rain and low visibility beside street lights"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:53.563Z",
+   "inputHash": "78076f3118959d91"
+  },
+  "ig:Det4yQzNHwx": {
+   "postId": "ig:Det4yQzNHwx",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "المنطقة الوسطى",
+     "nameEn": "Central Region",
+     "nameAr": "المنطقة الوسطى",
+     "kind": "district"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "unknown",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news-network repost of a user video reports very heavy rain falling on Al Madam in Sharjah's Central Region, with blurred, low-visibility footage filmed from a vehicle.",
+    "ar": "يعرض مقطع أعادت نشره شبكة إخبارية هطول أمطار غزيرة جداً على منطقة المدام في المنطقة الوسطى بالشارقة، مع لقطات ضبابية ضعيفة الرؤية مصوّرة من داخل مركبة."
+   },
+   "evidence": [
+    "On screen: \"حالياً .. هطول أمطار الخير على المدام في الشارقة\" dated 20/10/2026 under the Abu Dhabi news network banner",
+    "Speech: \"أمطار غزيرة جداً على المدام في المنطقة الوسطى للشارقة\"",
+    "Frame 0:21: hazy, whitened view of the road and street poles through a vehicle window, indicating reduced visibility",
+    "On screen: watermark \"مركز العاصفة\" showing the clip was sourced from another account"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:54.076Z",
+   "inputHash": "2a8366f07e062ddc"
+  },
+  "ig:Det8EGxI0cS": {
+   "postId": "ig:Det8EGxI0cS",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Tourism post about hiking trails, no weather report.",
+   "places": [
+    {
+     "text": "Khor Fakkan",
+     "nameEn": "Khor Fakkan",
+     "nameAr": "خورفكان",
+     "kind": "town"
+    },
+    {
+     "text": "Kalba",
+     "nameEn": "Kalba",
+     "nameAr": "كلباء",
+     "kind": "town"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "wadi Shees",
+     "nameEn": "Wadi Shees",
+     "nameAr": "وادي شيص",
+     "kind": "valley"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A tourism post lists hiking trails in Khor Fakkan and Kalba.",
+    "ar": "منشور سياحي يعرض مسارات للمشي في خورفكان وكلباء."
+   },
+   "evidence": [
+    "Caption: 6 beautiful hiking trails in Sharjah Emirate",
+    "Caption: hashtags #visitsharjah #uaehiking"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:02.081Z",
+   "inputHash": "6f11780dad5d92b5"
+  },
+  "ig:Det9bklqHxW": {
+   "postId": "ig:Det9bklqHxW",
+   "relevant": true,
+   "category": "hail",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "المدام",
+     "nameEn": "Al Madam",
+     "nameAr": "المدام",
+     "kind": "town"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "none",
+    "hail": true,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows small hailstones scattered on a desert highway near Al Madam, Sharjah, with traffic still moving under a hazy, stormy sky.",
+    "ar": "يُظهر مقطع فيديو حبات برد صغيرة متناثرة على طريق صحراوي قرب المدام في الشارقة مع استمرار حركة المركبات تحت سماء عاصفة ضبابية."
+   },
+   "evidence": [
+    "Caption: says hail fell without rain in Al Madam, Sharjah, dated 20/10/2026",
+    "Frame 0:01: small white hailstones scattered across dry asphalt beside red sand dunes",
+    "Frame 0:09: yellow bus and SUV driving on the hail-covered road under a hazy sky",
+    "Frame 0:12: road surface dotted with hail, no standing or flowing water visible"
+   ],
+   "confidence": 0.9,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:37.801Z",
+   "inputHash": "dd055e2c33c7bd27"
+  },
+  "ig:DeuCzJiNjXi": {
+   "postId": "ig:DeuCzJiNjXi",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Shawka",
+     "nameEn": "Shawka",
+     "nameAr": "شوكة",
+     "kind": "village"
+    },
+    {
+     "text": "Hamda",
+     "nameEn": "Hamda",
+     "nameAr": "حمدة",
+     "kind": "village"
+    },
+    {
+     "text": "Maleha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Mahafiz",
+     "nameEn": "Mahafiz",
+     "nameAr": "محافظ",
+     "kind": "village"
+    },
+    {
+     "text": "Al Faya",
+     "nameEn": "Al Faya",
+     "nameAr": "الفاية",
+     "kind": "village"
+    },
+    {
+     "text": "Madam",
+     "nameEn": "Madam",
+     "nameAr": "مدام",
+     "kind": "town"
+    },
+    {
+     "text": "Margham",
+     "nameEn": "Margham",
+     "nameAr": "مرغم",
+     "kind": "village"
+    },
+    {
+     "text": "Nazwa",
+     "nameEn": "Nazwa",
+     "nameAr": "نزوى",
+     "kind": "village"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A storm-chase video shows heavy rain falling on a road, with the caption listing Shawka, Hamda, Mleiha, Mahafiz, Al Faya, Madam, Margham and Nazwa on the evening of 20 October 2026.",
+    "ar": "يُظهر مقطع لمطاردة العاصفة أمطاراً غزيرة تهطل على طريق، ويذكر التعليق مناطق شوكة وحمدة ومليحة ومحافظ والفاية ومدام ومرغم ونزوى مساء 20 أكتوبر 2026."
+   },
+   "evidence": [
+    "Caption: storm chase listing Shawka, Hamda, Maleha, Mahafiz, Al Faya, Madam, Margham and Nazwa, Tuesday 20 October 2026 evening",
+    "Frame 0:00: dense raindrops splashing on a wet asphalt road with yellow lane markings",
+    "Frame 0:00: spray and haze over the road and shrubs reduce visibility",
+    "On screen: date text matches the posting date of 20 October"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:31:02.778Z",
+   "inputHash": "3df50f471d18ad7a"
+  },
+  "ig:DeuOlOQNpv3": {
+   "postId": "ig:DeuOlOQNpv3",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Mahafiz",
+     "nameEn": "Mahafiz",
+     "nameAr": "محافيظ",
+     "kind": "village"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Video shows rain falling on a wet reddish ground with small puddles and a camel walking nearby in Mahafiz, Sharjah, on 20 October 2026.",
+    "ar": "يُظهر مقطع فيديو هطول الأمطار على أرض رطبة مع برك صغيرة وجمل يسير بالقرب منها في منطقة محافيظ بإمارة الشارقة يوم 20 أكتوبر 2026."
+   },
+   "evidence": [
+    "On screen: \"Rain and camel, Mahafiz, Sharjah Emirate, Tuesday 20-October-2026 at 4.30 PM\"",
+    "Frame 0:00: visible rain streaks and wet ground with small puddles",
+    "Frame 0:00: a camel walking near shrubs and hills, no people or vehicles visible",
+    "Caption: date matches posting date of 20 Oct"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:59.739Z",
+   "inputHash": "d8a56cc6db08f130"
+  },
+  "tt:7699030833721593108": {
+   "postId": "tt:7699030833721593108",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Restaurant promotion, unrelated to weather.",
+   "places": [
+    {
+     "text": "Mahatta",
+     "nameEn": "Al Mahatta",
+     "nameAr": "المحطة",
+     "kind": "district"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A food vlog promotes a vegetarian restaurant in Sharjah.",
+    "ar": "مدونة طعام تروّج لمطعم نباتي في الشارقة."
+   },
+   "evidence": [
+    "Caption: FREE momos when you spend just AED 40",
+    "Caption: hashtags #sharjahfood #sharjahrestaurants"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:02.081Z",
+   "inputHash": "ef679aecb0b8c1eb"
+  },
+  "ig:Dev77P7tJ6s": {
+   "postId": "ig:Dev77P7tJ6s",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "Maleha",
+     "nameEn": "Maleha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Sharjah Emirate",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "UAE",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات العربية المتحدة",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video shows an open classic jeep driving through rain on a wet road in Maleha, Sharjah, on 20 October 2026.",
+    "ar": "يُظهر مقطع فيديو سيارة جيب كلاسيكية مكشوفة تسير تحت المطر على طريق مبتل في مليحة بالشارقة يوم 20 أكتوبر 2026."
+   },
+   "evidence": [
+    "Caption: storm chasing in Maleha, Sharjah Emirate, dated Tuesday 20 October 2026",
+    "Frame 0:00: rain falling and spray visible on a wet asphalt road",
+    "Frame 0:00: passenger wearing a yellow rain poncho in an open jeep",
+    "On screen: 'Storm chasing with a classic 1980 Mitsubishi Willys Jeep'"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:59.664Z",
+   "inputHash": "a8c2fcb13d97f48c"
+  },
+  "yt:ScGKv1dvXUY": {
+   "postId": "yt:ScGKv1dvXUY",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Video game car-crash gameplay, unrelated to weather.",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A YouTuber plays a car-crash video game.",
+    "ar": "صانع محتوى يلعب لعبة فيديو لحوادث السيارات."
+   },
+   "evidence": [
+    "Speech: هنلعب مع بعض لعبة الحوادث",
+    "On screen: Car Jump Arena"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:02.081Z",
+   "inputHash": "856d220148597535"
+  },
+  "ig:Dey2nZWjbXj": {
+   "postId": "ig:Dey2nZWjbXj",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Book fair promotion; Sandstorm and Little Storm are publisher names.",
+   "places": [
+    {
+     "text": "Al Jada",
+     "nameEn": "Aljada",
+     "nameAr": "الجادة",
+     "kind": "district"
+    },
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A publisher promotes its presence at a comics and children's book event in Aljada, Sharjah.",
+    "ar": "ناشر يروّج لمشاركته في فعالية للقصص المصورة وكتب الأطفال في الجادة بالشارقة."
+   },
+   "evidence": [
+    "Caption: comics and children’s books from Sandstorm and Little Storm",
+    "Caption: Al Jada, Sharjah, 22–25 October 2026"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:02.081Z",
+   "inputHash": "73b00e4c6ef707ca"
+  },
+  "ig:De0_XPqoLV3": {
+   "postId": "ig:De0_XPqoLV3",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Tourism/lifestyle post; 'Rain Room' is an art attraction.",
+   "places": [
+    {
+     "text": "Sharjah",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "Al Noor Island",
+     "nameEn": "Al Noor Island",
+     "nameAr": "جزيرة النور",
+     "kind": "landmark"
+    },
+    {
+     "text": "Mleiha",
+     "nameEn": "Mleiha",
+     "nameAr": "مليحة",
+     "kind": "town"
+    },
+    {
+     "text": "Khor Fakkan Amphitheatre and Waterfall",
+     "nameEn": "Khor Fakkan Amphitheatre and Waterfall",
+     "nameAr": "مدرج وشلال خورفكان",
+     "kind": "landmark"
+    }
+   ],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A travel post lists attractions and experiences in Sharjah.",
+    "ar": "منشور سياحي يستعرض معالم وتجارب في الشارقة."
+   },
+   "evidence": [
+    "Caption: 5 Things I loved about visiting Sharjah",
+    "Caption: Rain Room @sharjahart"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:02.081Z",
+   "inputHash": "ee2aec50ff773c7a"
+  },
+  "ig:De1UNKeIQSB": {
+   "postId": "ig:De1UNKeIQSB",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "TV show birthday post; 'flood' and 'Madam' are not weather references",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An entertainment show post celebrating a producer's birthday, unrelated to weather.",
+    "ar": "منشور لبرنامج ترفيهي يحتفل بعيد ميلاد منتجة، ولا علاقة له بالطقس."
+   },
+   "evidence": [
+    "Caption: 'Let's flood the comment section with birthday wishes'",
+    "Caption: '#themorayoshow #birthdaygirl'"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:30.583Z",
+   "inputHash": "a18c710c2339757e"
+  },
+  "tt:7699806383998323986": {
+   "postId": "tt:7699806383998323986",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A video filmed from inside a vehicle shows rain on the windscreen and a wet road in Sharjah on 23 October.",
+    "ar": "يُظهر مقطع مصوَّر من داخل مركبة هطول الأمطار على الزجاج الأمامي وطريقاً مبللاً في الشارقة يوم 23 أكتوبر."
+   },
+   "evidence": [
+    "Caption: says rain is falling now on 'محافز' in Sharjah, dated 23oct26",
+    "Frame 0:00: dense raindrops on the windscreen with an overcast sky",
+    "Frame 0:00: wet asphalt road with a yellow edge line and a vehicle on the left",
+    "Frame 0:00: no standing water, hail or flowing water visible"
+   ],
+   "confidence": 0.8,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:30:47.538Z",
+   "inputHash": "7462933ddc75e568"
+  },
+  "ig:De1ggsSH2_7": {
+   "postId": "ig:De1ggsSH2_7",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Cricket merchandise marketing; 'Desert Storm' refers to a 1998 cricket innings in Sharjah",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A marketing post for cricket memorabilia commemorating a 1998 innings in Sharjah, unrelated to weather.",
+    "ar": "منشور تسويقي لمقتنيات رياضية تخلد ذكرى مباراة كريكيت في الشارقة عام 1998، ولا علاقة له بالطقس."
+   },
+   "evidence": [
+    "Caption: 'THE DESERT STORM pays tribute to the Master Blaster's iconic April '98 moment'",
+    "Caption: 'TENxYOU Locker Room Editions'"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:30.583Z",
+   "inputHash": "7bf6f73cbbdc648b"
+  },
+  "ig:De4MLmbslvM": {
+   "postId": "ig:De4MLmbslvM",
+   "relevant": true,
+   "category": "official_update",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "شارع الوطن",
+     "nameEn": "Al Watan Road",
+     "nameAr": "شارع الوطن",
+     "kind": "road"
+    },
+    {
+     "text": "الشارقة",
+     "nameEn": "Sharjah",
+     "nameAr": "الشارقة",
+     "kind": "emirate"
+    },
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Sharjah News posted video of heavy rain falling on Al Watan Road, showing a wet road surface and reduced visibility.",
+    "ar": "نشرت الشارقة للأخبار مقطعاً يُظهر أمطاراً غزيرة على شارع الوطن مع طريق مبتل وتراجع في مدى الرؤية."
+   },
+   "evidence": [
+    "Caption: أمطار غزيرة على شارع الوطن (heavy rain on Al Watan Road)",
+    "On screen: Sharjah News (الشارقة للأخبار) logo with text 'heavy rain on Al Watan Road'",
+    "Frame 0:00: wet road with rain drops, cars driving with headlights on in hazy conditions",
+    "Frame 0:00: rocky mountain beside the road, distant view obscured by rain"
+   ],
+   "confidence": 0.88,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:31:08.883Z",
+   "inputHash": "037a490f60401bde"
+  },
+  "tt:7700233721630461192": {
+   "postId": "tt:7700233721630461192",
+   "relevant": true,
+   "category": "heavy_rain",
+   "noiseReason": null,
+   "places": [
+    {
+     "text": "الإمارات",
+     "nameEn": "United Arab Emirates",
+     "nameAr": "الإمارات",
+     "kind": "country"
+    },
+    {
+     "text": "طريق وادي الحلو كلباء",
+     "nameEn": "Wadi Al Helo – Kalba Road",
+     "nameAr": "طريق وادي الحلو كلباء",
+     "kind": "road"
+    },
+    {
+     "text": "وادي الحلو",
+     "nameEn": "Wadi Al Helo",
+     "nameAr": "وادي الحلو",
+     "kind": "village"
+    },
+    {
+     "text": "كلباء",
+     "nameEn": "Kalba",
+     "nameAr": "كلباء",
+     "kind": "town"
+    },
+    {
+     "text": "المنطقة الشرقية",
+     "nameEn": "Eastern Region",
+     "nameAr": "المنطقة الشرقية",
+     "kind": "district"
+    }
+   ],
+   "severity": "medium",
+   "observed": {
+    "waterDepth": "wet_surface",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": true,
+    "roadAffected": true
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "Dashcam-style video shows rain falling on the Wadi Al Helo–Kalba road in the Eastern Region, with a wet road surface and traffic moving with headlights on.",
+    "ar": "يُظهر مقطع مصوَّر من داخل سيارة هطول الأمطار على طريق وادي الحلو كلباء في المنطقة الشرقية، مع طريق مبتل وحركة مرور بأضواء مضاءة."
+   },
+   "evidence": [
+    "Caption: says rain is falling now on the Wadi Al Helo Kalba road in the Eastern Region, dated 24/10/2026",
+    "Frame 0:00: wet road surface with reflections and raindrops on the windscreen",
+    "Frame 0:00: overcast sky and haze reducing visibility, with mountains in the background",
+    "Frame 0:00: vehicles moving with lights on, no standing or flowing water visible"
+   ],
+   "confidence": 0.85,
+   "stage": "vision",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:31:06.549Z",
+   "inputHash": "a6908af484fa51a2"
+  },
+  "ig:De6j113i6SQ": {
+   "postId": "ig:De6j113i6SQ",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Persian-language fiction serial, unrelated to weather",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "An episode of a Persian-language fiction story with no weather content.",
+    "ar": "جزء من قصة خيالية باللغة الفارسية لا يتضمن أي محتوى عن الطقس."
+   },
+   "evidence": [
+    "Caption: 'پارت 558' fiction narrative set in a hotel"
+   ],
+   "confidence": 0.98,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:30.583Z",
+   "inputHash": "816643223371bedf"
+  },
+  "ig:De7Bl7KDeDi": {
+   "postId": "ig:De7Bl7KDeDi",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Unrelated news about voting for the Emirati Children's Parliament",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A news post announcing the start of voting for the Emirati Children's Parliament, unrelated to weather.",
+    "ar": "منشور إخباري يعلن انطلاق التصويت لانتخابات البرلمان الإماراتي للطفل، ولا علاقة له بالطقس."
+   },
+   "evidence": [
+    "Caption: 'يعلن انطلاق التصويت لانتخابات البرلمان الإماراتي للطفل'",
+    "On screen: 'شبكة أبوظبى الإخبارية | 25/10/2026'"
+   ],
+   "confidence": 0.97,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:30.583Z",
+   "inputHash": "3a5bef5372d79cee"
+  },
+  "ig:De7gDVTEqJW": {
+   "postId": "ig:De7gDVTEqJW",
+   "relevant": false,
+   "category": "noise",
+   "noiseReason": "Theatre season recap outside the UAE; lightning delay mentioned is not UAE weather",
+   "places": [],
+   "severity": "low",
+   "observed": {
+    "waterDepth": "none",
+    "hail": false,
+    "flowingWater": false,
+    "peopleAtRisk": false,
+    "poorVisibility": false,
+    "roadAffected": false
+   },
+   "possibleRepost": false,
+   "repostReason": null,
+   "claim": null,
+   "question": null,
+   "summary": {
+    "en": "A performer's recap of a summer theatre season abroad, unrelated to UAE weather.",
+    "ar": "ملخص لموسم مسرحي صيفي خارج الإمارات يقدمه أحد المؤدين، ولا علاقة له بطقس الإمارات."
+   },
+   "evidence": [
+    "Caption: 'Did you make it to @tuacahn.amp this summer?'",
+    "Caption: 'With a two hour lightning delay' referring to a theatre show"
+   ],
+   "confidence": 0.95,
+   "stage": "text",
+   "model": "claude-opus-5-5",
+   "analyzedAt": "2026-10-31T07:27:30.583Z",
+   "inputHash": "3d027ecaca6a6d4c"
+  }
+ }
+}

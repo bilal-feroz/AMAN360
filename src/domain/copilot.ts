@@ -36,7 +36,9 @@ export interface ActionItem {
     | "open_guidance"
     | "open_responses"
     | "fly_zone"
-    | "fly_closure";
+    | "fly_closure"
+    | "open_signals"
+    | "open_replay";
   target: string;
   label: string;
   allowed: boolean;
@@ -104,11 +106,22 @@ export interface ChecksProps {
   items: CheckItem[];
 }
 
+export interface SignalsProps {
+  dataset: "scenario" | "replay";
+  headline: string;
+  source: string;
+  synthetic: boolean;
+  funnel: { found: number; relevant: number; noise: number; located: number; hotspots: number; corroborated: number; viewedFrames: number };
+  hotspots: { id: string; label: string; posts: number; sources: number; corroborated: boolean; status: string; insideZone: boolean | null; categories: string[]; thumb: string | null }[];
+  rumours: { id: string; claim: string; posts: number; status: string }[];
+  questions: { question: string; posts: number; answerId: string | null }[];
+}
+
 export interface ActionsProps {
   items: ActionItem[];
 }
 
-export type ComponentKind = "overview" | "cases" | "trace" | "guidance" | "checks" | "actions";
+export type ComponentKind = "overview" | "cases" | "trace" | "guidance" | "checks" | "actions" | "signals";
 
 export type ComponentProps =
   | { kind: "overview"; props: OverviewProps }
@@ -116,7 +129,8 @@ export type ComponentProps =
   | { kind: "trace"; props: TraceProps }
   | { kind: "guidance"; props: GuidanceProps }
   | { kind: "checks"; props: ChecksProps }
-  | { kind: "actions"; props: ActionsProps };
+  | { kind: "actions"; props: ActionsProps }
+  | { kind: "signals"; props: SignalsProps };
 
 export type CopilotEvent =
   | { t: "meta"; mode: CopilotMode; model: string | null; label: string; note?: string }

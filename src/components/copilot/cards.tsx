@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { motion } from "motion/react";
 import {
+  Radar,
   ArrowUpRight,
   Check,
   CircleDashed,
@@ -20,7 +21,7 @@ import {
   TriangleAlert,
   X,
 } from "lucide-react";
-import type { ActionItem, CasesProps, CheckItem, CheckStatus, ComponentKind, CopilotMode, GraphRow, GuidanceProps, OverviewProps, Tone, TraceProps } from "@/domain/copilot";
+import type { ActionItem, CasesProps, CheckItem, CheckStatus, ComponentKind, CopilotMode, GraphRow, GuidanceProps, OverviewProps, SignalsProps, Tone, TraceProps } from "@/domain/copilot";
 import type { Part } from "@/lib/copilot-client";
 import { useUi } from "@/lib/ui-store";
 import { cn } from "@/components/ui";
@@ -36,6 +37,7 @@ const KIND_ICON: Record<ComponentKind, ReactNode> = {
   guidance: <MessageSquareText size={14} />,
   checks: <ListChecks size={14} />,
   actions: <Flag size={14} />,
+  signals: <Radar size={14} />,
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -236,6 +238,14 @@ function useRunAction() {
       case "fly_closure":
         ui.flyTo({ kind: "closure" });
         return;
+      case "open_signals":
+      case "open_replay": {
+        const dataset = a.kind === "open_replay" ? "replay" : "scenario";
+        ui.setSignals({ dataset, postId: null, hotspotId: null });
+        ui.setView("signals");
+        ui.flyTo(dataset === "replay" ? { kind: "replay" } : { kind: "zone" });
+        return;
+      }
     }
   };
 }
@@ -584,5 +594,70 @@ export function ComponentPart({ part, lang, mode }: { part: Extract<Part, { type
       return <ChecksCard items={d.props.items} checks={part.checks} label={part.label} lang={lang} />;
     case "actions":
       return <ActionsRow items={d.props.items} />;
+    case "signals":
+      return <SignalsCard p={d.props} label={part.label} lang={lang} />;
   }
+}
+
+function SignalsCard({ p, label, lang }: { p: SignalsProps; label: string; lang: Lang }) {
+  const f = p.funnel;
+  return (
+    <Shell
+      kind="signals"
+      label={label}
+      aside={<span className={cn("rounded-full px-2 py-[1px] text-[10.5px] font-semibold", p.synthetic ? "bg-amber-soft text-amber-ink" : "bg-violet-soft text-violet-ink")}>{p.synthetic ? L(lang, "Synthetic", "اصطناعي") : L(lang, "Real posts", "منشورات حقيقية")}</span>}
+      footer={
+        <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
+          <ShieldCheck size={11} className="mt-[2px] shrink-0" />
+          {L(lang, "Unverified. Places come from OpenStreetMap, not the model. Hotspots can only become verification requests.", "غير متحقق منها. الأماكن من OpenStreetMap وليس من النموذج. لا تصبح البؤر إلا طلبات تحقق.")}
+        </p>
+      }
+    >
+      <p className="text-[12.5px] leading-[1.5] text-ink">{p.headline}</p>
+      <div className="mt-2 grid grid-cols-4 gap-1.5 text-center">
+        {[
+          [f.found, L(lang, "posts", "منشور")],
+          [f.relevant, L(lang, "relevant", "ذو صلة")],
+          [f.hotspots, L(lang, "hotspots", "بؤر")],
+          [f.corroborated, L(lang, "corroborated", "مؤكدة")],
+        ].map(([n, t]) => (
+          <div key={String(t)} className="rounded-lg bg-surface-2 px-1 py-1.5">
+            <div className="tnum text-[15px] font-semibold text-ink">{n}</div>
+            <div className="text-[10px] text-muted">{t}</div>
+          </div>
+        ))}
+      </div>
+      <ul className="mt-2.5 space-y-1.5">
+        {p.hotspots.map((h, i) => (
+          <motion.li key={h.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, ease, delay: 0.05 + i * 0.07 }} className="flex items-center gap-2 rounded-lg p-1.5 ring-1 ring-line">
+            {h.thumb ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={h.thumb} alt="" className="h-8 w-8 rounded-md object-cover" />
+            ) : (
+              <span className="grid h-8 w-8 place-items-center rounded-md bg-violet-soft text-violet"><Radar size={14} /></span>
+            )}
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[12.5px] font-semibold text-ink">{h.label}</div>
+              <div className="text-[10.5px] text-muted tnum">{h.posts} {L(lang, "posts", "منشورات")} · {h.sources} {L(lang, "sources", "مصادر")}{h.insideZone === false ? ` · ${L(lang, "outside verified zone", "خارج المنطقة الموثقة")}` : ""}</div>
+            </div>
+            <span className={cn("rounded-full px-1.5 py-[1px] text-[10px] font-semibold", h.corroborated ? "bg-ink text-white" : "bg-surface-2 text-muted")}>{h.corroborated ? L(lang, "Corroborated", "مؤكدة") : L(lang, "1 source", "مصدر واحد")}</span>
+          </motion.li>
+        ))}
+      </ul>
+      {p.rumours.length > 0 && (
+        <div className="mt-2.5 space-y-1">
+          {p.rumours.map((r) => (
+            <div key={r.id} className="flex items-center gap-2 rounded-lg bg-amber-soft/70 px-2 py-1.5 text-[11.5px]">
+              <span className="font-semibold text-amber-ink">{L(lang, "Rumour", "شائعة")}</span>
+              <span className="min-w-0 flex-1 truncate text-ink">“{r.claim}”</span>
+              <span className="tnum text-muted">{r.posts}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="mt-2.5">
+        <ActionButton a={{ kind: p.dataset === "replay" ? "open_replay" : "open_signals", target: "", label: L(lang, "Open social intelligence", "فتح رصد التواصل"), allowed: true }} />
+      </div>
+    </Shell>
+  );
 }

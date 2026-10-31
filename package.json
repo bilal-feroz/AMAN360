@@ -20,7 +20,12 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "screenshots": "playwright test tests/e2e/screenshots.spec.ts --project=chromium",
-    "evaluate": "tsx --conditions=react-server scripts/evaluate.mts"
+    "evaluate": "tsx --conditions=react-server scripts/evaluate.mts",
+    "data:gazetteer": "node scripts/build-gazetteer.mjs",
+    "data:social": "node --env-file=.env.local scripts/fetch-social.mjs",
+    "data:replay": "tsx --env-file=.env.local --conditions=react-server scripts/build-replay.mts",
+    "data:scenario-signals": "tsx --env-file=.env.local --conditions=react-server scripts/build-scenario-signals.mts",
+    "data:triage": "tsx --env-file=.env.local --conditions=react-server scripts/build-triage-cache.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.137.0",

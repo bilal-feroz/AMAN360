@@ -75,6 +75,39 @@ The copilot explains; it does not decide or act.
   rule-based fallback never shows "thinking", and a failed API call is shown as a failed step.
 - **No paid calls without a key.** The key stays server-side in `.env.local`, which git ignores.
 
+### Social intelligence (`src/domain/signals.ts`, `src/server/signals/`)
+
+Public posts are the least trustworthy input in the system, so they get the tightest boundary.
+
+| Step | Who does it | Guard |
+|---|---|---|
+| Read a post or video and fill a fixed form (category, places *named*, what is visible, rumour/question) | Claude | Structured output validated with Zod; post text passed inside `<post>` as untrusted data |
+| Turn a place name into coordinates | Code | OpenStreetMap gazetteer lookup (exact → alias → bounded fuzzy match, kind-aware, distance-checked). The model never outputs a coordinate; emirate/country mentions are never pinned |
+| Group reports into hotspots | Code | Only impact categories; reposts, rumours and context excluded; *corroborated* requires ≥ 2 independent sources |
+| Act on a hotspot | A human | The only action is **Request verification**. Social signals cannot create, widen or change an alert |
+| Answer a rumour | A human | Approved clarification template; only the gazetteer place name is filled in — the model's wording is never published |
+| Live re-run | Analyst / officer | Rate-limited, audited, labelled *live*; the recorded reading stays available |
+
+Unverified intelligence is drawn in **violet** everywhere (map, panel, copilot), never in the coral or
+teal used for verified hazards and decisions.
+
+### AI triage of help requests (`src/server/services/triage.ts`)
+
+The keyword rule always runs; Claude's reading runs next to it. **Queue priority = the higher of the
+two**: the model can raise a case to P1 and can never lower one (unit-tested). Triage orders the human
+queue only — it never decides a response and is never shown to the citizen. Without a model, the rule
+result stands and the UI says "Keyword triage".
+
+### Red-team stress test (`src/domain/comms/redteam.ts`)
+
+Eleven typical unsafe model edits — invented evacuation, "help is on the way", a detour, a new phone
+number, a changed time, escalated severity, a link, medical advice, a dropped step, a blurred locked
+place name, the wrong language — are applied to every approved message (2 actions × 2 languages ×
+3 variants) and must all be blocked: **132 / 132** in the unit suite. Writing this suite exposed a real
+gap: Arabic first-aid advice (*"ضع رباطًا ضاغطًا إذا كان هناك نزيف"*) was not caught. The medical
+pattern now covers bandaging, bleeding, splints and first-aid wording in both languages. Operators can
+run the same attacks live from the guidance panel.
+
 ## 4. The validator (`src/domain/comms/validator.ts`)
 
 Every candidate — template-selected or LLM-generated — passes:
@@ -117,6 +150,9 @@ a fake provider that misbehaves (`tests/unit/llm-pipeline.test.ts`).
 | Duplicate tap / retry | Idempotency key; duplicate "safe" recorded once |
 | Server restart / reload | State, schedule and audit persist in SQLite |
 | Basemap offline | Cached tiles + bundled city pack; 2D fallback without WebGL |
+| Social post names an unknown or far-away place | Not placed on the map; never guessed |
+| Model unavailable for triage / post reading | Keyword rules / recorded readings, labelled as such |
+| A real post is deleted by its author | Embed stops playing; the recorded frames and reading remain |
 
 ## 7. Before any real-world use
 

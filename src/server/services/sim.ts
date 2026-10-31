@@ -23,6 +23,8 @@ export async function processDue(now = Date.now()): Promise<number> {
         if (item.kind === "deliver") deliver(item.payload as { messageId: string; attempt: number }, item.dueAt);
         else if (item.kind === "sim_response") await simResponse(item.payload as { messageId: string }, item.dueAt);
         else if (item.kind === "flag_no_response") flagNoResponse(item.payload as { incidentId: string });
+        else if (item.kind === "signal_verify") (await import("../signals/service")).completeVerification(item.payload as { dataset: "scenario"; hotspotId: string });
+        else if (item.kind === "case_triage") await (await import("./triage")).triageCase(item.payload as { caseId: string });
       } catch (e) {
         console.warn(`[sim] ${item.kind} failed:`, (e as Error).message);
       }

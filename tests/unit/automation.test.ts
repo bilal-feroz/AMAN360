@@ -6,7 +6,7 @@ import path from "node:path";
 process.env.AMAN_DATA_DIR = mkdtempSync(path.join(tmpdir(), "aman-test-"));
 delete process.env.ANTHROPIC_API_KEY;
 
-const { useMemoryDb } = await import("@/server/db");
+const { useMemoryDb, db } = await import("@/server/db");
 const { resetScenario } = await import("@/server/services/reset");
 const wf = await import("@/server/services/workflow");
 const auto = await import("@/server/services/automation");
@@ -56,6 +56,27 @@ describe("AMAN agent", () => {
     const [a, b] = await Promise.all([auto.runAgent(ID), auto.runAgent(ID, OP)]);
     expect(a).toBe(b);
     expect(store.auditLog.recent(200).filter((e) => e.type === "agent.ready")).toHaveLength(1);
+  });
+
+  it("a run that outlives a reset writes nothing into the new scenario", async () => {
+    const old = auto.runAgent(ID); // stops at its first await (drafting the message)
+    resetScenario("test"); // the operator resets meanwhile
+    await old;
+    expect(store.incidents.get(ID)!.state).toBe("draft");
+    expect(store.guidance.forIncident(ID)).toHaveLength(0);
+    expect(auto.automationStatus(ID).agent.status).toBe("scheduled");
+    // The new scenario's own run starts fresh instead of reusing the old one, and prepares properly.
+    expect((await auto.runAgent(ID)).status).toBe("done");
+    expect(store.messages.forIncident(ID)).toHaveLength(120);
+  });
+
+  it("refuses to send when there is nothing to send", async () => {
+    wf.verifySource(ID, OP);
+    wf.assessImpact(ID, OP);
+    await wf.prepareGuidance(ID, OP);
+    wf.approveGuidance(ID, OP);
+    db().prepare("DELETE FROM messages").run();
+    expect(() => wf.publish(ID, OP)).toThrow(/No approved messages/);
   });
 
   it("approve & send is a single human decision", async () => {

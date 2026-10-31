@@ -69,20 +69,25 @@ export function scheduleAgent(incidentId: string, delayMs = AGENT_DELAY_MS) {
   writeMeta("agent", { status: "scheduled", dueAt } satisfies AgentState);
 }
 
-const g = globalThis as unknown as { __amanAgent?: Promise<AgentState> | null };
+const g = globalThis as unknown as { __amanAgent?: { epoch: string | null; run: Promise<AgentState> } | null };
 
-/** Runs the preparation pipeline once; concurrent callers share the same run. */
+/** Runs the preparation pipeline once per scenario; concurrent callers share the same run. */
 export function runAgent(incidentId: string, requestedBy?: string): Promise<AgentState> {
-  if (g.__amanAgent) return g.__amanAgent;
+  const epoch = getMeta("agent_epoch");
+  if (g.__amanAgent && g.__amanAgent.epoch === epoch) return g.__amanAgent.run;
   const run = pipeline(incidentId, requestedBy).finally(() => {
-    g.__amanAgent = null;
+    if (g.__amanAgent?.run === run) g.__amanAgent = null;
   });
-  g.__amanAgent = run;
+  g.__amanAgent = { epoch, run };
   return run;
 }
 
 async function pipeline(incidentId: string, requestedBy?: string): Promise<AgentState> {
+  // A run that outlives a reset belongs to the old scenario: it must not write into the new one.
+  const epoch = getMeta("agent_epoch");
+  const stale = () => getMeta("agent_epoch") !== epoch;
   const stop = (status: "stopped" | "failed", reason: string, extra: Partial<AgentState> = {}) => {
+    if (stale()) return { status: "idle" } as AgentState;
     const state: AgentState = { ...extra, status, reason, finishedAt: new Date().toISOString() };
     writeMeta("agent", state);
     audit(AGENT_ACTOR, status === "failed" ? "agent.failed" : "agent.stopped", `AMAN agent stopped: ${reason}`, { entity: incidentId });
@@ -115,6 +120,7 @@ async function pipeline(incidentId: string, requestedBy?: string): Promise<Agent
     if (["assessed", "approved"].includes(incident.state) && !store.guidance.forIncident(incidentId).length) {
       await prepareGuidance(incidentId, AGENT_ACTOR, { templatesOnly: autoSendOn() });
     }
+    if (stale()) return { status: "idle" };
     const ms = Date.now() - t0;
     const drafts = store.guidance.forIncident(incidentId);
     const people = store.assessments.latest(incidentId)?.summary.send ?? 0;
@@ -233,6 +239,7 @@ export async function setAutomationPolicy(incidentId: string, operatorId: string
 
 /** Called by reset: every drill starts with the agent queued and auto-send off (human approval). */
 export function resetAutomation(incidentId: string) {
+  setMeta("agent_epoch", String(Number(getMeta("agent_epoch") ?? 0) + 1));
   setMeta("auto_send", "0");
   setMeta("auto_send_by", "");
   writeMeta("auto_send_state", null);

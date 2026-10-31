@@ -62,6 +62,8 @@ export const CITIZEN_COPY = {
     meshSub: "Your phone joined relay {node} over Wi-Fi. Messages travel {hops} radio hop(s) to a gateway with a satellite link. Simulated drill.",
     noNetwork: "No network here right now. Anything you send is saved and goes out when service returns.",
     severity: { advisory: "Advisory", watch: "Watch", warning: "Warning", emergency: "Emergency" },
+    until: "Until",
+    aboutAlert: "About this alert",
   },
   ar: {
     training: "سيناريو تدريبي — ليس تنبيهًا حقيقيًا",
@@ -126,5 +128,7 @@ export const CITIZEN_COPY = {
     meshSub: "اتصل هاتفك بالمُرحِّل {node} عبر Wi-Fi. تنتقل الرسائل عبر {hops} قفزة لاسلكية إلى بوابة متصلة بالأقمار الصناعية. تمرين محاكى.",
     noNetwork: "لا توجد شبكة هنا الآن. سيُحفظ أي شيء ترسله ويُرسل عند عودة الخدمة.",
     severity: { advisory: "استشاري", watch: "مراقبة", warning: "تحذير", emergency: "طوارئ" },
+    until: "حتى",
+    aboutAlert: "تفاصيل التنبيه",
   },
 };

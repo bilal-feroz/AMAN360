@@ -117,6 +117,14 @@ body {
   }
 }
 
+/* Phones never show scrollbars (the citizen app, also inside the command-center phone frames). */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Scrollbars inside panels */
 .scroll-thin {
   scrollbar-width: thin;

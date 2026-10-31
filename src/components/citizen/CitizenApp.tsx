@@ -2,16 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CircleCheck, LifeBuoy, MessageCircleQuestion, Volume2, Square, Accessibility, ShieldCheck, Clock, MapPin, Car, Info, X, Send, Wifi, RadioTower, CloudOff } from "lucide-react";
+import { Volume2, Square, Accessibility, ShieldCheck, Clock, MapPin, Info, X, Send, Wifi, RadioTower, CloudOff } from "lucide-react";
 import type { CitizenInbox } from "@/server/services/inbox";
 import { AmanMark, cn } from "@/components/ui";
 import { fmtTime } from "@/lib/format";
 import { speak } from "@/lib/speech";
 import { CITIZEN_COPY } from "./copy";
 import { MiniMap } from "./MiniMap";
+import { AlertHero, ReplyBar, StatusCard } from "./AlertParts";
 
 type Lang = "en" | "ar";
-type Alert = CitizenInbox["alerts"][number];
 type Prefs = { lang: Lang | null; scale: number; contrast: boolean; plain: boolean; reduced: boolean };
 
 const SCALES = [1, 1.15, 1.3, 1.5];
@@ -310,12 +310,12 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
         <div className="min-w-0 flex-1 text-[15px] font-semibold text-ink">{lang === "ar" ? "أمان 360" : "AMAN 360"}</div>
         <button
           onClick={() => setPrefs((p) => ({ ...p, lang: lang === "en" ? "ar" : "en" }))}
-          className="h-11 min-w-11 rounded-xl px-3 text-[14px] font-semibold text-ink-2 hover:bg-surface-2"
+          className="h-11 min-w-11 rounded-full bg-surface px-3 text-[15px] font-semibold text-ink ring-1 ring-line hover:bg-surface-2"
           aria-label={c.language}
         >
           {lang === "en" ? "ع" : "EN"}
         </button>
-        <button onClick={() => setSheet("a11y")} className="grid h-11 w-11 place-items-center rounded-xl text-ink-2 hover:bg-surface-2" aria-label={c.accessibility}>
+        <button onClick={() => setSheet("a11y")} className="grid h-11 w-11 place-items-center rounded-full bg-surface text-ink ring-1 ring-line hover:bg-surface-2" aria-label={c.accessibility}>
           <Accessibility size={20} />
         </button>
       </header>
@@ -343,7 +343,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto px-5 pb-6 pt-3" aria-live="polite">
+      <main className="no-scrollbar min-h-0 flex-1 overflow-y-auto px-5 pb-6 pt-3" aria-live="polite">
         {inbox?.clarifications.map((n) => (
           <div key={n.id} role="status" className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-soft px-3.5 py-3 text-[14px] leading-relaxed text-ink ring-1 ring-teal/25">
             <ShieldCheck size={17} className="mt-0.5 shrink-0 text-teal-ink" />
@@ -362,39 +362,22 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
           <NoAlerts c={c} area={inbox.recipient.areaLabel[lang]} name={inbox.recipient.displayName} />
         ) : (
           <article aria-labelledby="alert-title">
-            <div className="overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-panel)] ring-1 ring-line">
-              <div className={cn("flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-white", alert.actionId === "ACT-ROAD-02" ? "bg-[#c4412b]" : "bg-coral-ink")}>
-                <span className="h-2 w-2 rounded-full bg-white" />
-                {c.severity[alert.severity as keyof typeof c.severity]} · {alert.title[lang]}
-              </div>
-              <div className="px-4 pb-4 pt-3">
-                <div className="flex items-start gap-2 text-[13px] text-ink-2">
-                  {inbox.recipient.mobility === "driver" ? <Car size={16} className="mt-0.5 shrink-0 text-coral" /> : <MapPin size={16} className="mt-0.5 shrink-0 text-coral" />}
-                  <span>
-                    <b className="font-semibold text-ink">{inbox.recipient.mobility === "driver" ? c.driverContext : c.insideZone}</b>
-                    <br />
-                    {inbox.recipient.mobility === "driver" ? alert.closureName[lang] : alert.areaName[lang]}
-                  </span>
-                </div>
-                <h1 id="alert-title" className="mt-3 text-[22px] font-semibold leading-snug text-ink">
-                  {content.headline}
-                </h1>
-                <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{content.body}</p>
-              </div>
-            </div>
+            <AlertHero c={c} lang={lang} alert={alert} headline={content.headline} driver={inbox.recipient.mobility === "driver"} />
 
-            <section className="mt-4" aria-label={c.whatToDo}>
-              <div className="mb-1.5 flex items-center justify-between">
-                <h2 className="text-[15px] font-semibold text-ink">{c.whatToDo}</h2>
-                <button onClick={readAloud} className="-me-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-[14px] font-medium text-teal-ink hover:bg-teal-soft">
-                  {speaking ? <Square size={14} /> : <Volume2 size={16} />} {speaking ? c.stop : c.listen}
+            <StatusCard c={c} lang={lang} alert={alert} lastResponse={lastResponse} />
+
+            <section className="mt-5" aria-label={c.whatToDo}>
+              <div className="mb-2 flex items-center justify-between">
+                <h2 className="text-[17px] font-semibold text-ink">{c.whatToDo}</h2>
+                <button onClick={readAloud} className="-me-2 inline-flex h-11 items-center gap-1.5 rounded-full px-3 text-[14px] font-medium text-teal-ink hover:bg-teal-soft">
+                  {speaking ? <Square size={14} /> : <Volume2 size={17} />} {speaking ? c.stop : c.listen}
                 </button>
               </div>
-              <ol className="space-y-2">
+              <ol className="divide-y divide-line overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
                 {content.steps.map((s, i) => (
-                  <li key={s.id} className="flex gap-3 rounded-2xl bg-surface p-3.5 ring-1 ring-line">
-                    <span className="tnum grid h-7 w-7 shrink-0 place-items-center rounded-full bg-teal-soft text-[13px] font-semibold text-teal-ink">{i + 1}</span>
-                    <span className="text-[15px] leading-snug text-ink">{s.text}</span>
+                  <li key={s.id} className="flex gap-3 px-4 py-3.5">
+                    <span className="tnum grid h-7 w-7 shrink-0 place-items-center rounded-full bg-teal text-[14px] font-semibold text-white">{i + 1}</span>
+                    <span className="pt-0.5 text-[16px] leading-snug text-ink">{s.text}</span>
                   </li>
                 ))}
               </ol>
@@ -419,15 +402,15 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
               </p>
             )}
 
-            <ResponseArea c={c} lang={lang} alert={alert} lastResponse={lastResponse} busy={busy ?? (queued ? "queued" : null)} onSafe={() => void respond("safe")} onHelp={() => setSheet("help")} onClarify={() => (setAnswer(null), setSheet("clarify"))} />
-
-            {alert.geography.zone && (
-              <figure className="mt-5 overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
-                <MiniMap zone={alert.geography.zone} closures={alert.geography.closures} you={alert.geography.you} label={c.map} labels={{ you: c.you, zone: c.zone, closure: c.closure }} />
-              </figure>
-            )}
-
-            <dl className="mt-4 space-y-1 text-[13px] leading-relaxed text-muted">
+            <section className="mt-6" aria-label={c.aboutAlert}>
+              <h2 className="mb-2 text-[15px] font-semibold text-ink">{c.aboutAlert}</h2>
+              {alert.geography.zone && (
+                <figure className="overflow-hidden rounded-2xl bg-surface ring-1 ring-line">
+                  <MiniMap zone={alert.geography.zone} closures={alert.geography.closures} you={alert.geography.you} label={c.map} labels={{ you: c.you, zone: c.zone, closure: c.closure }} />
+                </figure>
+              )}
+              <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{content.body}</p>
+            <dl className="mt-3 space-y-1 text-[13px] leading-relaxed text-muted">
               <div className="flex flex-wrap items-center gap-x-1.5">
                 <Clock size={13} className="shrink-0" />
                 <dt>{c.issued}</dt>
@@ -444,9 +427,14 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
                 </dd>
               </div>
             </dl>
+            </section>
           </article>
         )}
       </main>
+
+      {alert && content && (
+        <ReplyBar c={c} alert={alert} lastResponse={lastResponse} busy={busy ?? (queued ? "queued" : null)} onSafe={() => void respond("safe")} onHelp={() => setSheet("help")} onClarify={() => (setAnswer(null), setSheet("clarify"))} />
+      )}
 
       <AnimatePresence>
         {sheet && (
@@ -529,7 +517,7 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
 
 function Screen({ embed, children }: { embed: boolean; children: React.ReactNode }) {
   return (
-    <div className={cn("mx-auto flex min-h-dvh max-w-[480px] flex-col bg-bg", embed && "h-dvh")}>
+    <div className="mx-auto flex h-dvh max-w-[480px] flex-col overflow-hidden bg-bg">
       {embed && <StatusBar />}
       {children}
     </div>
@@ -577,87 +565,6 @@ function NoAlerts({ c, area, name }: { c: (typeof CITIZEN_COPY)["en"]; area: str
         <bdi>{name}</bdi>
       </p>
     </div>
-  );
-}
-
-function ResponseArea({
-  c,
-  lang,
-  alert,
-  lastResponse,
-  busy,
-  onSafe,
-  onHelp,
-  onClarify,
-}: {
-  c: (typeof CITIZEN_COPY)["en"];
-  lang: Lang;
-  alert: Alert;
-  lastResponse: Alert["responses"][number] | null;
-  busy: string | null;
-  onSafe: () => void;
-  onHelp: () => void;
-  onClarify: () => void;
-}) {
-  const helpCase = alert.case;
-  const showHelpStatus = !!helpCase;
-  const safeNow = lastResponse?.kind === "safe" && !helpCase;
-  return (
-    <section className="mt-5" aria-label={c.respondPrompt}>
-      <AnimatePresence mode="wait" initial={false}>
-        {showHelpStatus ? (
-          <motion.div key="help" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-coral-soft p-4 ring-1 ring-coral/25" role="status">
-            <div className="flex items-center gap-2 text-[16px] font-semibold text-coral-ink">
-              <LifeBuoy size={19} />
-              {helpCase!.status === "open" ? c.helpReceived : helpCase!.status === "resolved" ? c.resolvedByOperator : c.acknowledgedByOperator}
-            </div>
-            <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{c.helpReceivedSub}</p>
-            <p className="tnum mt-2 text-[13px] text-muted" title={helpCase!.id}>
-              {fmtTime(alert.responses.find((r) => r.kind === "help")?.at, lang, true)}
-            </p>
-            {helpCase!.status !== "resolved" && (
-              <button onClick={onHelp} disabled={!!busy} className="mt-3 inline-flex h-11 items-center gap-2 rounded-xl bg-white px-4 text-[14px] font-semibold text-coral-ink ring-1 ring-coral/30 hover:bg-coral-soft disabled:opacity-60">
-                <Send size={15} className="rtl:-scale-x-100" /> {c.addDetails}
-              </button>
-            )}
-            {helpCase!.notes.map((n) => (
-              <div key={n.at} className="mt-3 rounded-xl bg-white/80 p-3 text-[14px] text-ink">
-                <div className="text-[13px] font-semibold text-muted">{c.operatorNote}</div>
-                {n.text}
-              </div>
-            ))}
-            <p className="mt-3 text-[13px] font-semibold text-coral-ink">{c.lifeThreat}</p>
-          </motion.div>
-        ) : safeNow ? (
-          <motion.div key="safe" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-2xl bg-teal-soft p-4 ring-1 ring-teal/25" role="status">
-            <div className="flex items-center gap-2 text-[16px] font-semibold text-teal-ink">
-              <CircleCheck size={19} /> {c.safeRecorded}
-            </div>
-            <p className="mt-1 text-[14px] text-ink-2">{c.safeRecordedSub}</p>
-            <p className="tnum mt-1 text-[13px] text-muted">{fmtTime(lastResponse!.at, lang, true)}</p>
-          </motion.div>
-        ) : (
-          <motion.p key="prompt" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-2 text-[14px] font-medium text-ink-2">
-            {c.respondPrompt}
-          </motion.p>
-        )}
-      </AnimatePresence>
-      <div className="mt-3 grid gap-2.5">
-        {!safeNow && !showHelpStatus && (
-          <button onClick={onSafe} disabled={!!busy} className="flex h-16 items-center justify-center gap-2.5 rounded-2xl bg-teal text-[18px] font-semibold text-white shadow-[0_10px_24px_-14px_rgb(8_127_122/0.9)] disabled:opacity-60">
-            <CircleCheck size={22} /> {busy === "safe" ? c.sending : c.safe}
-          </button>
-        )}
-        {!showHelpStatus && (
-          <button onClick={onHelp} disabled={!!busy} className="flex h-16 items-center justify-center gap-2.5 rounded-2xl bg-coral text-[18px] font-semibold text-white shadow-[0_10px_24px_-14px_rgb(250_104_79/0.9)] disabled:opacity-60">
-            <LifeBuoy size={22} /> {c.help}
-          </button>
-        )}
-        <button onClick={onClarify} disabled={!!busy} className="flex h-14 items-center justify-center gap-2.5 rounded-2xl bg-surface text-[16px] font-semibold text-ink ring-1 ring-line-strong disabled:opacity-60">
-          <MessageCircleQuestion size={20} /> {c.clarify}
-        </button>
-      </div>
-    </section>
   );
 }
 

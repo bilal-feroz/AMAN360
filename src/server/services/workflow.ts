@@ -183,6 +183,8 @@ export async function prepareGuidance(incidentId: string, actor: string, opts: {
   const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Publication gate failed", 409, gate.blocks);
   const facts = messageFacts(incident);
+  // A reset re-creates the incident; drafts built for the previous one must never be written.
+  const epoch = incident.createdAt;
   const provider = getProvider();
   const useModel = provider.id !== "template" && !opts.templatesOnly;
   const drafts: GuidanceDraft[] = [];
@@ -280,6 +282,8 @@ export async function prepareGuidance(incidentId: string, actor: string, opts: {
     }
   }
 
+  const latest = store.incidents.get(incidentId);
+  if (latest?.createdAt !== epoch || !["assessed", "approved"].includes(latest.state)) throw new WorkflowError("The scenario was reset while preparing — discarded");
   const now = new Date().toISOString();
   tx(() => {
     // Re-preparing supersedes previous drafts and unapproved messages.
@@ -352,6 +356,7 @@ export function publish(incidentId: string, operatorId: string) {
   const gate = checkIncidentGate(incident, SAFETY_POLICY, store.hazards.forIncident(incidentId), store.closures.forIncident(incidentId), new Date());
   if (!gate.ok) throw new WorkflowError("Publication blocked by safety gate", 409, gate.blocks);
   const approved = store.messages.forIncident(incidentId).filter((m) => m.state === "approved");
+  if (!approved.length) throw new WorkflowError("No approved messages to send — prepare the message again");
   const nowMs = Date.now();
   const now = new Date(nowMs).toISOString();
   const speed = simSpeed();

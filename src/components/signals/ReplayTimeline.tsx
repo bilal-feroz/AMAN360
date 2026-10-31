@@ -37,20 +37,18 @@ export function ReplayTimeline({ view, lang }: { view: SignalsView; lang: "en" |
   }, [view.items, hotspotId, lang]);
   const max = Math.max(4, ...days.map((d) => d.kept + d.noise));
   return (
-    <div className="pointer-events-auto rounded-2xl px-4 pb-3 pt-3 shadow-[var(--shadow-float)] ring-1 ring-line aman-glass">
-      <div className="mb-2 flex items-center gap-2 text-[11.5px]">
-        <span className="font-semibold text-ink">{L(lang, "Real posts per day · Sharjah emirate", "منشورات حقيقية يوميًا · إمارة الشارقة")}</span>
-        <span className="text-muted">10–25 Oct 2026</span>
-        <span className="ms-auto inline-flex items-center gap-3 text-muted">
-          <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-violet" />{L(lang, "Kept by Claude", "قبلها Claude")}</span>
-          <span className="inline-flex items-center gap-1"><span className="h-2 w-2 rounded-sm bg-line-strong" />{L(lang, "Noise", "ضوضاء")}</span>
-          {hotspotId && (
-            <button onClick={() => setSignals({ hotspotId: null })} className="inline-flex items-center gap-1 text-violet-ink">
-              <span className="h-2 w-2 rounded-sm bg-coral" />
-              {L(lang, "Selected hotspot ×", "البؤرة المحددة ×")}
-            </button>
-          )}
-        </span>
+    <div className="pointer-events-auto rounded-2xl bg-surface/95 px-4 pb-3 pt-3 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
+      <div className="mb-2 flex items-center gap-3 text-[11.5px]">
+        <span className="font-semibold text-ink">{L(lang, "Posts per day", "المنشورات يوميًا")}</span>
+        <span className="inline-flex items-center gap-1 text-muted"><span className="h-2 w-2 rounded-sm bg-violet" />{L(lang, "Relevant", "ذات صلة")}</span>
+        <span className="inline-flex items-center gap-1 text-muted"><span className="h-2 w-2 rounded-sm bg-line-strong" />{L(lang, "Noise", "ضوضاء")}</span>
+        {hotspotId && (
+          <button onClick={() => setSignals({ hotspotId: null })} className="inline-flex items-center gap-1 font-medium text-ink-2 hover:text-ink">
+            <span className="h-2 w-2 rounded-sm bg-coral" />
+            {L(lang, "Selected hotspot", "البؤرة المحددة")} <span aria-hidden>×</span>
+          </button>
+        )}
+        <span className="tnum ms-auto text-muted">10–25 Oct 2026</span>
       </div>
       <div className="flex h-[64px] items-end gap-1.5">
         {days.map((d, i) => (

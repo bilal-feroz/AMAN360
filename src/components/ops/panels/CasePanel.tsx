@@ -1,15 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Check, ClipboardPen, Info, CircleCheck, LocateFixed } from "lucide-react";
-import { Button, Chip, Field, Section } from "@/components/ui";
-import { fmtDateTime, fmtTime } from "@/lib/format";
+import { Check, ClipboardPen, CircleCheck, LocateFixed } from "lucide-react";
+import { Button, Field, Section } from "@/components/ui";
+import { fmtTime } from "@/lib/format";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
-import { PanelHeader } from "./PanelHeader";
+import { ActionBar, PanelHeader } from "./PanelHeader";
 import { ChainView, useChain } from "./ChainView";
 import { CaseStatusChip } from "./ResponsePanel";
 import { TriageCard } from "./TriageCard";
+import { Empty } from "./ImpactPanel";
 
 export function CasePanel() {
   const { state, t, lang, caseAction, busy, canAct } = useOps();
@@ -27,62 +28,47 @@ export function CasePanel() {
     return (
       <div>
         <PanelHeader title={t("cases")} onBack={() => setView("responses")} />
-        <p className="px-5 py-8 text-center text-[13px] text-muted">{t("noCases")}</p>
+        <Empty text={t("noCases")} />
       </div>
     );
   }
-  const response = chain?.responses.find((r) => r.id === c.responseId);
 
   return (
     <div className="flex min-h-full flex-col">
       <PanelHeader
-        title={
-          <span className="flex items-center gap-2">
-            <span className="font-id">{c.id}</span>
-            <Chip tone={c.priority === "P1" ? "coral" : "amber"}>{c.priority}</Chip>
-            <CaseStatusChip status={c.status} />
+        eyebrow={
+          <span className="flex items-center gap-1.5">
+            <span className={c.priority === "P1" ? "rounded bg-coral-ink px-1 text-[10.5px] font-bold text-white" : "rounded bg-amber-soft px-1 text-[10.5px] font-bold text-amber-ink"}>{c.priority}</span>
+            {lang === "ar" ? "طلب مساعدة" : "Help request"} · <span className="tnum">{fmtTime(c.openedAt, lang, true)}</span>
           </span>
         }
-        subtitle={lang === "ar" ? "طلب مساعدة — مراجعة بشرية" : "Assistance request — human review"}
+        title={<bdi>{c.recipient?.displayName}</bdi>}
+        aside={<CaseStatusChip status={c.status} />}
         onBack={() => selectCase(null)}
       />
-      <Section title={lang === "ar" ? "الطلب" : "Request"}>
-        <blockquote className="rounded-xl bg-coral-soft/60 px-4 py-3 text-[14px] leading-relaxed text-ink" dir="auto">
-          “{c.summary}”
+      <div className="px-5 pb-4">
+        <blockquote className="rounded-2xl bg-coral-soft/60 px-4 py-3.5 text-[15px] leading-relaxed text-ink ring-1 ring-coral/15" dir="auto">
+          {c.summary}
         </blockquote>
         <dl className="mt-3">
-          <Field label={lang === "ar" ? "المستلم" : "Recipient"}>
-            <bdi>{c.recipient?.displayName}</bdi> <span className="font-id text-[11.5px] text-muted">· {c.recipientId} · {lang === "ar" ? "اصطناعي" : "synthetic"}</span>
-          </Field>
           <Field label={lang === "ar" ? "المنطقة" : "Area"}>{c.recipient?.areaLabel[lang]}</Field>
-          <Field label={lang === "ar" ? "وقت الاستلام" : "Received"}>{fmtDateTime(c.openedAt, lang)}</Field>
-          {c.recipient?.vulnerability.length ? (
-            <Field label={lang === "ar" ? "احتياجات مسجّلة" : "Recorded needs"}>{c.recipient.vulnerability.join(", ")}</Field>
-          ) : null}
-          {response?.classification && (
-            <Field label={lang === "ar" ? "التصنيف" : "Classification"}>
-              {response.classification.category} · {response.classification.method}
-            </Field>
-          )}
+          {c.recipient?.vulnerability.length ? <Field label={lang === "ar" ? "احتياجات مسجّلة" : "Recorded needs"}><span className="capitalize">{c.recipient.vulnerability.join(", ")}</span></Field> : null}
         </dl>
         {chain?.recipient.location && (
           <button
-            className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-teal hover:underline"
+            className="mt-1 inline-flex items-center gap-1.5 text-[12px] font-semibold text-teal-ink hover:underline"
             onClick={() => flyTo({ kind: "point", lngLat: chain.recipient.location!.coordinates as [number, number], zoom: 17.2, pitch: 63 })}
           >
-            <LocateFixed size={13} /> {lang === "ar" ? "إظهار الموقع (صلاحية الحالة فقط)" : "Show location (case access only)"}
+            <LocateFixed size={13} /> {lang === "ar" ? "إظهار على الخريطة" : "Show on map"}
           </button>
         )}
-      </Section>
-
-      <Section title={lang === "ar" ? "الفرز بالذكاء الاصطناعي" : "AI triage"}>
-        <TriageCard triage={c.triage} lang={lang} />
-      </Section>
-
-      <Section title={t("chain")}>{chain ? <ChainView chain={chain} /> : <div className="h-40 animate-pulse rounded-xl bg-surface-2" />}</Section>
+        <div className="mt-4">
+          <TriageCard triage={c.triage} lang={lang} />
+        </div>
+      </div>
 
       {c.notes.length > 0 && (
-        <Section title={lang === "ar" ? "سجل المتابعة" : "Follow-up log"}>
+        <Section title={lang === "ar" ? "المتابعة" : "Follow-up"}>
           <ul className="space-y-2">
             {c.notes.map((n) => (
               <li key={n.at + n.text} className="rounded-xl bg-surface-2 px-3 py-2 text-[12.5px]">
@@ -99,7 +85,9 @@ export function CasePanel() {
         </Section>
       )}
 
-      <div className="sticky bottom-0 mt-auto border-t border-line bg-surface/95 px-5 py-4 backdrop-blur">
+      <Section title={t("chain")}>{chain ? <ChainView chain={chain} /> : <div className="h-40 animate-pulse rounded-xl bg-surface-2" />}</Section>
+
+      <ActionBar note={lang === "ar" ? "تسجيل المتابعة لا يعني إرسال أي وحدة طوارئ." : "Recording a follow-up never dispatches a unit."}>
         {c.status === "open" && (
           <Button tone="danger" size="lg" className="w-full" disabled={!canAct} busy={busy === "case:acknowledge"} onClick={() => void caseAction(c.id, "acknowledge")} icon={<Check size={17} />}>
             {t("acknowledge")}
@@ -117,9 +105,7 @@ export function CasePanel() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
-              placeholder={
-                lang === "ar" ? "مثال: تم الاتصال بالأسرة (محاكاة)؛ الجيران يساعدون في الصعود إلى الطابق العلوي" : "e.g. Called household (simulated); neighbours helping the resident upstairs"
-              }
+              placeholder={lang === "ar" ? "مثال: تم الاتصال بالأسرة؛ الجيران يساعدون في الصعود إلى الطابق العلوي" : "e.g. Called the household; neighbours helping the resident upstairs"}
               className="w-full resize-none rounded-xl bg-surface-2 px-3 py-2 text-[13px] ring-1 ring-line outline-none focus:ring-2 focus:ring-cyan"
             />
             <div className="flex gap-2">
@@ -133,17 +119,11 @@ export function CasePanel() {
           </form>
         )}
         {c.status === "resolved" && (
-          <div className="flex items-center gap-2 rounded-xl bg-teal-soft px-3 py-2.5 text-[13px] text-teal-ink">
-            <CircleCheck size={16} /> {t("resolved")} · {fmtTime(c.resolvedAt, lang, true)}
+          <div className="flex items-center gap-2 rounded-xl bg-teal-soft px-3 py-2.5 text-[13px] font-medium text-teal-ink">
+            <CircleCheck size={16} /> {t("resolved")} · <span className="tnum">{fmtTime(c.resolvedAt, lang, true)}</span>
           </div>
         )}
-        <p className="mt-2 flex items-start gap-1.5 text-[11.5px] leading-relaxed text-muted">
-          <Info size={12} className="mt-0.5 shrink-0" />
-          {lang === "ar"
-            ? "لا يوجد تكامل مع أنظمة الإرسال. المتابعة تُسجَّل لأغراض السيناريو التدريبي ولا تعني إرسال أي وحدة طوارئ."
-            : "No dispatch integration exists. Follow-up is recorded for the training scenario and never implies that an emergency unit was sent."}
-        </p>
-      </div>
+      </ActionBar>
     </div>
   );
 }

@@ -15,13 +15,10 @@ type Lang = "en" | "ar";
 const L = (lang: Lang, en: string, ar: string) => (lang === "ar" ? ar : en);
 
 export const SUGGESTIONS: { en: string; ar: string }[] = [
-  { en: "Brief me on Al Majaz", ar: "أطلعني على وضع المجاز" },
   { en: "Who needs help first?", ar: "من يحتاج المساعدة أولاً؟" },
+  { en: "Brief me on Al Majaz", ar: "أطلعني على وضع المجاز" },
   { en: "Why did Mariam get this message?", ar: "لماذا وصلت هذه الرسالة إلى مريم؟" },
-  { en: "Show the Arabic and English guidance", ar: "اعرض الإرشادات بالعربية والإنجليزية" },
-  { en: "Run the safety checks", ar: "شغّل فحوص السلامة" },
   { en: "What is social media saying?", ar: "ماذا تقول وسائل التواصل؟" },
-  { en: "Show the real October storm posts", ar: "اعرض منشورات العاصفة الحقيقية في أكتوبر" },
 ];
 
 function modelName(model: string | null) {
@@ -33,13 +30,13 @@ function modelName(model: string | null) {
 function ModeBadge({ mode, model, lang }: { mode: CopilotMode | null; model: string | null; lang: Lang }) {
   if (!mode) return null;
   return mode === "llm" ? (
-    <span className="inline-flex items-center gap-1 whitespace-nowrap rounded-full bg-[#e3f7f4] px-2 py-[3px] text-[11px] font-medium text-[#0d6e66]" title={model ?? undefined}>
-      <Sparkles size={11} />
-      {modelName(model)} · {L(lang, "live", "مباشر")}
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-violet-soft px-2 py-[2px] text-[11px] font-semibold text-violet-ink" title={modelName(model) ?? model ?? undefined}>
+      <span className="h-1.5 w-1.5 rounded-full bg-violet" />
+      {L(lang, "Claude · live", "Claude · مباشر")}
     </span>
   ) : (
-    <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-[3px] text-[11px] font-medium text-ink-2 ring-1 ring-line" title={L(lang, "No AI model is configured; answers are chosen by keyword rules", "لا يوجد نموذج ذكاء اصطناعي؛ الإجابات بقواعد الكلمات المفتاحية")}>
-      <ShieldCheck size={11} />
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-surface-2 px-2 py-[2px] text-[11px] font-semibold text-ink-2" title={L(lang, "No AI model is configured; answers are chosen by keyword rules", "لا يوجد نموذج ذكاء اصطناعي؛ الإجابات بقواعد الكلمات المفتاحية")}>
+      <span className="h-1.5 w-1.5 rounded-full bg-slate" />
       {L(lang, "Rule-based", "قائم على القواعد")}
     </span>
   );
@@ -74,10 +71,7 @@ function Activity({ x, lang }: { x: Exchange; lang: Lang }) {
         aria-expanded={hasThinking ? open : undefined}
       >
         {streaming ? (
-          <span className="relative grid h-4 w-4 place-items-center">
-            <span className="absolute inset-0 animate-ping rounded-full bg-cyan/40" />
-            <Sparkles size={13} className="relative text-teal" />
-          </span>
+          <Loader2 size={13} className="animate-spin text-teal" />
         ) : mode === "rules" ? (
           <ShieldCheck size={13} className="text-ink-2" />
         ) : (
@@ -196,14 +190,9 @@ export function CopilotPanel() {
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-surface shadow-[var(--shadow-float)] ring-1 ring-line" aria-label={L(lang, "Ask AMAN copilot", "مساعد أمان")} role="complementary">
-      <header className="flex items-center gap-2.5 border-b border-line px-4 py-3">
-        <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-teal to-cyan text-white shadow-[0_6px_16px_-8px_rgb(8_127_122/0.9)]">
-          <Sparkles size={16} />
-        </span>
-        <div className="min-w-0">
-          <div className="text-[14px] font-semibold leading-tight text-ink">{L(lang, "Ask AMAN", "اسأل أمان")}</div>
-          <div className="truncate text-[11px] leading-tight text-muted">{L(lang, "Generative copilot · read-only", "مساعد توليدي · للقراءة فقط")}</div>
-        </div>
+      <header className="flex h-[52px] items-center gap-2 border-b border-line px-4">
+        <Sparkles size={16} className="text-teal" />
+        <h2 className="text-[14.5px] font-semibold text-ink">{L(lang, "Ask AMAN", "اسأل أمان")}</h2>
         <div className="ms-auto flex items-center gap-1">
           <ModeBadge mode={mode} model={model} lang={lang} />
           {exchanges.length > 0 && (
@@ -222,15 +211,11 @@ export function CopilotPanel() {
         className="scroll-thin @container relative min-h-0 flex-1 space-y-6 overflow-y-auto px-4 py-4"
       >
         {exchanges.length === 0 && (
-          <div className="space-y-4 pt-2">
-            <p className="text-[13px] leading-[1.6] text-ink-2">
-              {L(
-                lang,
-                "Ask about the live incident. Answers are built as cards from stored records — the AI chooses what to show and explains it, but cannot change safety decisions or take actions.",
-                "اسأل عن الحادثة الحية. تُبنى الإجابات كبطاقات من السجلات المخزنة — يختار الذكاء الاصطناعي ما يعرضه ويشرحه، لكنه لا يغيّر قرارات السلامة ولا ينفّذ إجراءات.",
-              )}
+          <div className="space-y-3 pt-1">
+            <p className="text-[13px] leading-[1.55] text-muted">
+              {L(lang, "Answers are built from live records. Try:", "تُبنى الإجابات من السجلات الحية. جرّب:")}
             </p>
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col gap-1.5">
               {SUGGESTIONS.map((s, i) => (
                 <motion.button
                   key={i}
@@ -239,9 +224,10 @@ export function CopilotPanel() {
                   transition={{ delay: 0.05 * i }}
                   onClick={() => send(s[lang])}
                   disabled={!state}
-                  className="rounded-full bg-surface-2 px-3 py-1.5 text-start text-[12.5px] text-ink ring-1 ring-line transition-colors hover:bg-teal-soft hover:text-teal-ink hover:ring-teal/30"
+                  className="group flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-start text-[13px] font-medium text-ink ring-1 ring-line transition-colors hover:bg-teal-soft hover:text-teal-ink hover:ring-teal/30 disabled:opacity-50"
                 >
                   {s[lang]}
+                  <ArrowUp size={14} className="shrink-0 rotate-45 text-muted group-hover:text-teal-ink rtl:-rotate-45" />
                 </motion.button>
               ))}
             </div>
@@ -289,10 +275,7 @@ export function CopilotPanel() {
             </button>
           )}
         </div>
-        <div className="mt-1.5 flex items-center gap-1 px-1 text-[10.5px] text-muted">
-          <ShieldCheck size={11} />
-          {L(lang, "Read-only. Safety decisions come from the rules engine, not the AI.", "للقراءة فقط. قرارات السلامة من محرك القواعد وليست من الذكاء الاصطناعي.")}
-        </div>
+        <p className="mt-1.5 px-1 text-[11px] text-muted">{L(lang, "Read-only — decisions come from the rules engine.", "للقراءة فقط — القرارات من محرك القواعد.")}</p>
       </form>
     </div>
   );

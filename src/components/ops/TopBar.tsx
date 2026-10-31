@@ -1,16 +1,15 @@
 "use client";
 
-import { MapPin, Presentation, Radio, Settings2, LogOut, Sparkles } from "lucide-react";
+import { Play, Settings2, Sparkles, Square } from "lucide-react";
 import { useState } from "react";
-import { AmanMark, Button, Chip, cn, Segmented, useNow } from "@/components/ui";
+import { AmanMark, cn, Segmented, useNow } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "./context";
 import { SettingsMenu } from "./SettingsMenu";
-import { api } from "@/lib/api";
 import { AiStatus } from "./AiStatus";
 
 export function TopBar({ connection, onPresent }: { connection: "live" | "reconnecting" | "polling"; onPresent: () => void }) {
-  const { t, lang, state, operator, signInRequired } = useOps();
+  const { t, lang } = useOps();
   const setLang = useUi((s) => s.setLang);
   const presenting = useUi((s) => s.presenting);
   const copilotOpen = useUi((s) => s.copilot.open);
@@ -27,50 +26,44 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
           second: "2-digit",
           hour12: false,
         }).format(now);
-  const incident = state?.incident;
-  const active = incident && ["assessed", "approved", "active"].includes(incident.state);
 
   return (
-    <header className="relative z-30 flex h-14 items-center gap-4 border-b border-line bg-surface/95 px-4 backdrop-blur">
-      <div className="flex items-center gap-2.5 text-teal">
-        <AmanMark size={26} />
-        <span className="whitespace-nowrap text-[15.5px] font-semibold tracking-[0.06em] text-ink rtl:tracking-normal">{lang === "ar" ? "أمان 360" : "AMAN 360"}</span>
+    <header className="relative z-30 grid h-14 grid-cols-[1fr_auto_1fr] items-center gap-4 border-b border-line bg-surface/95 px-4 backdrop-blur">
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 text-teal">
+          <AmanMark size={24} />
+          <span className="whitespace-nowrap text-[15px] font-semibold tracking-[0.04em] text-ink rtl:tracking-normal">{t("appName")}</span>
+        </div>
+        <span title={t("training")} className="rounded-md bg-amber-soft px-1.5 py-[3px] text-[10.5px] font-semibold uppercase tracking-[0.08em] text-amber-ink rtl:tracking-normal">
+          {t("trainingShort")}
+        </span>
       </div>
-      <div className="h-6 w-px bg-line" />
-      <Chip tone="amber" dot className="uppercase tracking-[0.06em] rtl:tracking-normal">
-        {t("training")}
-      </Chip>
-      <div className="hidden items-center gap-1.5 whitespace-nowrap text-[12.5px] text-ink-2 2xl:flex">
-        <MapPin size={14} className="text-muted" />
-        {t("location")}
-      </div>
-      {incident && (
-        <div className="hidden items-center gap-2 whitespace-nowrap 2xl:flex">
-          <span className="text-line-strong">·</span>
-          <span className="font-id text-[12px] text-ink-2">{incident.id}</span>
-          <Chip tone={active ? "coral" : incident.state === "blocked" ? "coral" : "neutral"} dot>
-            {active
-              ? lang === "ar"
-                ? "حادثة نشطة"
-                : "Incident active"
-              : incident.state === "blocked"
-                ? t("conflicting")
-                : incident.state === "resolved"
-                  ? t("resolved")
-                  : t("noActiveIncident")}
-          </Chip>
-        </div>
-      )}
-      <div className="ms-auto flex items-center gap-3">
-        <div className="hidden items-center gap-2 text-[12px] text-muted md:flex" title={lang === "ar" ? "مزامنة مع خادم العرض المحلي" : "Sync with the local demo server"}>
-          <span className={cn("h-2 w-2 rounded-full", connection === "live" ? "bg-teal" : "bg-amber")} />
-          <Radio size={13} className="hidden 2xl:block" />
-          <span className="hidden whitespace-nowrap 2xl:inline">{connection === "live" ? (lang === "ar" ? "مزامنة مباشرة" : "Live sync") : lang === "ar" ? "إعادة الاتصال…" : "Reconnecting…"}</span>
-        </div>
-        <div className="tnum hidden whitespace-nowrap text-[12.5px] font-medium text-ink-2 sm:block" aria-label={t("uaeTime")}>
-          {time} <span className="text-muted">{lang === "ar" ? "بتوقيت الإمارات" : "GST"}</span>
-        </div>
+
+      <IncidentPill />
+
+      <div className="flex items-center justify-end gap-2">
+        {connection !== "live" && (
+          <span className="hidden items-center gap-1.5 whitespace-nowrap rounded-full bg-amber-soft px-2.5 py-1 text-[11.5px] font-medium text-amber-ink md:inline-flex" role="status">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber" />
+            {lang === "ar" ? "إعادة الاتصال…" : "Reconnecting…"}
+          </span>
+        )}
+        <span className="tnum hidden whitespace-nowrap pe-1 text-[12.5px] font-medium text-ink-2 sm:block" aria-label={t("uaeTime")}>
+          {time} <span className="text-muted">{lang === "ar" ? "الإمارات" : "GST"}</span>
+        </span>
         <AiStatus />
+        <button
+          onClick={() => setCopilotOpen(!copilotOpen)}
+          aria-pressed={copilotOpen}
+          title={lang === "ar" ? "اسأل أمان (/)" : "Ask AMAN (/)"}
+          className={cn(
+            "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[10px] px-3 text-[12.5px] font-semibold ring-1 transition-colors",
+            copilotOpen ? "bg-teal-soft text-teal-ink ring-teal/40" : "bg-surface text-ink ring-line-strong/80 hover:bg-surface-2",
+          )}
+        >
+          <Sparkles size={14} className="text-teal" />
+          {lang === "ar" ? "اسأل أمان" : "Ask AMAN"}
+        </button>
         <Segmented
           ariaLabel={t("language")}
           size="sm"
@@ -82,54 +75,82 @@ export function TopBar({ connection, onPresent }: { connection: "live" | "reconn
           ]}
         />
         <button
-          onClick={() => setCopilotOpen(!copilotOpen)}
-          aria-pressed={copilotOpen}
-          title={lang === "ar" ? "اسأل أمان (/)" : "Ask AMAN (/)"}
+          onClick={onPresent}
           className={cn(
-            "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-[13px] font-medium ring-1 transition-colors",
-            copilotOpen ? "bg-teal-soft text-teal-ink ring-teal/40" : "bg-surface text-ink ring-line hover:bg-teal-soft hover:text-teal-ink",
+            "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-[10px] px-3 text-[12.5px] font-semibold transition-colors",
+            presenting ? "bg-ink text-white hover:bg-ink-2" : "text-ink-2 hover:bg-surface-2 hover:text-ink",
           )}
         >
-          <Sparkles size={15} className="text-teal" />
-          {lang === "ar" ? "اسأل أمان" : "Ask AMAN"}
-          <kbd className="hidden rounded bg-surface-2 px-1 font-id text-[10px] text-muted ring-1 ring-line xl:inline">/</kbd>
-        </button>
-        <Button tone={presenting ? "dark" : "primary"} size="sm" onClick={onPresent} icon={<Presentation size={15} />}>
+          {presenting ? <Square size={11} fill="currentColor" /> : <Play size={13} fill="currentColor" />}
           {presenting ? t("exit") : t("presentation")}
-        </Button>
+        </button>
         <div className="relative">
           <button
             onClick={() => setSettings((s) => !s)}
             aria-expanded={settings}
             aria-label={t("settings")}
-            className="grid h-8 w-8 place-items-center rounded-lg text-ink-2 ring-1 ring-line hover:bg-surface-2"
+            title={t("settings")}
+            className="grid h-8 w-8 place-items-center rounded-[10px] text-ink-2 hover:bg-surface-2 hover:text-ink"
           >
-            <Settings2 size={16} />
+            <Settings2 size={17} />
           </button>
           {settings && <SettingsMenu onClose={() => setSettings(false)} />}
         </div>
-        <div className="flex items-center gap-2 ps-1">
-          <div className="grid h-8 w-8 place-items-center rounded-full bg-ink text-[12px] font-semibold text-white" title={`${operator.name} — ${operator.title[lang]}`}>
-            {operator.name
-              .split(" ")
-              .map((p) => p[0])
-              .join("")}
-          </div>
-          {signInRequired && (
-            <button
-              className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink"
-              aria-label={t("signOut")}
-              title={t("signOut")}
-              onClick={async () => {
-                await api("/api/auth/logout", { method: "POST" });
-                window.location.href = "/login";
-              }}
-            >
-              <LogOut size={15} />
-            </button>
-          )}
-        </div>
       </div>
     </header>
+  );
+}
+
+/** The one-line answer to "what is happening?" — always centred, always one click from the alert. */
+function IncidentPill() {
+  const { state, lang, L, t } = useOps();
+  const setView = useUi((s) => s.setView);
+  const flyTo = useUi((s) => s.flyTo);
+  if (!state) return <div />;
+  const inc = state.incident;
+  const s = inc.state;
+  const active = ["assessed", "approved", "active"].includes(s);
+  const tone = s === "blocked" ? "coral" : active ? "coral" : s === "draft" ? "amber" : "teal";
+  const status =
+    s === "draft"
+      ? lang === "ar"
+        ? "بانتظار التفعيل"
+        : "Awaiting activation"
+      : s === "blocked"
+        ? t("conflicting")
+        : s === "resolved"
+          ? t("resolved")
+          : s === "active"
+            ? lang === "ar"
+              ? "نشطة · أُرسلت"
+              : "Active · alert sent"
+            : lang === "ar"
+              ? "نشطة"
+              : "Active";
+  return (
+    <button
+      onClick={() => {
+        setView("queue");
+        flyTo({ kind: "zone" });
+      }}
+      className="group inline-flex h-9 max-w-[min(560px,40vw)] items-center gap-2.5 rounded-full bg-surface-2 ps-3 pe-1.5 text-[13px] ring-1 ring-line transition-colors hover:ring-line-strong"
+    >
+      <span className="relative grid h-2.5 w-2.5 place-items-center">
+        {active && <span className={cn("aman-pulse absolute inset-0 rounded-full", tone === "coral" ? "bg-coral" : "bg-amber")} />}
+        <span className={cn("relative h-2.5 w-2.5 rounded-full", tone === "coral" ? "bg-coral" : tone === "amber" ? "bg-amber" : "bg-teal")} />
+      </span>
+      <span className="truncate font-semibold text-ink">
+        {L(inc.title).split(" — ")[0]}
+        <span className="font-normal text-muted"> · {t("location")}</span>
+      </span>
+      <span
+        className={cn(
+          "whitespace-nowrap rounded-full px-2 py-[3px] text-[11px] font-semibold",
+          tone === "coral" ? "bg-coral-soft text-coral-ink" : tone === "amber" ? "bg-amber-soft text-amber-ink" : "bg-teal-soft text-teal-ink",
+        )}
+      >
+        {status}
+      </span>
+    </button>
   );
 }

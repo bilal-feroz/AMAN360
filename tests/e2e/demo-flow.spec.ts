@@ -46,12 +46,12 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   const skip = page.getByRole("button", { name: /Skip intro/ });
   await skip.click({ timeout: 2500 }).catch(() => undefined); // the intro may already have finished
   await page.waitForTimeout(5000);
-  await expect(page.getByText("Incoming verified-feed alert")).toBeVisible();
+  await expect(page.getByText("Incoming alert").first()).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/02-sharjah-overview.png` });
 
   // Activate → geographic matching (computed by the backend, not animated counters)
   await page.getByRole("button", { name: /Activate incident/ }).click();
-  await expect(page.getByText("Matching result")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Who is affected" })).toBeVisible();
   await expect(page.getByText("106", { exact: true }).first()).toBeVisible();
   await page.waitForTimeout(4500);
   await page.screenshot({ path: `${SHOTS}/03-hazard-zone-activated.png` });
@@ -81,17 +81,17 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   await panel.getByRole("button", { name: "Back" }).click();
 
   // Guidance: prepare → inspect bilingual + accessible variants → approve → publish
-  await page.getByRole("button", { name: /Prepare guidance/ }).click();
+  await page.getByRole("button", { name: /Prepare message/ }).click();
   await expect(page.getByText("Bilingual consistency:", { exact: false })).toBeVisible();
   await page.waitForTimeout(2500);
   await page.screenshot({ path: `${SHOTS}/06-guidance-approval.png` });
   await page.getByRole("radio", { name: "Plain language" }).click();
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${SHOTS}/06b-guidance-plain-language.png` });
-  await expect(page.getByRole("button", { name: /Issue to simulated channels/ })).toBeDisabled();
-  await page.getByRole("button", { name: /Approve guidance/ }).click();
-  await expect(page.getByRole("button", { name: /Issue to simulated channels/ })).toBeEnabled();
-  await page.getByRole("button", { name: /Issue to simulated channels/ }).click();
+  await expect(page.getByRole("button", { name: /Send to 120 people/ })).toBeDisabled();
+  await page.getByRole("button", { name: /Approve message/ }).click();
+  await expect(page.getByRole("button", { name: /Send to 120 people/ })).toBeEnabled();
+  await page.getByRole("button", { name: /Send to 120 people/ }).click();
   await page.waitForTimeout(7000);
   await page.screenshot({ path: `${SHOTS}/07-citizen-devices-in-command-center.png` });
   await page.getByRole("button", { name: "Close devices" }).click();
@@ -119,7 +119,8 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   const before = await metrics(ops);
   expect(before.alertsSent).toBe(120);
 
-  await page.getByRole("button", { name: /Response intelligence/ }).click();
+  const rail = page.getByRole("navigation", { name: "Primary" });
+  await rail.getByRole("button", { name: /Responses/ }).click();
   await daniel.getByRole("button", { name: "I am safe" }).click();
   await expect(daniel.getByText(/your status is recorded/)).toBeVisible();
 
@@ -153,7 +154,7 @@ test("full demo loop across operator and citizen sessions", async ({ browser }) 
   // Arabic command center (true RTL)
   await page.getByRole("radio", { name: "ع" }).click();
   await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-  await page.getByRole("button", { name: /تحليل الاستجابة/ }).click();
+  await rail.getByRole("button", { name: /الردود/ }).click();
   await page.waitForTimeout(3000);
   await page.screenshot({ path: `${SHOTS}/13-command-center-arabic.png` });
   await page.getByRole("radio", { name: "EN" }).click();

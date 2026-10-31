@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { FastForward, Film, RotateCcw, TriangleAlert, LocateFixed } from "lucide-react";
+import { FastForward, Film, RotateCcw, TriangleAlert, LocateFixed, LogOut } from "lucide-react";
 import { Segmented } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
+import { api } from "@/lib/api";
 import { useOps } from "./context";
 
 export function SettingsMenu({ onClose }: { onClose: () => void }) {
-  const { t, lang, state, demo, incidentAction, canAct } = useOps();
+  const { t, lang, state, demo, incidentAction, canAct, operator, signInRequired } = useOps();
   const { quality, setQuality, reducedMotion, setReducedMotion, replayIntro, flyTo } = useUi();
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -24,11 +25,38 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
   }, [onClose]);
 
   const speed = state?.scenario.simSpeed ?? 1;
-  const item = "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[13px] text-ink hover:bg-surface-2 disabled:opacity-50";
+  const item = "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-start text-[13px] text-ink hover:bg-surface-2 disabled:opacity-45";
+  const label = "px-1.5 pb-1.5 text-[11.5px] font-semibold text-muted";
 
   return (
     <div ref={ref} role="dialog" aria-label={t("settings")} className="absolute end-0 top-10 z-50 w-[300px] rounded-2xl bg-surface p-3 shadow-[var(--shadow-float)] ring-1 ring-line">
-      <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{lang === "ar" ? "السيناريو" : "Scenario"}</div>
+      <div className="mb-3 flex items-center gap-2.5 rounded-xl bg-surface-2 px-2.5 py-2">
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink text-[11.5px] font-semibold text-white">
+          {operator.name
+            .split(" ")
+            .map((p) => p[0])
+            .join("")}
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[13px] font-semibold text-ink">{operator.name}</div>
+          <div className="truncate text-[11.5px] text-muted">{operator.title[lang]}</div>
+        </div>
+        {signInRequired && (
+          <button
+            className="grid h-8 w-8 place-items-center rounded-lg text-muted hover:bg-surface hover:text-ink"
+            aria-label={t("signOut")}
+            title={t("signOut")}
+            onClick={async () => {
+              await api("/api/auth/logout", { method: "POST" });
+              window.location.href = "/login";
+            }}
+          >
+            <LogOut size={15} />
+          </button>
+        )}
+      </div>
+
+      <div className={label}>{lang === "ar" ? "السيناريو" : "Scenario"}</div>
       <div className="px-1.5 pb-3">
         <select
           aria-label={lang === "ar" ? "اختيار السيناريو" : "Choose scenario"}
@@ -52,8 +80,8 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
           <option value="rain-responses-complete">{lang === "ar" ? "نقطة تحقق: اكتملت الردود" : "Checkpoint: responses complete"}</option>
         </select>
       </div>
-      <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{t("visualQuality")}</div>
-      <div className="px-1.5 pb-3">
+      <div className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-2 px-1.5 pb-3">
+        <span className="text-[12px] text-ink-2">{t("visualQuality")}</span>
         <Segmented
           ariaLabel={t("visualQuality")}
           size="sm"
@@ -65,9 +93,7 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
             { value: "lite", label: t("lite") },
           ]}
         />
-      </div>
-      <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{t("motion")}</div>
-      <div className="px-1.5 pb-3">
+        <span className="text-[12px] text-ink-2">{t("motion")}</span>
         <Segmented
           ariaLabel={t("motion")}
           size="sm"
@@ -78,9 +104,7 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
             { value: "reduced", label: t("motionReduced") },
           ]}
         />
-      </div>
-      <div className="px-1.5 pb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{t("simSpeed")}</div>
-      <div className="px-1.5 pb-3">
+        <span className="text-[12px] text-ink-2">{t("simSpeed")}</span>
         <Segmented
           ariaLabel={t("simSpeed")}
           size="sm"
@@ -98,7 +122,7 @@ export function SettingsMenu({ onClose }: { onClose: () => void }) {
         </button>
         <button className={item} disabled={!canAct || !state?.pendingSimulation} onClick={() => void demo("fast-forward")}>
           <FastForward size={15} className="text-muted" /> {t("fastForward")}
-          {!!state?.pendingSimulation && <span className="ms-auto text-[11.5px] text-muted">{state.pendingSimulation}</span>}
+          {!!state?.pendingSimulation && <span className="tnum ms-auto text-[11.5px] text-muted">{state.pendingSimulation}</span>}
         </button>
         <button
           className={item}

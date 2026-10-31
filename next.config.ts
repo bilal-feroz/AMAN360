@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["better-sqlite3"],
   poweredByHeader: false,
+  devIndicators: false,
   async headers() {
     return [
       {

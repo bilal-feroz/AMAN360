@@ -1,7 +1,6 @@
 export const CITIZEN_COPY = {
   en: {
-    training: "Training scenario — synthetic data. Not a real alert.",
-    appSub: "Emergency guidance",
+    training: "Training scenario — not a real alert",
     noAlerts: "No active alerts for you",
     noAlertsSub: "AMAN will notify you if verified guidance applies to your location.",
     yourArea: "Your area",
@@ -57,8 +56,7 @@ export const CITIZEN_COPY = {
     severity: { advisory: "Advisory", watch: "Watch", warning: "Warning", emergency: "Emergency" },
   },
   ar: {
-    training: "سيناريو تدريبي — بيانات اصطناعية. ليس تنبيهًا حقيقيًا.",
-    appSub: "إرشادات الطوارئ",
+    training: "سيناريو تدريبي — ليس تنبيهًا حقيقيًا",
     noAlerts: "لا توجد تنبيهات نشطة لك",
     noAlertsSub: "سيُعلمك أمان إذا انطبقت إرشادات موثّقة على موقعك.",
     yourArea: "منطقتك",

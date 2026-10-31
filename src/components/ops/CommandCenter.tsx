@@ -9,7 +9,6 @@ import type { IntroStage } from "@/components/map/CityMap";
 import { useOpsState } from "@/lib/use-ops-state";
 import { hydratePreferences, useUi } from "@/lib/ui-store";
 import type { Lang } from "@/lib/i18n";
-import { Chip } from "@/components/ui";
 import { OpsProvider, useOps } from "./context";
 import { TopBar } from "./TopBar";
 import { Rail } from "./Rail";
@@ -217,14 +216,14 @@ function Shell({ connection }: { connection: "live" | "reconnecting" | "polling"
         animate={{ width: panelWidth, x: chrome ? 0 : rtl ? -panelWidth - 8 : panelWidth + 8 }}
         transition={{ type: "spring", stiffness: 150, damping: 24, delay: chrome ? 0.16 : 0 }}
       >
-        <div className="scroll-thin relative min-h-0 flex-1 overflow-y-auto">
+        <div className="scroll-thin relative flex min-h-0 flex-1 flex-col overflow-y-auto">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={ui.view + (ui.view === "case" ? ui.selectedCaseId : ui.view === "recipient" ? ui.selectedRecipientId : "")}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } }}
               exit={{ opacity: 0, y: -6, transition: { duration: 0.14 } }}
-              className="min-h-full"
+              className="flex flex-1 flex-col [&>*]:flex-1"
             >
               {ops.state ? panel : <PanelSkeleton />}
             </motion.div>
@@ -327,93 +326,69 @@ function ClosureCard({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="pointer-events-auto absolute start-4 top-4 w-[320px] rounded-2xl bg-surface p-4 shadow-[var(--shadow-float)] ring-1 ring-line"
+      className="pointer-events-auto absolute start-4 top-4 w-[300px] rounded-2xl bg-surface p-4 shadow-[var(--shadow-float)] ring-1 ring-line"
     >
       <div className="flex items-start gap-3">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-coral-soft text-coral-ink">
+        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-coral-soft text-coral-ink">
           <Route size={17} />
         </span>
         <div className="min-w-0 flex-1">
-          <div className="text-[13.5px] font-semibold text-ink">{L(c.name)}</div>
-          <div className="mt-0.5 flex flex-wrap gap-1.5">
-            <Chip tone="coral" dot>
-              {lang === "ar" ? "إغلاق مؤكد (محاكاة)" : "Confirmed closure (simulated)"}
-            </Chip>
-          </div>
+          <div className="text-[14px] font-semibold leading-snug text-ink">{L(c.name)}</div>
+          <div className="mt-0.5 text-[12px] font-medium text-coral-ink">{lang === "ar" ? "إغلاق مؤكد · الاتجاهان" : "Confirmed closure · both directions"}</div>
         </div>
-        <button onClick={onClose} aria-label="Close" className="text-muted hover:text-ink">
+        <button onClick={onClose} aria-label="Close" className="grid h-7 w-7 place-items-center rounded-lg text-muted hover:bg-surface-2 hover:text-ink">
           <X size={15} />
         </button>
       </div>
-      <dl className="mt-3 space-y-1 text-[12px]">
-        {state.closures.map((x) => (
-          <div key={x.id} className="flex justify-between gap-2">
-            <dt className="font-id text-muted">{x.id}</dt>
-            <dd className="text-ink">{L(x.direction)}</dd>
-          </div>
-        ))}
-        <div className="flex justify-between gap-2">
-          <dt className="text-muted">{lang === "ar" ? "المصدر" : "Source"}</dt>
-          <dd className="text-ink">SIM-ROADS (mock)</dd>
-        </div>
-        <div className="flex justify-between gap-2">
-          <dt className="text-muted">{lang === "ar" ? "تحويلات معتمدة" : "Approved diversions"}</dt>
-          <dd className="text-ink">{lang === "ar" ? "لا يوجد — لا يُقترح أي مسار بديل" : "None — no alternative route is suggested"}</dd>
-        </div>
-      </dl>
-      <p className="mt-3 text-[11.5px] text-muted">
-        {lang === "ar" ? "هذا الإغلاق جزء من سيناريو تدريبي ولا يمثل حالة الطريق الفعلية." : "This closure is part of a training scenario and does not describe the real road."}
+      <p className="mt-3 rounded-xl bg-surface-2 px-3 py-2.5 text-[12.5px] leading-relaxed text-ink">
+        {lang === "ar" ? "لا يوجد تحويل معتمد — لا يُقترح أي مسار بديل." : "No approved diversion — no alternative route is suggested."}
+      </p>
+      <p className="mt-2 text-[11.5px] text-muted">
+        {lang === "ar" ? "المصدر: SIM-ROADS (محاكاة)" : "Source: SIM-ROADS (simulated)"} · {state.closures.length} {lang === "ar" ? "مقاطع" : "segments"}
       </p>
     </motion.div>
   );
 }
 
+/** Before alerts go out the map needs a key; afterwards the metric dots in the timeline are the key. */
 function Legend() {
   const { lang, state } = useOps();
-  const items: [string, string][] = state?.metrics.alertsSent
+  if (state?.metrics.alertsSent) return null;
+  const items: [string, string][] = state?.assessment
     ? [
-        ["#0b8f88", lang === "ar" ? "بخير" : "Safe"],
-        ["#e8ac45", lang === "ar" ? "بانتظار الرد" : "Awaiting"],
-        ["#42c8bb", lang === "ar" ? "استيضاح" : "Clarification"],
-        ["#fa684f", lang === "ar" ? "طلب مساعدة" : "Assistance"],
+        ["#f39a80", lang === "ar" ? "متأثر" : "Affected"],
+        ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside"],
+        ["#e8ac45", lang === "ar" ? "مراجعة" : "Review"],
       ]
-    : state?.assessment
-      ? [
-          ["#f39a80", lang === "ar" ? "متأثر" : "Affected"],
-          ["#c3cfd1", lang === "ar" ? "خارج المنطقة" : "Outside zone"],
-          ["#e8ac45", lang === "ar" ? "يحتاج مراجعة" : "Needs review"],
-        ]
-      : [["#6fa3ab", lang === "ar" ? "سكان اصطناعيون (≈120 م)" : "Synthetic population (≈120 m cells)"]];
+    : [["#6fa3ab", lang === "ar" ? "السكان (≈120 م)" : "Population (≈120 m)"]];
   return (
-    <div className="absolute end-4 top-4 rounded-xl bg-white/90 px-3 py-2 text-[11.5px] shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
-      <div className="mb-1 font-semibold text-ink">{lang === "ar" ? "أعمدة السكان" : "Population columns"}</div>
-      <ul className="space-y-1">
-        {items.map(([c, l]) => (
-          <li key={l} className="flex items-center gap-2 text-ink-2">
-            <span className="h-2.5 w-2.5 rounded-sm" style={{ background: c }} />
-            {l}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul className="absolute end-4 top-4 flex items-center gap-3 rounded-full bg-white/90 px-3 py-1.5 text-[11.5px] font-medium text-ink-2 shadow-[var(--shadow-panel)] ring-1 ring-line backdrop-blur">
+      {items.map(([c, l]) => (
+        <li key={l} className="flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full" style={{ background: c }} />
+          {l}
+        </li>
+      ))}
+    </ul>
   );
 }
 
 /** Required data attributions, always visible (MapLibre's own control would sit under the panel). */
 function Attribution() {
+  const a = "hover:text-ink";
   return (
-    <div className="pointer-events-auto absolute bottom-0 end-0 rounded-ss-lg bg-white/80 px-2 py-0.5 text-[10.5px] text-muted backdrop-blur" dir="ltr">
-      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" className="hover:text-ink">© OpenStreetMap contributors</a>
+    <div className="pointer-events-auto absolute bottom-0 end-0 max-w-full truncate rounded-ss-lg bg-white/75 px-2 py-0.5 text-[10px] text-muted backdrop-blur" dir="ltr">
+      <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener" className={a}>© OpenStreetMap contributors</a>
       {" · "}
-      <a href="https://openfreemap.org" target="_blank" rel="noopener" className="hover:text-ink">OpenFreeMap</a>
+      <a href="https://openfreemap.org" target="_blank" rel="noopener" className={a}>OpenFreeMap</a>
       {" · "}
-      <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener" className="hover:text-ink">OpenMapTiles</a>
+      <a href="https://www.openmaptiles.org/" target="_blank" rel="noopener" className={a}>OpenMapTiles</a>
       {" · "}
-      <a href="https://cloudless.eox.at" target="_blank" rel="noopener" className="hover:text-ink">EOxCloudless 2024 (contains modified Copernicus Sentinel data)</a>
+      <a href="https://cloudless.eox.at" target="_blank" rel="noopener" className={a} title="EOxCloudless 2024 (contains modified Copernicus Sentinel data)">EOxCloudless 2024 (modified Copernicus Sentinel data)</a>
       {" · "}
-      <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener" className="hover:text-ink">Terrain Tiles (AWS Open Data, SRTM)</a>
+      <a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener" className={a}>Terrain Tiles (AWS, SRTM)</a>
       {" · "}
-      <a href="https://maplibre.org" target="_blank" rel="noopener" className="hover:text-ink">MapLibre</a>
+      <a href="https://maplibre.org" target="_blank" rel="noopener" className={a}>MapLibre</a>
     </div>
   );
 }

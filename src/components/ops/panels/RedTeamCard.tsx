@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, FlaskConical, ShieldX, X } from "lucide-react";
+import { Check, ChevronDown, FlaskConical, ShieldCheck, ShieldX, X } from "lucide-react";
 import type { ActionTemplate, ActionVariant, Bilingual, ValidationCheck } from "@/domain/types";
 import { cn, Segmented } from "@/components/ui";
 import { api } from "@/lib/api";
@@ -23,6 +23,7 @@ interface Result {
  */
 export function RedTeamCard({ actionId, variant, lang }: { actionId: string; variant: ActionVariant; lang: Lang }) {
   const [attacks, setAttacks] = useState<{ id: string; label: Bilingual }[]>([]);
+  const [open, setOpen] = useState(false);
   const [msgLang, setMsgLang] = useState<Lang>(lang);
   const [busy, setBusy] = useState<string | null>(null);
   const [res, setRes] = useState<Result | null>(null);
@@ -34,7 +35,10 @@ export function RedTeamCard({ actionId, variant, lang }: { actionId: string; var
   useEffect(() => setRes(null), [actionId, variant, msgLang]);
   // Presentation Mode triggers a stress test through a window event.
   useEffect(() => {
-    const on = (e: Event) => void run((e as CustomEvent<{ attack: string }>).detail.attack);
+    const on = (e: Event) => {
+      setOpen(true);
+      void run((e as CustomEvent<{ attack: string }>).detail.attack);
+    };
     window.addEventListener("aman:redteam", on);
     return () => window.removeEventListener("aman:redteam", on);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -55,69 +59,76 @@ export function RedTeamCard({ actionId, variant, lang }: { actionId: string; var
   const at = inj && text.includes(inj) ? text.indexOf(inj) : -1;
 
   return (
-    <div data-redteam-panel className="mx-5 mt-3 overflow-hidden rounded-2xl bg-[linear-gradient(160deg,#1a1236,#102c33)] text-white ring-1 ring-black/10">
-      <div className="flex items-center gap-2 px-4 pt-3.5">
-        <FlaskConical size={15} className="text-[#b9a7ff]" />
-        <span className="text-[13px] font-semibold">{L(lang, "Try to break the AI", "حاول كسر الذكاء الاصطناعي")}</span>
-        <span className="text-[11px] text-white/55">{L(lang, "· live stress test of the validator", "· اختبار ضغط مباشر للمدقق")}</span>
-        <span className="ms-auto">
-          <Segmented ariaLabel="Message language" size="sm" value={msgLang} onChange={setMsgLang} options={[{ value: "en", label: "EN" }, { value: "ar", label: "ع" }]} />
-        </span>
-      </div>
-      <p className="px-4 pt-1 text-[11.5px] leading-relaxed text-white/60">
-        {L(lang, `Pick an unsafe edit a model might make to ${actionId}. It runs through the same 8 checks as every real Claude output.`, `اختر تعديلًا غير آمن قد يجريه نموذج على ${actionId}. يمر عبر الفحوص الثمانية نفسها التي يمر بها كل مخرج حقيقي من Claude.`)}
-      </p>
-      <div className="flex flex-wrap gap-1.5 px-4 pb-3 pt-2.5">
-        {attacks.map((a) => (
-          <button
-            key={a.id}
-            onClick={() => void run(a.id)}
-            disabled={!!busy}
-            className={cn(
-              "rounded-full px-2.5 py-1 text-[11.5px] font-medium ring-1 transition",
-              res?.attack.id === a.id ? "bg-[#6d4cf0] text-white ring-[#8b6cf6]" : "bg-white/5 text-white/85 ring-white/15 hover:bg-white/10",
-            )}
-          >
-            {busy === a.id ? "…" : L(lang, a.label.en, a.label.ar)}
-          </button>
-        ))}
-      </div>
-      <AnimatePresence mode="wait">
-        {res && (
-          <motion.div key={res.attack.id + msgLang} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="border-t border-white/10 bg-black/20">
-            <div className="px-4 py-3">
-              <div className="text-[10.5px] font-semibold uppercase tracking-wide text-white/45">{L(lang, "Unsafe candidate", "مرشح غير آمن")}</div>
-              <p className="mt-1 line-clamp-4 text-[12px] leading-relaxed text-white/80" dir={msgLang === "ar" ? "rtl" : "ltr"}>
-                {at >= 0 ? (
-                  <>
-                    {text.slice(Math.max(0, at - 140), at)}
-                    <mark className="rounded bg-[#fa684f] px-1 text-white">{inj}</mark>
-                    {text.slice(at + inj.length, at + inj.length + 60)}
-                  </>
-                ) : (
-                  <>
-                    <mark className="rounded bg-[#fa684f] px-1 text-white">{inj}</mark> {text.slice(0, 180)}
-                  </>
-                )}
-              </p>
-              <ul className="mt-2.5 grid grid-cols-2 gap-x-3 gap-y-1">
-                {res.checks.map((c, i) => (
-                  <motion.li key={c.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0, transition: { delay: 0.05 * i } }} className={cn("flex items-start gap-1.5 text-[11px]", c.passed ? "text-white/45" : "font-semibold text-[#ff9b87]")} title={c.detail}>
-                    {c.passed ? <Check size={12} className="mt-0.5 shrink-0" /> : <X size={12} className="mt-0.5 shrink-0" />}
-                    {c.label}
-                  </motion.li>
-                ))}
-              </ul>
-              <div className={cn("mt-3 flex items-center gap-2 rounded-xl px-3 py-2 text-[12px] font-semibold", res.passed ? "bg-amber/20 text-amber" : "bg-[#0b8f88]/25 text-[#7fe3d6]")}>
-                <ShieldX size={14} />
-                {res.passed
-                  ? L(lang, "Not blocked — this would be a validator gap", "لم يُحجب — هذه ثغرة في المدقق")
-                  : L(lang, `Blocked by ${failed.length} check${failed.length > 1 ? "s" : ""} → the approved template is used instead`, `حُجب بواسطة ${failed.length} فحص → يُستخدم القالب المعتمد بدلًا منه`)}
-              </div>
-            </div>
-          </motion.div>
+    <div data-redteam-panel className="overflow-hidden rounded-xl ring-1 ring-line">
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-2 px-3 py-2.5 text-start text-[12.5px] font-medium text-ink-2 hover:text-ink">
+        <FlaskConical size={15} className="text-violet" />
+        <span className="flex-1">{L(lang, "Try to break the AI", "حاول كسر الذكاء الاصطناعي")}</span>
+        {res && !res.passed && (
+          <span className="inline-flex items-center gap-1 text-[11.5px] font-semibold text-teal-ink">
+            <ShieldCheck size={13} /> {L(lang, "Blocked", "حُجب")}
+          </span>
         )}
-      </AnimatePresence>
+        <ChevronDown size={15} className={cn("text-muted transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <div className="border-t border-line px-3 pb-3 pt-2.5">
+          <div className="flex items-start gap-3">
+            <p className="flex-1 text-[12px] leading-relaxed text-muted">
+              {L(lang, "Inject an unsafe edit into the approved message. It must pass the same checks as every real Claude output.", "أدخل تعديلًا غير آمن على الرسالة المعتمدة. يجب أن يمر بالفحوص نفسها التي يمر بها كل مخرج حقيقي من Claude.")}
+            </p>
+            <Segmented ariaLabel="Message language" size="sm" value={msgLang} onChange={setMsgLang} options={[{ value: "en", label: "EN" }, { value: "ar", label: "ع" }]} />
+          </div>
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {attacks.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => void run(a.id)}
+                disabled={!!busy}
+                className={cn(
+                  "rounded-full px-2.5 py-1 text-[11.5px] font-medium ring-1 transition",
+                  res?.attack.id === a.id ? "bg-violet text-white ring-violet" : "bg-surface text-ink-2 ring-line hover:ring-violet/50 hover:text-ink",
+                )}
+              >
+                {busy === a.id ? "…" : L(lang, a.label.en, a.label.ar)}
+              </button>
+            ))}
+          </div>
+          <AnimatePresence mode="wait">
+            {res && (
+              <motion.div key={res.attack.id + msgLang} initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-3 rounded-xl bg-surface-2 p-3">
+                <p className="line-clamp-3 text-[12px] leading-relaxed text-ink-2" dir={msgLang === "ar" ? "rtl" : "ltr"}>
+                  {at >= 0 ? (
+                    <>
+                      …{text.slice(Math.max(0, at - 110), at)}
+                      <mark className="rounded bg-coral px-1 text-white">{inj}</mark>
+                      {text.slice(at + inj.length, at + inj.length + 50)}…
+                    </>
+                  ) : (
+                    <>
+                      <mark className="rounded bg-coral px-1 text-white">{inj}</mark> {text.slice(0, 160)}…
+                    </>
+                  )}
+                </p>
+                {failed.length > 0 && (
+                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                    {failed.map((c) => (
+                      <li key={c.id} title={c.detail} className="inline-flex items-center gap-1 rounded-full bg-coral-soft px-2 py-[2px] text-[11px] font-semibold text-coral-ink">
+                        <X size={11} /> {c.label}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className={cn("mt-2.5 flex items-center gap-2 text-[12.5px] font-semibold", res.passed ? "text-amber-ink" : "text-teal-ink")}>
+                  {res.passed ? <ShieldX size={15} /> : <Check size={15} strokeWidth={2.6} />}
+                  {res.passed
+                    ? L(lang, "Not blocked — this would be a validator gap", "لم يُحجب — هذه ثغرة في المدقق")
+                    : L(lang, `Blocked by ${failed.length} check${failed.length > 1 ? "s" : ""} → the approved template is used instead`, `حُجب بواسطة ${failed.length} فحص → يُستخدم القالب المعتمد بدلًا منه`)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
     </div>
   );
 }

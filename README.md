@@ -87,7 +87,7 @@ serves the optimised production bundle — use it on presentation day.
 
 ### Citizen devices
 
-In the command center, open **Citizen devices** (left rail) to preview the four synthetic personas
+In the command center, open **Devices** (left rail) to preview the four synthetic personas
 in-place or open each one in its **own window / phone** (same Wi-Fi: replace `localhost` with the
 laptop's IP). Responses on a device update the command center live over Server-Sent Events.
 
@@ -107,7 +107,7 @@ follows. The badge always says which mode answered: **Claude Opus 5.5 · live** 
 
 ### Social signals
 
-Open **Social signals** in the left rail. *Live scenario* shows the synthetic posts arriving on the
+Open **Signals** in the left rail. *Live drill* shows the synthetic posts arriving on the
 scenario clock (hotspots, a spreading rumour, public questions). *Real storm · Oct 2026* flies the map
 to Sharjah's central region and east coast over 3D terrain: pick a hotspot, open a post to see the
 frames Claude looked at, its reading (water depth, hail, people at risk, evidence), the deterministic
@@ -153,7 +153,7 @@ from keyword rules, and the UI says so ("Approved templates (deterministic)", "R
 | ![Opening — Earth](docs/screenshots/00-opening-earth.jpg) Opening sequence: Sentinel-2 Earth | ![Opening — city](docs/screenshots/01-opening-city.jpg) Descent into Al Majaz |
 | ![Overview](docs/screenshots/02-sharjah-overview.jpg) Calm city, verified alert waiting | ![Activated](docs/screenshots/03-hazard-zone-activated.jpg) Zone, closure and computed impact |
 | ![Closure](docs/screenshots/04-road-closure-detail.jpg) Simulated closure — no invented diversion | ![Why](docs/screenshots/05-why-this-action.jpg) “Why this action?” |
-| ![Guidance](docs/screenshots/06-bilingual-guidance-approval.jpg) Bilingual guidance approval | ![Responses](docs/screenshots/10-response-intelligence.jpg) Response intelligence (120 · 85 · 8 · 27) |
+| ![Guidance](docs/screenshots/06-bilingual-guidance-approval.jpg) Bilingual guidance approval | ![Responses](docs/screenshots/10-response-intelligence.jpg) Responses (120 · 85 · 8 · 27) |
 | ![Case](docs/screenshots/11-case-explainability.jpg) Case with full decision chain | ![Arabic](docs/screenshots/12-command-center-arabic.jpg) Arabic command center (RTL) |
 | ![Arabic citizen](docs/screenshots/07-citizen-arabic.jpg) Citizen app — Arabic | ![English citizen](docs/screenshots/08-citizen-english.jpg) Citizen app — English driver |
 | ![Social signals](docs/screenshots/16-social-signals.jpg) Social intelligence — hotspots go to human verification | ![Real storm](docs/screenshots/19-real-storm-3d.jpg) Real storm, 12–20 Oct 2026 — over 3D terrain |

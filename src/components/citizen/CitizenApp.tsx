@@ -236,40 +236,38 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
 
   return (
     <Screen embed={embed}>
-      <header className="flex items-center gap-2.5 px-5 pb-3 pt-3">
+      <header className="flex items-center gap-2.5 px-5 pb-2 pt-3">
         <span className="text-teal">
-          <AmanMark size={26} />
+          <AmanMark size={24} />
         </span>
-        <div className="min-w-0 flex-1">
-          <div className="text-[15px] font-semibold leading-tight text-ink">{lang === "ar" ? "أمان 360" : "AMAN 360"}</div>
-          <div className="text-[11.5px] text-muted">{c.appSub}</div>
-        </div>
+        <div className="min-w-0 flex-1 text-[15px] font-semibold text-ink">{lang === "ar" ? "أمان 360" : "AMAN 360"}</div>
         <button
           onClick={() => setPrefs((p) => ({ ...p, lang: lang === "en" ? "ar" : "en" }))}
-          className="h-11 min-w-11 rounded-xl px-3 text-[14px] font-semibold text-ink-2 ring-1 ring-line hover:bg-surface-2"
+          className="h-11 min-w-11 rounded-xl px-3 text-[14px] font-semibold text-ink-2 hover:bg-surface-2"
           aria-label={c.language}
         >
           {lang === "en" ? "ع" : "EN"}
         </button>
-        <button onClick={() => setSheet("a11y")} className="grid h-11 w-11 place-items-center rounded-xl text-ink-2 ring-1 ring-line hover:bg-surface-2" aria-label={c.accessibility}>
-          <Accessibility size={19} />
+        <button onClick={() => setSheet("a11y")} className="grid h-11 w-11 place-items-center rounded-xl text-ink-2 hover:bg-surface-2" aria-label={c.accessibility}>
+          <Accessibility size={20} />
         </button>
       </header>
-      <div className="mx-5 rounded-xl bg-amber-soft px-3 py-2 text-[12px] font-medium text-amber-ink" role="note">
+      <p className="mx-5 flex items-center gap-2 text-[13px] text-amber-ink" role="note">
+        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber" aria-hidden />
         {c.training}
-      </div>
+      </p>
       {offline && (
-        <div className="mx-5 mt-2 flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2 text-[12px] text-muted">
+        <div className="mx-5 mt-2 flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2 text-[13px] text-muted">
           <Wifi size={14} /> {c.offline}
         </div>
       )}
 
-      <main className="flex-1 overflow-y-auto px-5 pb-6 pt-4" aria-live="polite">
+      <main className="flex-1 overflow-y-auto px-5 pb-6 pt-3" aria-live="polite">
         {inbox?.clarifications.map((n) => (
-          <div key={n.id} role="status" className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-soft px-3.5 py-3 text-[13.5px] leading-relaxed text-teal-ink ring-1 ring-teal/25">
-            <ShieldCheck size={17} className="mt-0.5 shrink-0" />
+          <div key={n.id} role="status" className="mb-3 flex items-start gap-2.5 rounded-2xl bg-teal-soft px-3.5 py-3 text-[14px] leading-relaxed text-ink ring-1 ring-teal/25">
+            <ShieldCheck size={17} className="mt-0.5 shrink-0 text-teal-ink" />
             <span>
-              <b className="block text-[12px] font-semibold uppercase tracking-[0.06em] rtl:tracking-normal">{lang === "ar" ? "توضيح رسمي" : "Official clarification"}</b>
+              <b className="block text-[13px] font-semibold text-teal-ink">{lang === "ar" ? "توضيح رسمي" : "Official clarification"}</b>
               {n.text[lang]}
             </span>
           </div>
@@ -305,10 +303,10 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
             </div>
 
             <section className="mt-4" aria-label={c.whatToDo}>
-              <div className="mb-2 flex items-center justify-between">
-                <h2 className="text-[13px] font-semibold uppercase tracking-[0.06em] text-muted rtl:tracking-normal">{c.whatToDo}</h2>
-                <button onClick={readAloud} className="inline-flex h-10 items-center gap-1.5 rounded-xl px-3 text-[13px] font-medium text-teal ring-1 ring-teal/30 hover:bg-teal-soft">
-                  {speaking ? <Square size={14} /> : <Volume2 size={15} />} {speaking ? c.stop : c.listen}
+              <div className="mb-1.5 flex items-center justify-between">
+                <h2 className="text-[15px] font-semibold text-ink">{c.whatToDo}</h2>
+                <button onClick={readAloud} className="-me-2 inline-flex h-11 items-center gap-1.5 rounded-xl px-3 text-[14px] font-medium text-teal-ink hover:bg-teal-soft">
+                  {speaking ? <Square size={14} /> : <Volume2 size={16} />} {speaking ? c.stop : c.listen}
                 </button>
               </div>
               <ol className="space-y-2">
@@ -329,25 +327,20 @@ export default function CitizenApp({ token, embed }: { token: string; embed: boo
               </figure>
             )}
 
-            <dl className="mt-4 space-y-1.5 rounded-2xl bg-surface-2 p-4 text-[13px]">
-              <div className="flex items-center gap-2">
-                <Clock size={14} className="text-muted" />
-                <dt className="text-muted">{c.issued}</dt>
-                <dd className="tnum ms-auto text-ink">{fmtTime(alert.issuedAt, lang)}</dd>
+            <dl className="mt-4 space-y-1 text-[13px] leading-relaxed text-muted">
+              <div className="flex flex-wrap items-center gap-x-1.5">
+                <Clock size={13} className="shrink-0" />
+                <dt>{c.issued}</dt>
+                <dd className="tnum text-ink-2">{fmtTime(alert.issuedAt, lang)}</dd>
+                <span aria-hidden>·</span>
+                <dt>{c.validUntil}</dt>
+                <dd className="tnum text-ink-2">{fmtTime(alert.validUntil, lang)}</dd>
               </div>
-              <div className="flex items-center gap-2">
-                <Clock size={14} className="text-muted" />
-                <dt className="text-muted">{c.validUntil}</dt>
-                <dd className="tnum ms-auto text-ink">{fmtTime(alert.validUntil, lang)}</dd>
-              </div>
-              <div className="flex items-start gap-2">
-                <ShieldCheck size={14} className="mt-0.5 text-muted" />
-                <dt className="text-muted">{c.source}</dt>
-                <dd className="ms-auto text-end text-ink">
-                  {alert.source.name[lang]}
-                  <span className="block text-[11.5px] text-muted">
-                    {alert.source.ref} · {c.simulated}
-                  </span>
+              <div className="flex items-start gap-1.5" title={alert.source.ref}>
+                <ShieldCheck size={13} className="mt-[3px] shrink-0" />
+                <dt className="sr-only">{c.source}</dt>
+                <dd>
+                  <span className="text-ink-2">{alert.source.name[lang]}</span> · {c.simulated}
                 </dd>
               </div>
             </dl>
@@ -480,7 +473,7 @@ function NoAlerts({ c, area, name }: { c: (typeof CITIZEN_COPY)["en"]; area: str
       <div className="mt-6 flex items-center gap-2 rounded-full bg-surface px-4 py-2 text-[13px] text-ink-2 ring-1 ring-line">
         <MapPin size={14} className="text-muted" /> {c.yourArea}: {area}
       </div>
-      <p className="mt-2 text-[12px] text-muted">
+      <p className="mt-2 text-[13px] text-muted">
         <bdi>{name}</bdi>
       </p>
     </div>
@@ -519,12 +512,12 @@ function ResponseArea({
               {helpCase!.status === "open" ? c.helpReceived : helpCase!.status === "resolved" ? c.resolvedByOperator : c.acknowledgedByOperator}
             </div>
             <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{c.helpReceivedSub}</p>
-            <p className="mt-2 text-[12.5px] text-muted">
-              <span className="font-id">{helpCase!.id}</span> · {fmtTime(alert.responses.find((r) => r.kind === "help")?.at, lang, true)}
+            <p className="tnum mt-2 text-[13px] text-muted" title={helpCase!.id}>
+              {fmtTime(alert.responses.find((r) => r.kind === "help")?.at, lang, true)}
             </p>
             {helpCase!.notes.map((n) => (
               <div key={n.at} className="mt-3 rounded-xl bg-white/80 p-3 text-[14px] text-ink">
-                <div className="text-[12px] font-semibold text-muted">{c.operatorNote}</div>
+                <div className="text-[13px] font-semibold text-muted">{c.operatorNote}</div>
                 {n.text}
               </div>
             ))}
@@ -536,7 +529,7 @@ function ResponseArea({
               <CircleCheck size={19} /> {c.safeRecorded}
             </div>
             <p className="mt-1 text-[14px] text-ink-2">{c.safeRecordedSub}</p>
-            <p className="tnum mt-1 text-[12.5px] text-muted">{fmtTime(lastResponse!.at, lang, true)}</p>
+            <p className="tnum mt-1 text-[13px] text-muted">{fmtTime(lastResponse!.at, lang, true)}</p>
           </motion.div>
         ) : (
           <motion.p key="prompt" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-2 text-[14px] font-medium text-ink-2">
@@ -617,7 +610,7 @@ function A11yPanel({ c, prefs, setPrefs, lang }: { c: (typeof CITIZEN_COPY)["en"
       <Toggle label={c.plainLanguage} value={prefs.plain} onChange={(v) => setPrefs((p) => ({ ...p, plain: v }))} />
       <Toggle label={c.highContrast} value={prefs.contrast} onChange={(v) => setPrefs((p) => ({ ...p, contrast: v }))} />
       <Toggle label={c.reduceMotion} value={prefs.reduced} onChange={(v) => setPrefs((p) => ({ ...p, reduced: v }))} />
-      <p className="flex items-start gap-2 text-[12.5px] text-muted">
+      <p className="flex items-start gap-2 text-[13px] text-muted">
         <Info size={14} className="mt-0.5 shrink-0" />
         {lang === "ar" ? "تُحفظ هذه التفضيلات على هذا الجهاز فقط." : "These preferences are saved on this device only."}
       </p>

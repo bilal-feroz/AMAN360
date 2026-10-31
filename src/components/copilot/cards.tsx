@@ -16,7 +16,6 @@ import {
   MapPin,
   MessageSquareText,
   Route,
-  ShieldCheck,
   Sparkles,
   TriangleAlert,
   X,
@@ -45,6 +44,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 // ---------------------------------------------------------------------------------- primitives
 
 const ID_RE = /(\*\*[^*]+\*\*|\b(?:RES|CASE|EVT|HZ|RC|ACT|REV|SIM|OP)-[A-Za-z0-9/-]+\b|\bR-\d{2}-[A-Z]+\b|\bPOLICY-\d{4}-\d{2}\b)/g;
+const HAS_ID = /\b(?:RES|CASE|EVT|HZ|RC|ACT|REV|SIM|OP)-[A-Za-z0-9/-]+\b/;
 
 /** **bold** and record ids (kept left-to-right and unbroken, also inside Arabic text). */
 function Rich({ text }: { text: string }) {
@@ -56,7 +56,7 @@ function Rich({ text }: { text: string }) {
             {p.slice(2, -2)}
           </strong>
         ) : /^(RES|CASE|EVT|HZ|RC|ACT|REV|SIM|OP|R|POLICY)-/.test(p) ? (
-          <bdi key={i} dir="ltr" className="whitespace-nowrap font-id text-[0.9em] text-teal-ink">
+          <bdi key={i} dir="ltr" className="whitespace-nowrap font-id text-[0.88em] text-muted">
             {p}
           </bdi>
         ) : (
@@ -77,7 +77,7 @@ export function Prose({ text, streaming }: { text: string; streaming?: boolean }
   );
 }
 
-function ToneDot({ tone, size = 20 }: { tone: Tone; size?: number }) {
+function ToneDot({ tone, size = 18 }: { tone: Tone; size?: number }) {
   const s = { width: size, height: size };
   if (tone === "done")
     return (
@@ -87,7 +87,7 @@ function ToneDot({ tone, size = 20 }: { tone: Tone; size?: number }) {
     );
   if (tone === "help")
     return (
-      <span style={s} className="grid shrink-0 place-items-center rounded-full bg-coral text-white">
+      <span style={s} className="grid shrink-0 place-items-center rounded-full bg-coral-ink text-white">
         <LifeBuoy size={size * 0.6} strokeWidth={2.4} />
       </span>
     );
@@ -99,7 +99,7 @@ function ToneDot({ tone, size = 20 }: { tone: Tone; size?: number }) {
     );
   if (tone === "attention")
     return (
-      <span style={s} className="relative grid shrink-0 place-items-center rounded-full bg-amber-soft ring-2 ring-amber">
+      <span style={s} className="grid shrink-0 place-items-center rounded-full bg-amber-soft ring-2 ring-amber">
         <span className="h-1.5 w-1.5 rounded-full bg-amber-ink" />
       </span>
     );
@@ -110,24 +110,7 @@ function ToneDot({ tone, size = 20 }: { tone: Tone; size?: number }) {
   );
 }
 
-function Tag({ text, tone = "neutral" }: { text: string; tone?: "teal" | "coral" | "amber" | "neutral" }) {
-  return (
-    <span
-      dir="ltr"
-      className={cn(
-        "rounded-md px-1.5 py-[1px] font-id text-[10.5px] leading-[16px]",
-        tone === "neutral" && "bg-surface-2 text-ink-2 ring-1 ring-line",
-        tone === "teal" && "bg-teal-soft text-teal-ink",
-        tone === "coral" && "bg-coral-soft text-coral-ink",
-        tone === "amber" && "bg-amber-soft text-amber-ink",
-      )}
-    >
-      {text}
-    </span>
-  );
-}
-
-/** The connected "graph" of pipeline rows, revealed one by one. */
+/** The connected "graph" of pipeline rows, revealed one by one. Record ids stay in the tooltip. */
 function GraphRows({ rows }: { rows: GraphRow[] }) {
   return (
     <ol className="relative">
@@ -137,22 +120,16 @@ function GraphRows({ rows }: { rows: GraphRow[] }) {
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.32, ease, delay: 0.05 + i * 0.07 }}
-          className={cn("relative grid grid-cols-[20px_1fr_auto] gap-x-3 rounded-lg px-2 py-[7px]", r.emphasized && "bg-teal-soft/70 ring-1 ring-teal/20")}
+          title={r.tags.map((t) => t.text).join(" · ") || undefined}
+          className={cn("relative grid grid-cols-[18px_1fr_auto] gap-x-3 rounded-lg px-2 py-[6px]", r.emphasized && "bg-teal-soft/70")}
         >
-          {i < rows.length - 1 && <span className="absolute start-[17.5px] top-[29px] bottom-[-7px] w-px bg-line-strong" aria-hidden />}
+          {i < rows.length - 1 && <span className="absolute start-[16.5px] top-[27px] bottom-[-6px] w-px bg-line-strong" aria-hidden />}
           <span className="pt-[1px]">
             <ToneDot tone={r.tone} />
           </span>
           <div className="min-w-0">
             <div className={cn("text-[13px] leading-5", r.tone === "pending" ? "text-muted" : "font-medium text-ink")}>{r.label}</div>
             {r.detail && <div className="mt-0.5 text-[12px] leading-[1.45] text-muted">{r.detail}</div>}
-            {r.tags.length > 0 && (
-              <div className="mt-1 flex flex-wrap gap-1">
-                {r.tags.map((t, j) => (
-                  <Tag key={j} text={t.text} tone={t.tone} />
-                ))}
-              </div>
-            )}
           </div>
           <div className="whitespace-nowrap pt-[2px] text-[11px] text-muted tnum">{r.meta}</div>
         </motion.li>
@@ -180,10 +157,10 @@ function CheckPill({ item, result, index, lang }: { item: CheckItem; result?: { 
       layout
       title={detail}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-colors duration-300",
-        shown === "pending" && "bg-surface-2 text-muted ring-1 ring-line",
-        shown === "pass" && "bg-teal-soft text-teal-ink ring-1 ring-teal/25",
-        shown === "fail" && "bg-coral-soft text-coral-ink ring-1 ring-coral/30",
+        "inline-flex items-center gap-1.5 rounded-full px-2 py-[3px] text-[11.5px] font-medium transition-colors duration-300",
+        shown === "pending" && "bg-surface-2 text-muted",
+        shown === "pass" && "bg-teal-soft text-teal-ink",
+        shown === "fail" && "bg-coral-soft text-coral-ink",
       )}
     >
       {shown === "pending" ? <Loader2 size={12} className="animate-spin" /> : shown === "pass" ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
@@ -259,11 +236,13 @@ function ActionButton({ a, primary }: { a: ActionItem; primary?: boolean }) {
   const roleBlocked = WORKFLOW.has(a.kind) && operator.role !== "duty_officer";
   const allowed = a.allowed && !roleBlocked;
   const reason = roleBlocked ? L(lang, "Only the duty officer can do this", "هذا متاح للضابط المناوب فقط") : a.reason;
+  // Record ids belong in the tooltip, not on the button face.
+  const label = a.kind === "open_case" && HAS_ID.test(a.label) ? L(lang, "Open case", "فتح الحالة") : a.label;
   return (
     <div className="flex min-w-0 flex-col gap-1">
       <button
         disabled={!allowed || busy}
-        title={reason}
+        title={[a.label !== label ? a.label : null, reason].filter(Boolean).join(" — ") || undefined}
         onClick={async () => {
           setBusy(true);
           try {
@@ -273,14 +252,14 @@ function ActionButton({ a, primary }: { a: ActionItem; primary?: boolean }) {
           }
         }}
         className={cn(
-          "inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-[12.5px] font-medium transition-colors",
-          allowed && primary && "bg-teal text-white hover:bg-teal-ink",
-          allowed && !primary && "bg-surface-2 text-ink ring-1 ring-line hover:bg-surface-3",
-          !allowed && "cursor-not-allowed bg-surface-2 text-muted ring-1 ring-line",
+          "inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] px-3 text-[12.5px] font-semibold transition-colors",
+          allowed && primary && "bg-teal text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.16),0_1px_2px_rgb(6_70_67/0.35)] hover:bg-teal-ink",
+          allowed && !primary && "bg-surface text-ink shadow-[0_1px_2px_rgb(16_44_51/0.06)] ring-1 ring-line-strong/80 hover:bg-surface-2",
+          !allowed && "cursor-not-allowed bg-surface-2 text-muted",
         )}
       >
         {busy ? <Loader2 size={13} className="animate-spin" /> : !allowed ? <Lock size={12} /> : null}
-        {a.label}
+        {label}
         {allowed && !busy && <ArrowUpRight size={13} className="rtl:-scale-x-100" />}
       </button>
       {!allowed && reason && <span className="text-[11px] leading-tight text-muted">{reason}</span>}
@@ -293,18 +272,18 @@ function ActionButton({ a, primary }: { a: ActionItem; primary?: boolean }) {
 function Shell({ kind, label, aside, children, footer }: { kind: ComponentKind; label: string; aside?: ReactNode; children: ReactNode; footer?: ReactNode }) {
   return (
     <motion.section
-      initial={{ opacity: 0, y: 8, scale: 0.985 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease }}
-      className="overflow-hidden rounded-xl bg-surface ring-1 ring-line shadow-[0_1px_0_rgb(16_44_51/0.03),0_10px_28px_-20px_rgb(16_44_51/0.35)]"
+      className="overflow-hidden rounded-2xl bg-surface shadow-[0_1px_2px_rgb(16_44_51/0.05)] ring-1 ring-line"
     >
-      <header className="flex items-center gap-2 border-b border-line bg-surface-2/60 px-3 py-2">
-        <span className="text-teal">{KIND_ICON[kind]}</span>
-        <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-2 rtl:tracking-normal">{label}</span>
+      <header className="flex items-center gap-2 px-3.5 pb-1 pt-3">
+        <span className="text-muted">{KIND_ICON[kind]}</span>
+        <span className="text-[12.5px] font-semibold text-ink-2">{label}</span>
         <div className="ms-auto flex items-center gap-1.5">{aside}</div>
       </header>
-      <div className="p-3">{children}</div>
-      {footer && <div className="border-t border-line bg-surface-2/40 px-3 py-2.5">{footer}</div>}
+      <div className="px-2 pb-2.5 pt-1">{children}</div>
+      {footer && <div className="border-t border-line px-3.5 py-2.5">{footer}</div>}
     </motion.section>
   );
 }
@@ -321,10 +300,10 @@ function Building({ kind, label, lang }: { kind: ComponentKind; label: string; l
         </span>
       }
     >
-      <div className="space-y-2.5 py-1">
+      <div className="space-y-2.5 px-1.5 py-1">
         {[0.92, 0.7, 0.82].map((w, i) => (
           <div key={i} className="flex items-center gap-3">
-            <span className="h-5 w-5 shrink-0 animate-pulse rounded-full bg-surface-3" />
+            <span className="h-[18px] w-[18px] shrink-0 animate-pulse rounded-full bg-surface-3" />
             <span className="h-3 animate-pulse rounded bg-surface-3" style={{ width: `${w * 100}%`, animationDelay: `${i * 120}ms` }} />
           </div>
         ))}
@@ -352,26 +331,25 @@ function OverviewCard({ p, checks, label, lang }: { p: OverviewProps; checks: Re
       kind="overview"
       label={label}
       aside={
-        <>
-          <span className="font-id text-[10.5px] text-muted">{p.incidentId}</span>
-          <span className={cn("rounded-full px-2 py-[2px] text-[10.5px] font-semibold", toneChip(p.stateTone))}>{STATE_LABEL[p.state]?.[lang] ?? p.state}</span>
-        </>
+        <span title={p.incidentId} className={cn("rounded-full px-2 py-[2px] text-[11px] font-semibold", toneChip(p.stateTone))}>
+          {STATE_LABEL[p.state]?.[lang] ?? p.state}
+        </span>
       }
       footer={
         <div className="flex items-center gap-2.5">
           <ToneDot tone={p.next.tone} size={18} />
-          <span className="min-w-0 flex-1 text-[12.5px] font-medium text-ink">{p.next.label}</span>
+          <span className="min-w-0 flex-1 text-[13px] font-semibold text-ink">{p.next.label}</span>
           {p.next.action && <ActionButton a={p.next.action} primary />}
         </div>
       }
     >
-      <div className="mb-2 px-2">
+      <div className="mb-2 px-1.5">
         <div className="text-[14.5px] font-semibold leading-snug text-ink">{p.title}</div>
         <div className="mt-0.5 text-[12.5px] leading-snug text-ink-2">{p.headline}</div>
       </div>
       <GraphRows rows={p.rows} />
       {p.checks.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5 border-t border-line px-1 pt-3">
+        <div className="mt-2.5 flex flex-wrap gap-1.5 border-t border-line px-1.5 pt-2.5">
           {p.checks.map((c, i) => (
             <CheckPill key={c.id} item={c} result={checks[c.id]} index={i} lang={lang} />
           ))}
@@ -388,69 +366,54 @@ function ago(iso: string, lang: Lang) {
 
 function CasesCard({ p, label, lang }: { p: CasesProps; label: string; lang: Lang }) {
   const [showOriginal, setShowOriginal] = useState<string | null>(null);
+  const llm = p.items[0]?.summaryBy === "llm";
   return (
     <Shell
       kind="cases"
       label={label}
       footer={
-        p.items[0]?.summaryBy === "llm" ? (
-          <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
-            <Sparkles size={11} className="mt-[2px] shrink-0 text-teal" />
-            {L(
-              lang,
-              "Order and summaries suggested by Claude. P1/P2 priority comes from the rules engine; an operator decides who to contact.",
-              "الترتيب والملخصات مقترحة من Claude. أولوية P1/P2 من محرك القواعد، والمشغّل يقرر من يتواصل معه.",
-            )}
-          </p>
-        ) : (
-          <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
-            <ShieldCheck size={11} className="mt-[2px] shrink-0" />
-            {L(lang, "Ordered by rules: P1 first, then oldest first.", "مرتبة بالقواعد: P1 أولاً ثم الأقدم.")}
-          </p>
-        )
+        <p className="flex items-center gap-1.5 text-[11.5px] leading-snug text-muted">
+          {llm && <Sparkles size={11} className="shrink-0 text-violet" />}
+          {llm ? L(lang, "Claude suggests order and summaries. Priority comes from the rules.", "Claude يقترح الترتيب والملخصات. الأولوية من القواعد.") : L(lang, "Ordered by rules: P1 first, then oldest.", "مرتبة بالقواعد: P1 أولاً ثم الأقدم.")}
+        </p>
       }
       aside={
-        <span className="text-[11px] text-muted tnum">
+        <span className="text-[11.5px] text-muted tnum">
           {L(lang, `${p.totals.open} open · ${p.totals.p1} urgent`, `${p.totals.open} مفتوحة · ${p.totals.p1} عاجلة`)}
         </span>
       }
     >
-      <ol className="space-y-2">
+      <ol className="space-y-1.5 px-1.5">
         {p.items.map((c, i) => (
           <motion.li
             key={c.caseId}
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, ease, delay: 0.05 + i * 0.09 }}
-            className="rounded-lg p-2.5 ring-1 ring-line"
+            className="rounded-xl p-2.5 ring-1 ring-line"
           >
-            <div className="flex items-center gap-2">
-              <span className="grid h-5 w-5 place-items-center rounded-full bg-ink text-[10.5px] font-semibold text-white tnum">{i + 1}</span>
-              <span className={cn("rounded px-1.5 py-[1px] text-[10.5px] font-bold", c.priority === "P1" ? "bg-coral text-white" : "bg-amber-soft text-amber-ink")}>{c.priority}</span>
+            <div className="flex items-center gap-2" title={c.caseId}>
+              <span className={cn("rounded-md px-1.5 py-[1px] text-[11px] font-bold", c.priority === "P1" ? "bg-coral-ink text-white" : "bg-amber-soft text-amber-ink")}>{c.priority}</span>
               <bdi className="min-w-0 truncate text-[13px] font-semibold text-ink">{c.displayName}</bdi>
-              <span className="rounded-full bg-coral-soft px-2 py-[1px] text-[10.5px] font-medium text-coral-ink">{c.need}</span>
+              <span className="truncate text-[11.5px] font-medium text-coral-ink">{c.need}</span>
               <span className="ms-auto whitespace-nowrap text-[11px] text-muted">{ago(c.openedAt, lang)}</span>
             </div>
-            <div className="mt-1.5 ps-7">
-              <p className="text-[12.5px] leading-[1.5] text-ink-2">{showOriginal === c.caseId ? `“${c.original}”` : c.summary}</p>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
-                <span className="inline-flex items-center gap-1">
-                  <MapPin size={11} />
-                  {c.area}
-                </span>
-                <span className="font-id">{c.caseId}</span>
-                {c.summaryBy === "llm" ? (
-                  <button className="inline-flex items-center gap-1 text-teal-ink hover:underline" onClick={() => setShowOriginal((s) => (s === c.caseId ? null : c.caseId))}>
-                    <Sparkles size={11} />
-                    {showOriginal === c.caseId ? L(lang, "Show AI summary", "عرض ملخص الذكاء الاصطناعي") : L(lang, "AI summary · show citizen's words", "ملخص آلي · عرض كلمات المواطن")}
-                  </button>
-                ) : (
-                  <span>{L(lang, "Citizen's own words", "كلمات المواطن")}</span>
-                )}
-                <span className="ms-auto">
-                  <ActionButton a={{ kind: "open_case", target: c.caseId, label: L(lang, "Open", "فتح"), allowed: true }} />
-                </span>
-              </div>
+            <p className="mt-1.5 text-[12.5px] leading-[1.5] text-ink-2" dir="auto">
+              {showOriginal === c.caseId ? `“${c.original}”` : c.summary}
+            </p>
+            <div className="mt-2 flex items-center gap-3 text-[11.5px] text-muted">
+              <span className="inline-flex min-w-0 items-center gap-1 truncate">
+                <MapPin size={11} className="shrink-0" />
+                {c.area}
+              </span>
+              {c.summaryBy === "llm" && (
+                <button className="shrink-0 font-medium text-violet-ink hover:underline" onClick={() => setShowOriginal((s) => (s === c.caseId ? null : c.caseId))}>
+                  {showOriginal === c.caseId ? L(lang, "AI summary", "ملخص آلي") : L(lang, "Their words", "كلماتهم")}
+                </button>
+              )}
+              <span className="ms-auto shrink-0">
+                <ActionButton a={{ kind: "open_case", target: c.caseId, label: L(lang, "Open", "فتح"), allowed: true }} />
+              </span>
             </div>
           </motion.li>
         ))}
@@ -464,22 +427,21 @@ function TraceCard({ p, label, lang, mode }: { p: TraceProps; label: string; lan
     <Shell
       kind="trace"
       label={label}
-      aside={<span className="font-id text-[10.5px] text-muted">{p.recipientId}</span>}
       footer={
-        <div className="flex items-start gap-2">
-          {mode === "llm" ? <Sparkles size={14} className="mt-0.5 shrink-0 text-teal" /> : <ShieldCheck size={14} className="mt-0.5 shrink-0 text-ink-2" />}
-          <div className="min-w-0 flex-1">
-            <div className="text-[10.5px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">
-              {mode === "llm" ? L(lang, "Claude's explanation", "شرح Claude") : L(lang, "Policy rule", "قاعدة السياسة")}
-            </div>
-            <p className="mt-0.5 text-[12.5px] leading-[1.55] text-ink"><Rich text={p.explanation} /></p>
+        <div>
+          <div className="flex items-center gap-1.5 text-[11.5px] font-semibold text-muted">
+            {mode === "llm" && <Sparkles size={11} className="text-violet" />}
+            {mode === "llm" ? L(lang, "Claude's explanation", "شرح Claude") : L(lang, "Policy rule", "قاعدة السياسة")}
           </div>
+          <p className="mt-0.5 text-[12.5px] leading-[1.55] text-ink">
+            <Rich text={p.explanation} />
+          </p>
         </div>
       }
     >
-      <div className="mb-2 flex items-center gap-2 px-2">
+      <div className="mb-1.5 flex items-center gap-2 px-1.5" title={p.recipientId}>
         <bdi className="text-[14.5px] font-semibold text-ink">{p.displayName}</bdi>
-        <span className="rounded bg-surface-2 px-1.5 py-[1px] text-[10.5px] font-medium uppercase text-ink-2 ring-1 ring-line">{p.language}</span>
+        <span className="text-[11.5px] font-medium uppercase text-muted">{p.language}</span>
         {p.location && (
           <span className="ms-auto">
             <ActionButton a={{ kind: "open_recipient", target: p.recipientId, label: L(lang, "Map", "الخريطة"), allowed: true }} />
@@ -493,26 +455,28 @@ function TraceCard({ p, label, lang, mode }: { p: TraceProps; label: string; lan
 
 function GuidanceCard({ p, label, lang }: { p: GuidanceProps; label: string; lang: Lang }) {
   const side = (s: GuidanceProps["en"], l: Lang) => (
-    <div dir={l === "ar" ? "rtl" : "ltr"} lang={l} className="min-w-0 rounded-lg p-2.5 ring-1 ring-line">
-      <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.08em] text-muted">{l === "ar" ? "العربية" : "English"}</div>
+    <div dir={l === "ar" ? "rtl" : "ltr"} lang={l} className="min-w-0 rounded-xl bg-surface-2/70 p-3">
+      <div className="mb-1 text-[11px] font-semibold text-muted">{l === "ar" ? "العربية" : "English"}</div>
       <div className="text-[13px] font-semibold leading-snug text-ink">{s.headline}</div>
       <p className="mt-1 text-[12px] leading-[1.5] text-ink-2">{s.body}</p>
       <ol className="mt-1.5 space-y-1">
         {s.steps.map((st, i) => (
           <li key={i} className="flex gap-1.5 text-[12px] leading-[1.45] text-ink">
-            <span className="grid h-4 w-4 shrink-0 place-items-center rounded-full bg-teal-soft text-[9.5px] font-bold text-teal-ink tnum">{i + 1}</span>
+            <span className="tnum shrink-0 font-semibold text-muted">{i + 1}.</span>
             {st}
           </li>
         ))}
       </ol>
-      <div className="mt-2 flex flex-wrap gap-1">
-        {s.facts.map((f, i) => (
-          <span key={i} className="inline-flex items-center gap-1 rounded bg-surface-2 px-1.5 py-[1px] text-[10.5px] text-ink-2">
-            <Lock size={9} />
-            {f}
-          </span>
-        ))}
-      </div>
+      {s.facts.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1" title={L(lang, "Locked facts — the AI cannot change these", "حقائق مقفلة — لا يمكن للذكاء الاصطناعي تغييرها")}>
+          {s.facts.map((f, i) => (
+            <span key={i} className="inline-flex items-center gap-1 rounded-md bg-teal-soft px-1.5 py-[1px] text-[10.5px] text-teal-ink">
+              <Lock size={9} />
+              {f}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
   return (
@@ -520,25 +484,17 @@ function GuidanceCard({ p, label, lang }: { p: GuidanceProps; label: string; lan
       kind="guidance"
       label={label}
       aside={
-        <>
-          <Tag text={p.actionId} tone="coral" />
-          <Tag text={p.variant} />
-        </>
+        <span className="text-[11.5px] text-muted tnum" title={`${p.actionId} · ${p.variant} · ${p.mode}`}>
+          {L(lang, `${p.recipients} people`, `${p.recipients} شخصًا`)}
+        </span>
       }
       footer={
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
-          <span>{L(lang, `${p.recipients} recipients`, `${p.recipients} مستلمًا`)}</span>
-          <span className="inline-flex items-center gap-1">
-            <ShieldCheck size={11} />
-            {p.mode}
-          </span>
-          <span className="ms-auto">
-            <ActionButton a={{ kind: "open_guidance", target: "", label: L(lang, "Open approval", "فتح الاعتماد"), allowed: true }} />
-          </span>
+        <div className="flex justify-end">
+          <ActionButton a={{ kind: "open_guidance", target: "", label: L(lang, "Open approval", "فتح الاعتماد"), allowed: true }} />
         </div>
       }
     >
-      <div className="grid grid-cols-1 gap-2 @[520px]:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 px-1.5 @[520px]:grid-cols-2">
         {side(p.en, "en")}
         {side(p.ar, "ar")}
       </div>
@@ -548,8 +504,8 @@ function GuidanceCard({ p, label, lang }: { p: GuidanceProps; label: string; lan
 
 function ChecksCard({ items, checks, label, lang }: { items: CheckItem[]; checks: Record<string, { status: CheckStatus; detail?: string }>; label: string; lang: Lang }) {
   return (
-    <Shell kind="checks" label={label} aside={<span className="text-[11px] text-muted">{L(lang, "deterministic · run now", "حتمية · الآن")}</span>}>
-      <ul className="space-y-1.5">
+    <Shell kind="checks" label={label} aside={<span className="text-[11.5px] text-muted">{L(lang, "Run now", "الآن")}</span>}>
+      <ul className="space-y-1.5 px-1.5">
         {items.map((c, i) => (
           <li key={c.id} className="flex items-start gap-2">
             <CheckPill item={c} result={checks[c.id]} index={i} lang={lang} />
@@ -574,7 +530,7 @@ function ActionsRow({ items }: { items: ActionItem[] }) {
 export function ComponentPart({ part, lang, mode }: { part: Extract<Part, { type: "component" }>; lang: Lang; mode: CopilotMode }) {
   if (part.dropped)
     return (
-      <div className="flex items-center gap-2 rounded-lg bg-surface-2 px-3 py-2 text-[12px] text-muted ring-1 ring-line">
+      <div className="flex items-center gap-2 rounded-xl bg-surface-2 px-3 py-2 text-[12px] text-muted">
         <TriangleAlert size={13} />
         {L(lang, `${part.label} not shown — ${part.dropped}`, `لم يُعرض ${part.label} — ${part.dropped}`)}
       </div>
@@ -605,58 +561,52 @@ function SignalsCard({ p, label, lang }: { p: SignalsProps; label: string; lang:
     <Shell
       kind="signals"
       label={label}
-      aside={<span className={cn("rounded-full px-2 py-[1px] text-[10.5px] font-semibold", p.synthetic ? "bg-amber-soft text-amber-ink" : "bg-violet-soft text-violet-ink")}>{p.synthetic ? L(lang, "Synthetic", "اصطناعي") : L(lang, "Real posts", "منشورات حقيقية")}</span>}
+      aside={<span className={cn("rounded-full px-2 py-[2px] text-[11px] font-semibold", p.synthetic ? "bg-amber-soft text-amber-ink" : "bg-violet-soft text-violet-ink")}>{p.synthetic ? L(lang, "Synthetic", "اصطناعي") : L(lang, "Real posts", "منشورات حقيقية")}</span>}
       footer={
-        <p className="flex items-start gap-1.5 text-[11px] leading-snug text-muted">
-          <ShieldCheck size={11} className="mt-[2px] shrink-0" />
-          {L(lang, "Unverified. Places come from OpenStreetMap, not the model. Hotspots can only become verification requests.", "غير متحقق منها. الأماكن من OpenStreetMap وليس من النموذج. لا تصبح البؤر إلا طلبات تحقق.")}
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="min-w-0 flex-1 text-[11.5px] leading-snug text-muted">{L(lang, "Unverified — can only trigger a human verification request.", "غير متحقق منها — لا تؤدي إلا إلى طلب تحقق بشري.")}</p>
+          <ActionButton a={{ kind: p.dataset === "replay" ? "open_replay" : "open_signals", target: "", label: L(lang, "Open signals", "فتح الرصد"), allowed: true }} />
+        </div>
       }
     >
-      <p className="text-[12.5px] leading-[1.5] text-ink">{p.headline}</p>
-      <div className="mt-2 grid grid-cols-4 gap-1.5 text-center">
-        {[
-          [f.found, L(lang, "posts", "منشور")],
-          [f.relevant, L(lang, "relevant", "ذو صلة")],
-          [f.hotspots, L(lang, "hotspots", "بؤر")],
-          [f.corroborated, L(lang, "corroborated", "مؤكدة")],
-        ].map(([n, t]) => (
-          <div key={String(t)} className="rounded-lg bg-surface-2 px-1 py-1.5">
-            <div className="tnum text-[15px] font-semibold text-ink">{n}</div>
-            <div className="text-[10px] text-muted">{t}</div>
+      <div className="px-1.5">
+        <p className="text-[12.5px] leading-[1.5] text-ink">{p.headline}</p>
+        <p className="tnum mt-1.5 text-[11.5px] text-muted">
+          {L(lang, `${f.found} posts · ${f.relevant} relevant · ${f.hotspots} hotspots · ${f.corroborated} corroborated`, `${f.found} منشور · ${f.relevant} ذو صلة · ${f.hotspots} بؤر · ${f.corroborated} مؤكدة`)}
+        </p>
+        {p.rumours.length > 0 && (
+          <div className="mt-2.5 space-y-1">
+            {p.rumours.map((r) => (
+              <div key={r.id} className="flex items-center gap-2 rounded-lg bg-amber-soft/70 px-2.5 py-1.5 text-[12px]">
+                <span className="font-semibold text-amber-ink">{L(lang, "Rumour", "شائعة")}</span>
+                <span className="min-w-0 flex-1 truncate text-ink">“{r.claim}”</span>
+                <span className="tnum text-muted">{r.posts}</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <ul className="mt-2.5 space-y-1.5">
-        {p.hotspots.map((h, i) => (
-          <motion.li key={h.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, ease, delay: 0.05 + i * 0.07 }} className="flex items-center gap-2 rounded-lg p-1.5 ring-1 ring-line">
-            {h.thumb ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={h.thumb} alt="" className="h-8 w-8 rounded-md object-cover" />
-            ) : (
-              <span className="grid h-8 w-8 place-items-center rounded-md bg-violet-soft text-violet"><Radar size={14} /></span>
-            )}
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-[12.5px] font-semibold text-ink">{h.label}</div>
-              <div className="text-[10.5px] text-muted tnum">{h.posts} {L(lang, "posts", "منشورات")} · {h.sources} {L(lang, "sources", "مصادر")}{h.insideZone === false ? ` · ${L(lang, "outside verified zone", "خارج المنطقة الموثقة")}` : ""}</div>
-            </div>
-            <span className={cn("rounded-full px-1.5 py-[1px] text-[10px] font-semibold", h.corroborated ? "bg-ink text-white" : "bg-surface-2 text-muted")}>{h.corroborated ? L(lang, "Corroborated", "مؤكدة") : L(lang, "1 source", "مصدر واحد")}</span>
-          </motion.li>
-        ))}
-      </ul>
-      {p.rumours.length > 0 && (
-        <div className="mt-2.5 space-y-1">
-          {p.rumours.map((r) => (
-            <div key={r.id} className="flex items-center gap-2 rounded-lg bg-amber-soft/70 px-2 py-1.5 text-[11.5px]">
-              <span className="font-semibold text-amber-ink">{L(lang, "Rumour", "شائعة")}</span>
-              <span className="min-w-0 flex-1 truncate text-ink">“{r.claim}”</span>
-              <span className="tnum text-muted">{r.posts}</span>
-            </div>
+        )}
+        <ul className="mt-2.5 space-y-1">
+          {p.hotspots.map((h, i) => (
+            <motion.li key={h.id} initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3, ease, delay: 0.05 + i * 0.07 }} className="flex items-center gap-2.5 rounded-lg px-1 py-1">
+              {h.thumb ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={h.thumb} alt="" className="h-8 w-8 rounded-md object-cover" />
+              ) : (
+                <span className="grid h-8 w-8 place-items-center rounded-md bg-violet-soft text-violet">
+                  <Radar size={14} />
+                </span>
+              )}
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[12.5px] font-semibold text-ink">{h.label}</div>
+                <div className="text-[11px] text-muted tnum">
+                  {h.posts} {L(lang, "posts", "منشورات")} · {h.sources} {L(lang, "sources", "مصادر")}
+                  {h.insideZone === false && <span className="text-amber-ink"> · {L(lang, "outside zone", "خارج المنطقة")}</span>}
+                </div>
+              </div>
+              {h.corroborated && <span className="rounded-full bg-ink px-1.5 py-[1px] text-[10.5px] font-semibold text-white">{L(lang, "Corroborated", "مؤكدة")}</span>}
+            </motion.li>
           ))}
-        </div>
-      )}
-      <div className="mt-2.5">
-        <ActionButton a={{ kind: p.dataset === "replay" ? "open_replay" : "open_signals", target: "", label: L(lang, "Open social intelligence", "فتح رصد التواصل"), allowed: true }} />
+        </ul>
       </div>
     </Shell>
   );

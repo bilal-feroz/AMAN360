@@ -1,10 +1,11 @@
 "use client";
 
-import { Car, House, MapPinOff, ShieldCheck, Ban, ArrowRight, MessageSquareText, CircleHelp } from "lucide-react";
+import { Car, House, Ban, MessageSquareText, ChevronRight, ArrowRight } from "lucide-react";
 import { Button, Chip, cn, Section, Stat } from "@/components/ui";
 import { useUi } from "@/lib/ui-store";
 import { useOps } from "../context";
-import { PanelHeader } from "./PanelHeader";
+import { ACTION_LABEL } from "../workflow";
+import { ActionBar, PanelHeader } from "./PanelHeader";
 
 const CASE_ORDER = ["mariam", "daniel", "omar"] as const;
 
@@ -17,12 +18,7 @@ export function ImpactPanel() {
     return (
       <div>
         <PanelHeader title={t("impact")} />
-        <div className="px-5 py-10 text-center text-[13px] text-muted">
-          {lang === "ar" ? "لم يتم تقييم أي حادثة بعد. فعّل التنبيه الوارد من قائمة الحوادث." : "No incident assessed yet. Activate the incoming alert from the incident queue."}
-          <div className="mt-4">
-            <Button onClick={() => setView("queue")}>{t("incidents")}</Button>
-          </div>
-        </div>
+        <Empty text={lang === "ar" ? "لم يتم تقييم أي حادثة بعد." : "No incident assessed yet."} action={<Button onClick={() => setView("queue")}>{lang === "ar" ? "فتح التنبيه" : "Open the alert"}</Button>} />
       </div>
     );
   }
@@ -37,66 +33,46 @@ export function ImpactPanel() {
   };
 
   return (
-    <div>
-      <PanelHeader
-        title={t("impact")}
-        subtitle={lang === "ar" ? "مطابقة جغرافية فعلية وقواعد سلامة حتمية" : "Real geographic matching · deterministic safety rules"}
-        aside={
-          <Chip tone={gate.ok ? "teal" : "coral"} dot>
-            {gate.ok ? (lang === "ar" ? "بوابة النشر مفتوحة" : "Publication gate open") : lang === "ar" ? "النشر محظور" : "Publication blocked"}
-          </Chip>
-        }
-      />
+    <div className="flex min-h-full flex-col">
+      <PanelHeader title={t("impact")} aside={!gate.ok && <Chip tone="coral" dot>{lang === "ar" ? "النشر محظور" : "Publication blocked"}</Chip>} />
       {!gate.ok && (
-        <div className="mx-5 mb-3 rounded-xl bg-coral-soft px-3 py-2.5 text-[12.5px] text-coral-ink">
+        <div className="mx-5 mb-3 space-y-1 rounded-xl bg-coral-soft px-3 py-2.5 text-[12.5px] text-coral-ink">
           {gate.blocks.map((b) => (
             <div key={b.reason} className="flex gap-2">
-              <Ban size={14} className="mt-0.5 shrink-0" /> <span className="font-id">{b.ruleId}</span> {b.reason}
+              <Ban size={14} className="mt-0.5 shrink-0" /> {b.reason}
             </div>
           ))}
         </div>
       )}
-      <Section title={lang === "ar" ? "نتيجة المطابقة" : "Matching result"} aside={<span className="text-[11.5px] text-muted tnum">{s.total} {t("syntheticRecipients")}</span>}>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-4">
-          <button className="text-start" onClick={() => flyTo({ kind: "zone" })}>
-            <Stat label={<span className="flex items-center gap-1.5"><House size={13} className="text-coral" />{t("insideZone")}</span>} value={s.insideZone} tone="coral" big />
+
+      <div className="px-5 pb-4">
+        <div className="grid grid-cols-2 gap-3">
+          <button className="rounded-2xl bg-coral-soft/60 p-4 text-start ring-1 ring-coral/20 transition hover:ring-coral/40" onClick={() => flyTo({ kind: "zone" })}>
+            <Stat label={<><House size={13} />{t("insideZone")}</>} value={s.insideZone} tone="coral" big />
           </button>
-          <button className="text-start" onClick={() => flyTo({ kind: "closure" })}>
-            <Stat label={<span className="flex items-center gap-1.5"><Car size={13} className="text-amber" />{t("approachingClosure")}</span>} value={s.approachingClosure} tone="amber" big />
+          <button className="rounded-2xl bg-amber-soft/60 p-4 text-start ring-1 ring-amber/25 transition hover:ring-amber/50" onClick={() => flyTo({ kind: "closure" })}>
+            <Stat label={<><Car size={13} />{t("approachingClosure")}</>} value={s.approachingClosure} tone="amber" big />
           </button>
-          <Stat label={<span className="flex items-center gap-1.5"><ShieldCheck size={13} className="text-slate" />{t("outsideZone")}</span>} value={s.outside} tone="muted" />
-          <Stat label={<span className="flex items-center gap-1.5"><MapPinOff size={13} className="text-amber" />{t("needsReview")}</span>} value={s.review} tone="amber" sub={lang === "ar" ? "موقع مفقود أو قديم — لا استنتاج" : "missing/stale location — not inferred"} />
         </div>
-        <div className="mt-4 rounded-xl bg-surface-2 p-3">
-          <div className="flex items-baseline justify-between text-[12.5px]">
-            <span className="font-medium text-ink">{lang === "ar" ? "مستلمون مطابقون لإجراء معتمد" : "Matched to an approved action"}</span>
-            <span className="tnum text-[18px] font-semibold text-ink">{s.send}</span>
-          </div>
-          <Bar
-            parts={Object.entries(s.byAction).map(([k, v]) => ({ key: k, value: v, color: k === "ACT-INDOOR-01" ? "#fa684f" : "#e8ac45" }))}
-            total={s.send}
-          />
-          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11.5px] text-muted">
-            {Object.entries(s.byAction).map(([k, v]) => (
-              <span key={k} className="font-id">
-                {k} · <b className="tnum text-ink">{v}</b>
-              </span>
-            ))}
-            <span>
-              AR <b className="tnum text-ink">{s.byLanguage.ar ?? 0}</b> · EN <b className="tnum text-ink">{s.byLanguage.en ?? 0}</b>
-            </span>
-            <span>
-              {t("plain")} <b className="tnum text-ink">{s.byVariant.plain ?? 0}</b> · {t("audio")} <b className="tnum text-ink">{s.byVariant.audio ?? 0}</b>
-            </span>
-          </div>
+        <div className="mt-3 flex items-center gap-4 px-1 text-[12.5px] text-ink-2">
+          <span>
+            <b className="tnum font-semibold text-ink">{s.outside}</b> {lang === "ar" ? "خارج المنطقة" : "outside the zone"}
+          </span>
+          <span title={lang === "ar" ? "موقع مفقود أو قديم — لا يُستنتج" : "Missing or stale location — never guessed"}>
+            <b className="tnum font-semibold text-amber-ink">{s.review}</b> {lang === "ar" ? "بحاجة لمراجعة" : "need review"}
+          </span>
         </div>
-      </Section>
+        <p className="mt-3 rounded-xl bg-surface-2 px-3.5 py-2.5 text-[13px] text-ink">
+          <b className="tnum font-semibold">{s.send}</b> {lang === "ar" ? "شخصًا سيتلقون رسالة معتمدة" : "people will receive an approved message"}
+        </p>
+      </div>
 
       <Section title={t("threeCases")}>
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {personas.map((p) => {
             const d = p.decision;
             const send = d?.outcome === "SEND";
+            const action = send && d?.actionId ? ACTION_LABEL[d.actionId] : null;
             const Icon = p.mobility === "driver" ? Car : House;
             return (
               <button
@@ -105,7 +81,7 @@ export function ImpactPanel() {
                   selectRecipient(p.id);
                   if (p.location) flyTo({ kind: "point", lngLat: p.location.coordinates as [number, number], zoom: 17.1, pitch: 62 });
                 }}
-                className="group flex w-full items-start gap-3 rounded-xl p-3 text-start ring-1 ring-line transition hover:bg-surface-2 hover:ring-line-strong"
+                className="group flex w-full items-center gap-3 rounded-xl p-3 text-start ring-1 ring-line transition hover:bg-surface-2 hover:ring-line-strong"
               >
                 <span
                   className={cn(
@@ -113,57 +89,61 @@ export function ImpactPanel() {
                     d?.category === "inside_zone" ? "bg-coral" : d?.category === "approaching_closure" ? "bg-amber" : "bg-slate",
                   )}
                 >
-                  <Icon size={17} />
+                  <Icon size={16} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="flex items-center gap-2">
-                    <bdi className="text-[13.5px] font-semibold text-ink">{p.displayName}</bdi>
-                    <span className="font-id text-[11px] text-muted">{p.id}</span>
-                    <Chip tone="outline" className="!px-1.5 !py-0 text-[10.5px]">
-                      {p.language === "ar" ? "العربية" : "English"}
-                    </Chip>
-                  </span>
-                  <span className="mt-0.5 block text-[12px] text-muted">{p.areaLabel[lang]}</span>
-                  <span className="mt-2 flex flex-wrap items-center gap-1.5 text-[11.5px]">
-                    <span className="font-id rounded-md bg-surface-2 px-1.5 py-0.5 text-ink-2">{d?.ruleId}</span>
-                    <ArrowRight size={12} className="text-muted rtl:rotate-180" />
-                    {send ? (
-                      <span className="font-id rounded-md bg-coral-soft px-1.5 py-0.5 text-coral-ink">{d?.actionId}</span>
-                    ) : (
-                      <span className="rounded-md bg-surface-2 px-1.5 py-0.5 text-muted">{lang === "ar" ? "لا تُرسل تعليمات طوارئ" : "No emergency instruction"}</span>
-                    )}
+                  <bdi className="block text-[13.5px] font-semibold text-ink">{p.displayName}</bdi>
+                  <span className="mt-0.5 flex items-center gap-1.5 text-[12px] text-muted">
+                    <span className="truncate">{p.areaLabel[lang]}</span>
                   </span>
                 </span>
-                <span className="mt-1 inline-flex items-center gap-1 text-[11.5px] font-medium text-teal opacity-0 transition group-hover:opacity-100">
-                  <CircleHelp size={13} /> {t("whyThisAction")}
+                <span className="flex shrink-0 items-center gap-1.5">
+                  {action ? (
+                    <Chip tone={d?.category === "inside_zone" ? "coral" : "amber"}>{action[lang]}</Chip>
+                  ) : (
+                    <Chip tone="neutral">{lang === "ar" ? "لا رسالة" : "No message"}</Chip>
+                  )}
+                  <ChevronRight size={15} className="text-line-strong transition group-hover:text-ink rtl:rotate-180" />
                 </span>
               </button>
             );
           })}
         </div>
+        <p className="mt-2.5 text-[11.5px] text-muted">{lang === "ar" ? "اختر شخصًا لمعرفة سبب القرار." : "Select a person to see why."}</p>
       </Section>
 
-      <div className="sticky bottom-0 border-t border-line bg-surface/95 px-5 py-4 backdrop-blur">
+      <ActionBar>
         {prepared ? (
-          <Button tone="primary" size="lg" className="w-full" onClick={() => setView("guidance")} icon={<MessageSquareText size={17} />}>
-            {t("messages")}
+          <Button tone="primary" size="lg" className="w-full" onClick={() => setView("guidance")} icon={<ArrowRight size={16} className="rtl:rotate-180" />}>
+            {lang === "ar" ? "مراجعة الرسالة" : "Review the message"}
           </Button>
         ) : (
           <Button tone="primary" size="lg" className="w-full" onClick={prepare} busy={busy === "prepare"} disabled={!canAct || !gate.ok} icon={<MessageSquareText size={17} />}>
             {busy === "prepare" ? t("preparing") : t("prepareGuidance")}
           </Button>
         )}
-      </div>
+      </ActionBar>
+    </div>
+  );
+}
+
+export function Empty({ text, action }: { text: string; action?: React.ReactNode }) {
+  return (
+    <div className="px-5 py-12 text-center">
+      <p className="text-[13px] text-muted">{text}</p>
+      {action && <div className="mt-4">{action}</div>}
     </div>
   );
 }
 
 export function Bar({ parts, total }: { parts: { key: string; value: number; color: string }[]; total: number }) {
   return (
-    <div className="mt-2 flex h-2.5 w-full overflow-hidden rounded-full bg-surface-3" role="img" aria-label={parts.map((p) => `${p.key}: ${p.value}`).join(", ")}>
-      {parts.map((p) => (
-        <span key={p.key} style={{ width: `${total ? (p.value / total) * 100 : 0}%`, background: p.color }} className="h-full transition-[width] duration-700" />
-      ))}
+    <div className="flex h-2 w-full gap-[2px] overflow-hidden rounded-full bg-surface-3" role="img" aria-label={parts.map((p) => `${p.key}: ${p.value}`).join(", ")}>
+      {parts
+        .filter((p) => p.value > 0)
+        .map((p) => (
+          <span key={p.key} style={{ width: `${total ? (p.value / total) * 100 : 0}%`, background: p.color }} className="h-full transition-[width] duration-700 first:rounded-s-full last:rounded-e-full" />
+        ))}
     </div>
   );
 }

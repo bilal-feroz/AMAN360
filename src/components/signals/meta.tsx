@@ -70,14 +70,16 @@ export const TONE_CLASS: Record<string, string> = {
 
 export function CategoryChip({ category, lang, size = "sm" }: { category: SignalCategory; lang: Lang; size?: "sm" | "xs" }) {
   const c = CATEGORY[category];
-  const Icon = c.icon;
   return (
-    <span className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full font-medium ${TONE_CLASS[c.tone]} ${size === "xs" ? "px-1.5 py-[1px] text-[10.5px]" : "px-2 py-[2px] text-[11px]"}`}>
-      <Icon size={size === "xs" ? 11 : 12} strokeWidth={2} />
+    <span className={`inline-flex items-center whitespace-nowrap rounded-full font-medium ${TONE_CLASS[c.tone]} ${size === "xs" ? "px-1.5 py-[1px] text-[10.5px]" : "px-2 py-[2px] text-[11px]"}`}>
       {L(lang, c.en, c.ar)}
     </span>
   );
 }
+
+/** Violet = AI-read, unverified intelligence. Mirrors the primary Button, in the intel colour. */
+export const VIOLET_BTN =
+  "inline-flex h-8 items-center justify-center gap-1.5 whitespace-nowrap rounded-[10px] bg-violet px-3 text-[12.5px] font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.16),0_1px_2px_rgb(43_29_122/0.35),0_8px_18px_-10px_rgb(109_76_240/0.75)] transition-colors hover:bg-violet-ink active:translate-y-px disabled:cursor-not-allowed disabled:opacity-45";
 
 export function fmtPostTime(iso: string, lang: Lang, relativeTo: number | null) {
   if (relativeTo !== null) {

@@ -168,7 +168,7 @@ export function overviewProps(s: OpsState, lang: Lang, headline: string, emphasi
       id: "guidance",
       label: s.guidance.length
         ? L(lang, `Prepared ${s.guidance.length} Arabic & English variants`, `إعداد ${s.guidance.length} صيغة بالعربية والإنجليزية`)
-        : L(lang, "Prepare bilingual guidance", "إعداد إرشادات ثنائية اللغة"),
+        : L(lang, "Prepare the bilingual message", "إعداد الرسالة ثنائية اللغة"),
       tags: [{ text: "ACT-INDOOR-01", tone: "coral" }, { text: "ACT-ROAD-02", tone: "amber" }],
       meta: s.guidance.length ? `${s.provider.llmConfigured ? "LLM + validator" : "templates"} · ${s.guidance.filter((g) => g.validationPassed).length}/${s.guidance.length} ✓` : "—",
       tone: tone(s.guidance.length > 0),
@@ -182,7 +182,7 @@ export function overviewProps(s: OpsState, lang: Lang, headline: string, emphasi
     },
     {
       id: "delivery",
-      label: m.alertsSent ? L(lang, `Delivered ${m.delivered} of ${m.alertsSent} alerts`, `تسليم ${m.delivered} من ${m.alertsSent} تنبيهًا`) : L(lang, "Issue to simulated channels", "الإصدار إلى القنوات المحاكاة"),
+      label: m.alertsSent ? L(lang, `Delivered ${m.delivered} of ${m.alertsSent} alerts`, `تسليم ${m.delivered} من ${m.alertsSent} تنبيهًا`) : L(lang, "Send the approved message", "إرسال الرسالة المعتمدة"),
       detail: m.alertsSent ? L(lang, `in-app ${m.byChannel.in_app} · SMS sim ${m.byChannel.sms_sim} · ${m.deliveryRetries} retries`, `داخل التطبيق ${m.byChannel.in_app} · رسائل نصية ${m.byChannel.sms_sim} · ${m.deliveryRetries} إعادة`) : undefined,
       tags: [],
       meta: m.alertsSent ? ago(at("issued"), lang) : "—",

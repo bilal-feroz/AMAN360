@@ -18,7 +18,7 @@ test("presentation mode completes the guided demo on real records", async ({ bro
   page.on("console", (m) => m.type() === "error" && !/Download the React DevTools/.test(m.text()) && errors.push(m.text()));
   await page.addInitScript(() => sessionStorage.setItem("aman:intro-seen", "1"));
   await page.goto("/");
-  await expect(page.getByText("Incoming verified-feed alert")).toBeVisible({ timeout: 60_000 });
+  await expect(page.getByRole("button", { name: /Activate incident/ })).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(3000);
 
   await page.getByRole("button", { name: /Presentation/ }).click();
@@ -56,7 +56,7 @@ test("presentation mode completes the guided demo on real records", async ({ bro
       await page.screenshot({ path: `${SHOTS}/20-presentation-rumour.png` });
     }
     if (title === "Proof on real data — Sharjah storm, 12–20 Oct 2026") {
-      await expect(page.getByText("REAL public posts", { exact: true })).toBeVisible({ timeout: 20_000 });
+      await expect(page.getByText("Real public posts", { exact: true })).toBeVisible({ timeout: 20_000 });
       await page.waitForTimeout(9000);
       await page.screenshot({ path: `${SHOTS}/21-presentation-real-storm.png` });
       await expect(page.getByText("Claude's reading", { exact: true })).toBeVisible({ timeout: 20_000 });

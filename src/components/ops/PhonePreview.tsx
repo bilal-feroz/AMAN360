@@ -66,10 +66,9 @@ export function PhonePreview() {
               </div>
               <div className="flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-[12px] shadow">
                 <span className="font-semibold text-ink">{d.displayName}</span>
-                <span className="font-id text-muted">{d.id}</span>
                 <span className="text-muted">· {d.language === "ar" ? "العربية" : "English"}</span>
-                <a href={`/c/${d.token}`} target="_blank" rel="noopener" className="ms-1 inline-flex items-center gap-1 text-teal hover:underline">
-                  <ExternalLink size={12} /> {lang === "ar" ? "نافذة مستقلة" : "Own window"}
+                <a href={`/c/${d.token}`} target="_blank" rel="noopener" className="ms-1 grid h-5 w-5 place-items-center text-teal hover:text-teal-ink" title={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"} aria-label={lang === "ar" ? "فتح في نافذة مستقلة" : "Open in its own window"}>
+                  <ExternalLink size={13} />
                 </a>
               </div>
             </motion.div>
@@ -103,38 +102,34 @@ export function DevicesDrawer({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0, x: -16 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -16 }}
-      className="absolute start-[88px] top-4 z-30 w-[340px] rounded-2xl bg-surface p-4 shadow-[var(--shadow-float)] ring-1 ring-line"
+      className="absolute start-[88px] top-4 z-30 w-[320px] rounded-2xl bg-surface p-3 shadow-[var(--shadow-float)] ring-1 ring-line"
     >
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-[14px] font-semibold text-ink">{lang === "ar" ? "أجهزة المواطنين (محاكاة)" : "Citizen devices (simulated)"}</h3>
+        <h3 className="text-[14px] font-semibold text-ink">{lang === "ar" ? "أجهزة المواطنين" : "Citizen devices"}</h3>
         <button onClick={onClose} aria-label="Close" className="grid h-7 w-7 place-items-center rounded-lg text-muted hover:bg-surface-2">
           <X size={15} />
         </button>
       </div>
-      <ul className="space-y-2">
+      <ul className="space-y-1">
         {devices.map((d) => (
-          <li key={d.id} className="rounded-xl p-3 ring-1 ring-line">
-            <div className="flex items-center gap-2">
-              <span className="text-[13px] font-semibold text-ink">{d.displayName}</span>
-              <span className="font-id text-[11px] text-muted">{d.id}</span>
-            </div>
-            <p className="mt-0.5 text-[12px] text-muted">{copy[d.persona]?.[lang]}</p>
-            <div className="mt-2 flex gap-3 text-[12px] font-medium">
-              <button className="text-teal hover:underline" onClick={() => (openPhones([d.id]), onClose())}>
-                {lang === "ar" ? "عرض هنا" : "Preview here"}
-              </button>
-              <a className="inline-flex items-center gap-1 text-teal hover:underline" href={`/c/${d.token}`} target="_blank" rel="noopener">
-                <ExternalLink size={12} /> {lang === "ar" ? "فتح في نافذة جديدة" : "Open in new window"}
-              </a>
-            </div>
+          <li key={d.id} className="flex items-center gap-2 rounded-xl px-2.5 py-2 hover:bg-surface-2">
+            <button className="min-w-0 flex-1 text-start" onClick={() => (openPhones([d.id]), onClose())}>
+              <span className="block text-[13px] font-semibold text-ink">{d.displayName}</span>
+              <span className="block truncate text-[12px] text-muted">{copy[d.persona]?.[lang]}</span>
+            </button>
+            <a
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-teal hover:bg-surface hover:text-teal-ink"
+              href={`/c/${d.token}`}
+              target="_blank"
+              rel="noopener"
+              title={lang === "ar" ? "فتح في نافذة جديدة" : "Open in new window"}
+              aria-label={`${d.displayName} — ${lang === "ar" ? "فتح في نافذة جديدة" : "Open in new window"}`}
+            >
+              <ExternalLink size={14} />
+            </a>
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-[11.5px] leading-relaxed text-muted">
-        {lang === "ar"
-          ? "روابط الوصول رموز مبهمة خاصة بكل مستلم اصطناعي. افتحها في نافذة أو جهاز منفصل لعرض المزامنة المباشرة."
-          : "Access links are opaque per-recipient tokens for synthetic people. Open them in a separate window or device to show live synchronisation."}
-      </p>
     </motion.aside>
   );
 }

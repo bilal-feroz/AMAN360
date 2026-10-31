@@ -482,7 +482,7 @@ export default function CityMap(props: Props) {
       const thumbs = replay ? v.items.filter((i) => h.postIds.includes(i.post.id) && i.post.frames[0]).slice(0, 3).map((i) => i.post.frames[0].src) : [];
       const label = lang === "ar" ? h.label.ar : h.label.en;
       const statusTxt =
-        h.status === "unverified" ? (lang === "ar" ? "غير متحقق" : "UNVERIFIED") : h.status === "requested" ? (lang === "ar" ? "قيد التحقق" : "VERIFYING") : lang === "ar" ? "تم التحقق" : "VERIFIED";
+        h.status === "unverified" ? (lang === "ar" ? "غير متحقق" : "Unverified") : h.status === "requested" ? (lang === "ar" ? "قيد التحقق" : "Verifying") : lang === "ar" ? "تم التحقق" : "Verified";
       el.style.zIndex = sel ? "6" : h.corroborated ? "3" : "2";
       el.setAttribute("aria-label", `${label}: ${h.postIds.length} posts`);
       el.title = `${label} · ${h.postIds.length} ${lang === "ar" ? "منشورات" : "posts"} · ${h.sources} ${lang === "ar" ? "مصادر" : "sources"}`;
@@ -498,7 +498,7 @@ export default function CityMap(props: Props) {
             <span style="font:600 12px/1.15 var(--font-sans)">${label}</span>
             <span style="font:500 10.5px/1.2 var(--font-sans);opacity:.75">${h.postIds.length} ${lang === "ar" ? "منشورات" : h.postIds.length === 1 ? "post" : "posts"} · ${h.sources} ${lang === "ar" ? "مصادر" : h.sources === 1 ? "source" : "sources"}</span>
           </span>
-          <span style="font:700 9.5px/1 var(--font-sans);letter-spacing:.06em;padding:3px 6px;border-radius:7px;background:${h.status === "unverified" ? "#6d4cf0" : h.status === "requested" ? "#e8ac45" : "#087f7a"};color:#fff">${statusTxt}</span>
+          <span style="font:600 10px/1 var(--font-sans);padding:3px 6px;border-radius:7px;background:${h.status === "unverified" ? "#6d4cf0" : h.status === "requested" ? "#e8ac45" : "#087f7a"};color:#fff">${statusTxt}</span>
         </div>
         <span style="width:2px;height:${replay ? 22 : 14}px;background:linear-gradient(#6d4cf0,transparent)"></span>
         <span style="position:relative;width:12px;height:12px"><span class="aman-pulse" style="position:absolute;inset:0;border-radius:99px;background:#6d4cf0"></span><span style="position:absolute;inset:2px;border-radius:99px;background:#6d4cf0;border:2px solid #fff"></span></span>
@@ -601,8 +601,7 @@ export default function CityMap(props: Props) {
       <div style="display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--font-sans)">
         <div style="background:#fff;border:1px solid ${color}55;box-shadow:0 10px 24px -14px rgba(16,44,51,.5);border-radius:10px;padding:5px 9px;display:flex;align-items:center;gap:7px;white-space:nowrap">
           <span style="width:8px;height:8px;border-radius:99px;background:${color}"></span>
-          <span style="font:600 11.5px/1 var(--font-mono);color:#102c33">${st.incident.id}</span>
-          <span style="font:500 11.5px/1 var(--font-sans);color:#667c83">${active ? (lang === "ar" ? "خطر فيضان · نشط" : "Flood risk · active") : lang === "ar" ? "تنبيه وارد · بانتظار التفعيل" : "Incoming alert · awaiting activation"}</span>
+          <span style="font:600 11.5px/1 var(--font-sans);color:#102c33">${active ? (lang === "ar" ? "منطقة خطر فيضان" : "Flood-risk zone") : lang === "ar" ? "تنبيه وارد" : "Incoming alert"}</span>
         </div>
         <div style="position:relative;width:14px;height:14px">
           <span class="aman-pulse" style="position:absolute;inset:0;border-radius:99px;background:${color}"></span>
@@ -629,8 +628,7 @@ export default function CityMap(props: Props) {
     clEl.innerHTML = `<div style="display:flex;align-items:center;gap:6px;background:#fff;border-radius:999px;padding:3px 9px 3px 3px;border:1px solid #d8402a44;box-shadow:0 8px 20px -12px rgba(16,44,51,.55);font-family:var(--font-sans)">
       <span style="width:20px;height:20px;border-radius:99px;background:#d8402a;display:grid;place-items:center">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><path d="M5 12h14"/></svg></span>
-      <span style="font:600 11px/1 var(--font-sans);color:#102c33;white-space:nowrap">${lang === "ar" ? "شارع الوحدة · مغلق" : "Al Wahda St · closed"}</span>
-      <span style="font:500 10px/1 var(--font-sans);color:#c4412b;white-space:nowrap">${lang === "ar" ? "محاكاة" : "SIMULATED"}</span></div>`;
+      <span style="font:600 11px/1 var(--font-sans);color:#102c33;white-space:nowrap">${lang === "ar" ? "شارع الوحدة · مغلق" : "Al Wahda St · closed"}</span></div>`;
 
     // Demo personas
     for (const p of st.personas) {
@@ -662,7 +660,6 @@ export default function CityMap(props: Props) {
         <div style="display:flex;align-items:center;gap:6px;background:${selected ? "#102c33" : "#fff"};color:${selected ? "#fff" : "#102c33"};border-radius:999px;padding:3px 10px 3px 3px;box-shadow:0 10px 22px -12px rgba(16,44,51,.6);border:1px solid ${tone}66;font-family:var(--font-sans);white-space:nowrap">
           <span style="width:22px;height:22px;border-radius:99px;background:${tone};color:#fff;display:grid;place-items:center;font:600 11px/1 var(--font-sans)">${look.initial}</span>
           <span dir="ltr" style="font:600 11.5px/1 var(--font-sans)">${p.displayName}</span>
-          <span dir="ltr" style="font:500 10.5px/1 var(--font-mono);opacity:.65">${p.id}</span>
         </div>
         <span style="width:2px;height:16px;background:linear-gradient(${tone},transparent)"></span>
       </div>`;

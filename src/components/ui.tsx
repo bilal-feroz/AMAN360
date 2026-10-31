@@ -3,13 +3,18 @@
 import clsx from "clsx";
 import { forwardRef, useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { animate, useReducedMotion } from "motion/react";
+import { ChevronDown } from "lucide-react";
 
 export function cn(...a: Parameters<typeof clsx>) {
   return clsx(...a);
 }
 
-type Tone = "neutral" | "teal" | "coral" | "amber" | "ink" | "cyan" | "outline";
+type Tone = "neutral" | "teal" | "coral" | "amber" | "ink" | "cyan" | "outline" | "violet";
 
+/**
+ * Buttons. One primary action per surface; everything else is "soft" or "ghost".
+ * Danger is reserved for actions that reach people (activate, send, acknowledge help).
+ */
 export const Button = forwardRef<
   HTMLButtonElement,
   ButtonHTMLAttributes<HTMLButtonElement> & { tone?: "primary" | "danger" | "ghost" | "soft" | "dark"; size?: "sm" | "md" | "lg"; icon?: ReactNode; busy?: boolean }
@@ -19,16 +24,18 @@ export const Button = forwardRef<
       ref={ref}
       disabled={disabled || busy}
       className={cn(
-        "relative inline-flex items-center justify-center gap-2 rounded-xl font-medium transition-[background,box-shadow,transform,color] duration-200 select-none",
-        "active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-55",
-        size === "sm" && "h-8 px-3 text-[12.5px]",
+        "relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold tracking-[-0.005em] transition-[background,box-shadow,transform,color] duration-150",
+        "active:translate-y-px disabled:cursor-not-allowed disabled:shadow-none",
+        size === "sm" && "h-8 rounded-[10px] px-3 text-[12.5px]",
         size === "md" && "h-10 px-4 text-[13.5px]",
         size === "lg" && "h-12 px-5 text-[14.5px]",
-        tone === "primary" && "bg-teal text-white shadow-[0_8px_20px_-10px_rgb(8_127_122/0.8)] hover:bg-teal-ink",
-        tone === "danger" && "bg-coral text-white shadow-[0_8px_20px_-10px_rgb(250_104_79/0.8)] hover:bg-coral-ink",
-        tone === "dark" && "bg-ink text-white hover:bg-ink-2",
-        tone === "soft" && "bg-surface-2 text-ink hover:bg-surface-3 ring-1 ring-line",
-        tone === "ghost" && "text-ink-2 hover:bg-surface-2",
+        (tone === "primary" || tone === "danger" || tone === "dark") && "disabled:bg-surface-3 disabled:text-muted",
+        (tone === "soft" || tone === "ghost") && "disabled:opacity-50",
+        tone === "primary" && "bg-teal text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.16),0_1px_2px_rgb(6_70_67/0.4),0_8px_18px_-10px_rgb(8_127_122/0.7)] hover:bg-teal-ink",
+        tone === "danger" && "bg-coral-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.16),0_1px_2px_rgb(120_30_15/0.35),0_8px_18px_-10px_rgb(196_65_43/0.75)] hover:bg-[#a9351f]",
+        tone === "dark" && "bg-ink text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.1)] hover:bg-ink-2",
+        tone === "soft" && "bg-surface text-ink shadow-[0_1px_2px_rgb(16_44_51/0.06)] ring-1 ring-line-strong/80 hover:bg-surface-2",
+        tone === "ghost" && "font-medium text-ink-2 hover:bg-surface-2 hover:text-ink",
         className,
       )}
       {...rest}
@@ -45,7 +52,7 @@ export function IconButton({ label, children, active, className, ...rest }: Butt
       aria-label={label}
       title={label}
       className={cn(
-        "grid h-9 w-9 place-items-center rounded-xl text-ink-2 transition-colors hover:bg-surface-2",
+        "grid h-8 w-8 place-items-center rounded-[10px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink",
         active && "bg-teal-soft text-teal-ink",
         className,
       )}
@@ -56,37 +63,42 @@ export function IconButton({ label, children, active, className, ...rest }: Butt
   );
 }
 
+const DOT: Record<Tone, string> = {
+  neutral: "bg-slate",
+  outline: "bg-slate",
+  teal: "bg-teal",
+  coral: "bg-coral",
+  amber: "bg-amber",
+  cyan: "bg-cyan",
+  ink: "bg-cyan",
+  violet: "bg-violet",
+};
+
+/** Small status label. Quiet by default — colour carries meaning, not decoration. */
 export function Chip({ tone = "neutral", children, className, dot }: { tone?: Tone; children: ReactNode; className?: string; dot?: boolean }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-[3px] text-[11.5px] font-medium leading-[1.4]",
+        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-[2px] text-[11px] font-semibold leading-[1.45]",
         tone === "neutral" && "bg-surface-2 text-ink-2",
         tone === "teal" && "bg-teal-soft text-teal-ink",
         tone === "coral" && "bg-coral-soft text-coral-ink",
         tone === "amber" && "bg-amber-soft text-amber-ink",
+        tone === "violet" && "bg-violet-soft text-violet-ink",
         tone === "ink" && "bg-ink text-white",
-        tone === "cyan" && "bg-[#e3f7f4] text-[#0d6e66]",
-        tone === "outline" && "ring-1 ring-line-strong text-ink-2",
+        tone === "cyan" && "bg-teal-soft text-teal-ink",
+        tone === "outline" && "text-ink-2 ring-1 ring-line-strong",
         className,
       )}
     >
-      {dot && (
-        <span
-          className={cn(
-            "h-1.5 w-1.5 rounded-full",
-            tone === "teal" && "bg-teal",
-            tone === "coral" && "bg-coral",
-            tone === "amber" && "bg-amber",
-            tone === "cyan" && "bg-cyan",
-            (tone === "neutral" || tone === "outline") && "bg-slate",
-            tone === "ink" && "bg-cyan",
-          )}
-        />
-      )}
+      {dot && <span className={cn("h-1.5 w-1.5 rounded-full", DOT[tone])} />}
       {children}
     </span>
   );
+}
+
+export function Dot({ color, className }: { color: string; className?: string }) {
+  return <span aria-hidden className={cn("inline-block h-2 w-2 shrink-0 rounded-full", className)} style={{ background: color }} />;
 }
 
 export function Segmented<T extends string>({
@@ -95,15 +107,17 @@ export function Segmented<T extends string>({
   onChange,
   size = "md",
   ariaLabel,
+  className,
 }: {
   value: T;
   options: { value: T; label: ReactNode; title?: string }[];
   onChange: (v: T) => void;
   size?: "sm" | "md";
   ariaLabel: string;
+  className?: string;
 }) {
   return (
-    <div role="radiogroup" aria-label={ariaLabel} className="relative inline-flex rounded-xl bg-surface-2 p-1 ring-1 ring-line">
+    <div role="radiogroup" aria-label={ariaLabel} className={cn("relative inline-flex rounded-[11px] bg-surface-2 p-[3px] ring-1 ring-line", className)}>
       {options.map((o) => {
         const active = o.value === value;
         return (
@@ -114,9 +128,9 @@ export function Segmented<T extends string>({
             title={o.title}
             onClick={() => onChange(o.value)}
             className={cn(
-              "relative z-10 rounded-[9px] font-medium transition-colors",
-              size === "sm" ? "h-7 px-2.5 text-[12px]" : "h-8 px-3 text-[12.5px]",
-              active ? "bg-white text-ink shadow-[0_1px_2px_rgb(16_44_51/0.12),0_2px_8px_-4px_rgb(16_44_51/0.2)]" : "text-muted hover:text-ink",
+              "relative z-10 flex-1 whitespace-nowrap rounded-[8px] font-medium transition-colors",
+              size === "sm" ? "h-[26px] px-2.5 text-[12px]" : "h-8 px-3 text-[12.5px]",
+              active ? "bg-white text-ink shadow-[0_1px_2px_rgb(16_44_51/0.12),0_2px_6px_-3px_rgb(16_44_51/0.18)]" : "text-muted hover:text-ink",
             )}
           >
             {o.label}
@@ -155,6 +169,14 @@ export function AnimatedNumber({ value, format = (n) => String(Math.round(n)), c
   );
 }
 
+const STAT_TONE = {
+  ink: "text-ink",
+  teal: "text-teal",
+  coral: "text-coral-ink",
+  amber: "text-amber-ink",
+  muted: "text-muted",
+} as const;
+
 export function Stat({
   label,
   value,
@@ -162,42 +184,40 @@ export function Stat({
   sub,
   format,
   big,
+  dot,
 }: {
   label: ReactNode;
   value: number;
-  tone?: "ink" | "teal" | "coral" | "amber" | "muted";
+  tone?: keyof typeof STAT_TONE;
   sub?: ReactNode;
   format?: (n: number) => string;
   big?: boolean;
+  /** Map colour this number corresponds to — doubles as the legend. */
+  dot?: string;
 }) {
   return (
     <div className="min-w-0">
-      <div className="truncate text-[11.5px] font-medium text-muted">{label}</div>
-      <div
-        className={cn(
-          "font-semibold leading-none tracking-tight",
-          big ? "mt-2 text-[34px]" : "mt-1.5 text-[24px]",
-          tone === "ink" && "text-ink",
-          tone === "teal" && "text-teal",
-          tone === "coral" && "text-coral-ink",
-          tone === "amber" && "text-amber-ink",
-          tone === "muted" && "text-muted",
-        )}
-      >
+      <div className={cn("font-semibold leading-none tracking-[-0.02em]", big ? "text-[32px]" : "text-[22px]", STAT_TONE[tone])}>
         <AnimatedNumber value={value} format={format} />
       </div>
-      {sub && <div className="mt-1 text-[11.5px] text-muted">{sub}</div>}
+      <div className="mt-1.5 flex items-center gap-1.5 truncate text-[12px] font-medium text-ink-2">
+        {dot && <Dot color={dot} />}
+        {label}
+      </div>
+      {sub && <div className="mt-0.5 text-[11.5px] text-muted">{sub}</div>}
     </div>
   );
 }
 
-export function Section({ title, aside, children, className }: { title: ReactNode; aside?: ReactNode; children: ReactNode; className?: string }) {
+export function Section({ title, aside, children, className }: { title?: ReactNode; aside?: ReactNode; children: ReactNode; className?: string }) {
   return (
     <section className={cn("border-t border-line px-5 py-4 first:border-t-0", className)}>
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <h3 className="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-muted rtl:tracking-normal">{title}</h3>
-        {aside}
-      </div>
+      {(title || aside) && (
+        <div className="mb-3 flex min-h-6 items-center justify-between gap-3">
+          {title && <h3 className="text-[12.5px] font-semibold text-muted">{title}</h3>}
+          {aside}
+        </div>
+      )}
       {children}
     </section>
   );
@@ -205,9 +225,24 @@ export function Section({ title, aside, children, className }: { title: ReactNod
 
 export function Field({ label, children, mono }: { label: ReactNode; children: ReactNode; mono?: boolean }) {
   return (
-    <div className="grid grid-cols-[112px_1fr] gap-3 py-1.5 text-[12.5px]">
+    <div className="grid grid-cols-[104px_1fr] gap-3 py-1 text-[12.5px]">
       <dt className="text-muted">{label}</dt>
       <dd className={cn("min-w-0 text-ink", mono && "font-id text-[12px]")}>{children}</dd>
+    </div>
+  );
+}
+
+/** Secondary information lives one click away. Closed by default. */
+export function Disclosure({ summary, children, className, defaultOpen = false, icon }: { summary: ReactNode; children: ReactNode; className?: string; defaultOpen?: boolean; icon?: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className={cn("rounded-xl ring-1 ring-line", className)}>
+      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className="flex w-full items-center gap-2 px-3 py-2.5 text-start text-[12.5px] font-medium text-ink-2 hover:text-ink">
+        {icon}
+        <span className="min-w-0 flex-1">{summary}</span>
+        <ChevronDown size={15} className={cn("shrink-0 text-muted transition-transform", open && "rotate-180")} />
+      </button>
+      {open && <div className="border-t border-line px-3 py-3">{children}</div>}
     </div>
   );
 }

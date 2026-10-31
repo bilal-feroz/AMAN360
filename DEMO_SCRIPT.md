@@ -58,7 +58,7 @@ walk"* on Priya's English phone — the keyword rule says P2, Claude raises it t
 1. `npm run demo`, open `http://localhost:3360` in Chrome, full screen (F11). It opens straight
    into the command center as **Alya H.** (no sign-in).
 2. Let the city load once (this also warms the tile cache), then **Settings → Reset demo**.
-3. Optional second screen / phones: left rail → **Citizen devices** → *Open in new window* for
+3. Optional second screen / phones: left rail → **Devices** → the ↗ icon (new window) for
    Mariam (Arabic) and Daniel (English). Over Wi-Fi, use the laptop IP instead of `localhost`.
 4. **Settings → Replay intro** so the opening sequence plays when you start.
 
@@ -91,12 +91,12 @@ will not invent one."
 > no emergency message. This is a deterministic, versioned policy — **why this action?** is always
 > answerable."
 
-**01:20 — Communication** → **Prepare guidance**
+**01:20 — Communication** → **Prepare message**
 > "Here is the same approved action in English and Arabic, side by side, with locked facts
 > highlighted. Switch to *Plain language* — an accessible variant. The AI may simplify wording, but
 > a validator checks that the action, steps, place, time, numbers and claims are unchanged, and
 > that both languages are consistent."
-Click **Approve guidance** → **Issue to simulated channels**.
+Click **Approve message** → **Send to 120 people** (simulated channels).
 > "Nothing reaches the public without a human approval."
 
 **01:45 — Citizen interaction** *(phones open automatically)*
@@ -104,7 +104,7 @@ Click **Approve guidance** → **Issue to simulated channels**.
 > father can't climb the stairs."
 (Tap on the phones, or let Presentation tap for you.)
 
-**02:10 — The picture updates** → **Response intelligence**
+**02:10 — The picture updates** → **Responses**
 > "Every response changes the picture: 120 alerts, 85 safe, 8 assistance requests, 27 still
 > awaiting — computed from stored records, not animated counters. Mariam's case is at the top of
 > the priority queue, and her block on the map turns coral."

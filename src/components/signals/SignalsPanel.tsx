@@ -169,7 +169,7 @@ function Funnel({ view }: { view: SignalsView }) {
               <div className={cn("text-[22px] font-semibold leading-none tracking-tight", i === steps.length - 1 ? "text-violet" : "text-ink")}>
                 <AnimatedNumber value={s.v} />
               </div>
-              <div className="mt-1 truncate text-[10.5px] font-medium text-muted">{L(lang, s.en, s.ar)}</div>
+              <div className="mt-1 line-clamp-2 text-[10.5px] font-medium leading-tight text-muted">{L(lang, s.en, s.ar)}</div>
             </div>
             {i < steps.length - 1 && <ChevronRight size={14} className="shrink-0 text-line-strong rtl:rotate-180" />}
           </div>
@@ -252,7 +252,7 @@ function Hotspots({ view, canAct, act }: { view: SignalsView; canAct: boolean; a
                     {h.insideZone !== null && (
                       <div className={cn("mt-2 inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-medium", h.insideZone ? "bg-teal-soft text-teal-ink" : "bg-amber-soft text-amber-ink")}>
                         {h.insideZone ? <Check size={11} /> : <Eye size={11} />}
-                        {h.insideZone ? L(lang, "Inside the verified hazard zone", "داخل منطقة الخطر الموثقة") : L(lang, "Outside the verified zone — not covered by any alert", "خارج المنطقة الموثقة — لا يشمله أي تنبيه")}
+                        {h.insideZone ? L(lang, "Overlaps the verified hazard zone", "يتداخل مع منطقة الخطر الموثقة") : L(lang, "Outside the verified zone — not covered by any alert", "خارج المنطقة الموثقة — لا يشمله أي تنبيه")}
                       </div>
                     )}
                     <div className="mt-2.5 flex items-center gap-2">

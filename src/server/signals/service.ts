@@ -94,7 +94,9 @@ export function signalsView(dataset: SignalDataset, atIso?: string | null) {
     const dismissed = latest(actions, h.id, "dismiss");
     const v = latest(actions, h.id, "verification");
     const status: VerificationStatus = dismissed ? "dismissed" : ((v?.status as VerificationStatus | undefined) ?? "unverified");
-    const insideZone = zone ? turf.booleanPointInPolygon(turf.point(h.center), zone as Polygon) : null;
+    // A hotspot counts as covered when its area overlaps the verified zone (a district's centroid can
+    // sit just outside the zone while most of its reports are inside it).
+    const insideZone = zone ? turf.booleanIntersects(turf.circle(h.center, h.radiusM / 1000, { steps: 48 }), turf.feature(zone)) : null;
     return { ...h, status, insideZone, verification: v ? { at: v.at, actor: v.actor, note: (v.data?.note as string | undefined) ?? null } : null };
   });
   const rumourView = rumours.map((r) => {
